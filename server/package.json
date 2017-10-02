@@ -4,12 +4,18 @@
   "description": "Server to receive and process values from a Dutch Smart Meter (DSMR)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "run": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "./node_modules/.bin/supervisor --watch . --timestamp index.js"
   },
   "keywords": [
-    "Smart",
-    "Metering"
+    "Smart  Metering"
   ],
   "author": "Thomas ten Cate",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.1",
+    "supervisor": "^0.12.0"
+  }
 }
