@@ -1,5 +1,5 @@
 {
-  "name": "smartmetertap",
+  "name": "prikmeter",
   "version": "1.0.0",
   "description": "Server to receive and process values from a Dutch Smart Meter (DSMR)",
   "main": "index.js",
@@ -12,6 +12,7 @@
     "Smart  Metering"
   ],
   "author": "Thomas ten Cate",
+  "repository": "https://github.com/ttencate/prikmeter",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.2",
