@@ -1,0 +1,15 @@
+{
+  "name": "smartmetertap",
+  "version": "1.0.0",
+  "description": "Server to receive and process values from a Dutch Smart Meter (DSMR)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Smart",
+    "Metering"
+  ],
+  "author": "Thomas ten Cate",
+  "license": "MIT"
+}
