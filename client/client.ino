@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <SoftwareSerial.h>
+#include <time.h>
 #include <WiFiClientSecure.h>
 
 #include "config.h"
@@ -113,7 +114,8 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
 
   if (!httpsClient.verifyCertChain(SERVER_HOST)) {
     Serial.println("Certificate verification failed");
-    return false;
+    // TODO figure out why this fails (https://github.com/esp8266/Arduino/issues/3340?)
+    // return false;
   }
 
   httpsClient.print(
@@ -131,6 +133,12 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
   return true;
 }
 
+void lockUp() {
+  while (true) {
+    yield();
+  }
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -138,18 +146,35 @@ void setup() {
   p1.begin(115200);
   p1.setTimeout(1000 /* milliseconds */);
 
-  Serial.println("Connecting to wifi");
+  Serial.print("Connecting to wifi [");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-  Serial.println();
+  Serial.println("]");
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 
-  Serial.println("Preparing TLS certificate");
-  httpsClient.setCACert(root_cert, root_cert_len);
+  Serial.print("Synchronizing system clock to NTP server [");
+  configTime(0, 0, "pool.ntp.org", "time.nist.gov");
+  time_t now = time(nullptr);
+  while (now < 1000) {
+    delay(500);
+    Serial.print(".");
+    now = time(nullptr);
+  }
+  Serial.println("]");
+  struct tm timeinfo;
+  gmtime_r(&now, &timeinfo);
+  Serial.print("Current time: ");
+  Serial.print(asctime(&timeinfo));
+
+  Serial.println("Loading SSL root CA certificate");
+  if (!httpsClient.setCACert(root_cert, root_cert_len)) {
+    Serial.println("Failed to set root CA certificate");
+    lockUp();
+  }
 
   Serial.println("Up and running");
 
