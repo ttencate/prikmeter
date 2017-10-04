@@ -119,15 +119,15 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
   }
 
   httpsClient.print(
-      "POST /telegrams HTTP/1.1\n"
-      "Host: " SERVER_HOST "\n"
-      "User-Agent: " USER_AGENT " " VERSION "\n"
-      "Content-Type: text/plain\n"
+      "POST /telegrams HTTP/1.1\r\n"
+      "Host: " SERVER_HOST "\r\n"
+      "User-Agent: " USER_AGENT " " VERSION "\r\n"
+      "Content-Type: text/plain\r\n"
       "Content-Length: ");
   httpsClient.print(size);
-  httpsClient.print("\n"
-      "Connection: close\n"
-      "\n");
+  httpsClient.print("\r\n"
+      "Connection: close\r\n"
+      "\r\n");
   httpsClient.write(buffer, size);
 
   return true;
