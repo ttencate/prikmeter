@@ -2,11 +2,12 @@
   "name": "prikmeter",
   "version": "1.0.0",
   "description": "Server to receive and process values from a Dutch Smart Meter (DSMR)",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
-    "run": "node index.js",
+    "run": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "./node_modules/.bin/supervisor --watch . --timestamp index.js"
+    "migrate": "./node_modules/.bin/knex migrate:latest",
+    "watch": "./node_modules/.bin/supervisor --watch . --timestamp main.js"
   },
   "keywords": [
     "Smart  Metering"
@@ -15,8 +16,21 @@
   "repository": "https://github.com/ttencate/prikmeter",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^1.0.3",
+    "bcrypt-promise": "^2.0.0",
     "body-parser": "^1.18.2",
     "express": "^4.16.1",
+    "express-nunjucks": "^2.2.3",
+    "express-promise-router": "^2.0.0",
+    "express-session": "^1.15.6",
+    "express-validator": "^4.2.1",
+    "knex": "^0.13.0",
+    "make-promises-safe": "^1.1.0",
+    "nunjucks": "^3.0.1",
+    "pg": "^7.3.0",
+    "promisify-node": "^0.4.0",
+    "readline-sync": "^1.4.7",
+    "sqlite3": "^3.1.13",
     "supervisor": "^0.12.0"
   }
 }

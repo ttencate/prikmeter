@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Prikmeter</title>
+  </head>
+  <body>
+    {% if errors %}
+      <h4>Errors</h4>
+      <ul>
+      {% for error in errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+    {% if user %}
+      <h4>Logged in as {{ user.email }}</h4>
+      <form action="/logout" method="POST">
+        <input value="Log out" type="submit">
+      </form>
+      <h4>Meters</h4>
+      {% for meter in meters %}
+      <h5>{{ meter.name }}</h5>
+      <p>Auth tokens:</p>
+      <ul>
+        {% for token in meter.authTokens %}
+          <li><code>{{ token }}</code></li>
+        {% endfor %}
+      </ul>
+      {% endfor %}
+    {% else %}
+      <h4>Log in</h4>
+      <form action="/login" method="POST">
+        Email: <input name="email" type="email">
+        Password: <input name="password" type="password">
+        <input name="return_url" type="hidden" value="{{ return_url }}">
+        <input value="Log in" type="submit">
+      </form>
+      <h4>Create account</h4>
+      <form action="/users" method="POST">
+        Email: <input name="email" type="email">
+        Password: <input name="password1" type="password">
+        Password (repeated): <input name="password2" type="password">
+        <input name="return_url" type="hidden" value="{{ return_url }}">
+        <input value="Create account" type="submit">
+      </form>
+    {% endif %}
+  </body>
+</html>
