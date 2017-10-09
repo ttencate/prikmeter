@@ -11,6 +11,9 @@ You also need to create a file named `config.in` which looks like this:
     WIFI_PASSWORD = your_wifi_password
     SERVER_HOST = prikmeter.your-server.example.com
 
-Then type `make` to generate `config.h` from this. This also generates
-`root_cert.cpp`, which contains the root CA certificate used to authentitate
-the server.
+Then you can just use the commands from
+[makeEspArduino](https://github.com/plerup/makeEspArduino); type `make help` to
+get the full list. Some of the more useful ones:
+
+    make build    # build the code
+    make flash    # upload the code
