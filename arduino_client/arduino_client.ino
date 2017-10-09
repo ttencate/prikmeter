@@ -8,6 +8,7 @@
 #include "root_cert.h"
 
 #define SERIAL_RX_PIN D5
+#define LED_PIN D4
 #define P1_BUFFER_SIZE_BYTES 64
 
 #define MAX_TELEGRAM_SIZE 4096
@@ -130,6 +131,9 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
       "\r\n");
   httpsClient.write(buffer, size);
 
+  Serial.print("Sent telegram of ");
+  Serial.print(size);
+  Serial.print(" bytes");
   return true;
 }
 
@@ -139,7 +143,14 @@ void lockUp() {
   }
 }
 
+void setLed(bool on) {
+  digitalWrite(LED_PIN, on ? LOW : HIGH);
+}
+
 void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  setLed(true);
+
   Serial.begin(115200);
 
   Serial.println("Opening P1 port");
@@ -165,10 +176,9 @@ void setup() {
     now = time(nullptr);
   }
   Serial.println("]");
-  struct tm timeinfo;
-  gmtime_r(&now, &timeinfo);
+  now = time(nullptr);
   Serial.print("Current time: ");
-  Serial.print(asctime(&timeinfo));
+  Serial.print(ctime(&now));
 
   // Serial.println("Loading SSL root CA certificate");
   // if (!httpsClient.setCACert(root_cert, root_cert_len)) {
@@ -178,19 +188,19 @@ void setup() {
 
   Serial.println("Up and running");
 
-  Serial.println("Sending test telegram");
-  char const *test = "hello world\r\n!abcd\r\n";
-  uploadTelegram((byte const *) test, strlen(test));
+  setLed(false);
 }
 
 void loop() {
   if (P1_INPUT.available()) {
+    setLed(true);
     uint16 size = readTelegram(telegramBuffer, MAX_TELEGRAM_SIZE);
     if (size > 0) {
       Serial.print("Received telegram of ");
       Serial.print(size);
       Serial.println(" bytes; uploading");
       uploadTelegram(telegramBuffer, size);
+      setLed(false);
     }
   }
 }

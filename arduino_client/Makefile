@@ -31,6 +31,7 @@ clean_certs:
 SKETCH := arduino_client.ino
 CHIP := esp8266
 BOARD := nodemcuv2
+UPLOAD_SPEED := 115200
 ESPTOOL_PY := ../esptool/esptool.py
 BUILD_ROOT := ./build
 include makeEspArduino.mk
