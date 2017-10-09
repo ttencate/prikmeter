@@ -1,4 +1,4 @@
-include config.in
+-include config.in
 
 .PHONY: all
 all: config.h root_cert.cpp
@@ -23,6 +23,14 @@ root.cert: config.in
 root_cert.cpp: root.cert
 	xxd -i $< > $@
 
-.PHONY: clean
-clean:
+.PHONY: clean_certs
+clean_certs:
 	rm -f config.h root.cert root_cert.cpp
+
+# https://github.com/plerup/makeEspArduino
+SKETCH := arduino_client.ino
+CHIP := esp8266
+BOARD := nodemcuv2
+ESPTOOL_PY := ../esptool/esptool.py
+BUILD_ROOT := ./build
+include makeEspArduino.mk

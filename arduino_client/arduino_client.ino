@@ -112,11 +112,11 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
     return false;
   }
 
-  if (!httpsClient.verifyCertChain(SERVER_HOST)) {
-    Serial.println("Certificate verification failed");
-    // TODO figure out why this fails (https://github.com/esp8266/Arduino/issues/3340?)
-    // return false;
-  }
+  // TODO figure out why this fails (https://github.com/esp8266/Arduino/issues/3340?)
+  // if (!httpsClient.verifyCertChain(SERVER_HOST)) {
+  //   Serial.println("Certificate verification failed");
+  //   return false;
+  // }
 
   httpsClient.print(
       "POST /telegrams HTTP/1.1\r\n"
@@ -170,11 +170,11 @@ void setup() {
   Serial.print("Current time: ");
   Serial.print(asctime(&timeinfo));
 
-  Serial.println("Loading SSL root CA certificate");
-  if (!httpsClient.setCACert(root_cert, root_cert_len)) {
-    Serial.println("Failed to set root CA certificate");
-    lockUp();
-  }
+  // Serial.println("Loading SSL root CA certificate");
+  // if (!httpsClient.setCACert(root_cert, root_cert_len)) {
+  //   Serial.println("Failed to set root CA certificate");
+  //   lockUp();
+  // }
 
   Serial.println("Up and running");
 
