@@ -3,15 +3,17 @@ const db = require('../storage/db')
 
 module.exports = {
   get: async function ({ id }) {
-    return await db.from('meters').where({ id }).first('id', 'name')
+    const meter = await db.from('meters').where({ id }).first('id', 'name')
+    return meter
   },
 
   getForAuthToken: async function (authToken) {
     authToken = authToken || ''
-    return await db.from('authTokens')
+    const meter = await db.from('authTokens')
         .where({ 'authTokens.token': authToken })
         .leftJoin('meters', 'authTokens.meterId', 'meters.id')
         .first('meters.id', 'meters.name')
+    return meter
   },
 
   getForUser: async function (user) {
@@ -19,7 +21,7 @@ module.exports = {
         .leftJoin('authTokens', 'meters.id', 'authTokens.meterId')
         .select('meters.id', 'meters.name', 'authTokens.token')
     const metersById = {}
-    for (row of queryResult) {
+    for (let row of queryResult) {
       metersById[row.id] = metersById[row.id] || { id: row.id, name: row.name, authTokens: [] }
       metersById[row.id].authTokens.push(row.token)
     }

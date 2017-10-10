@@ -9,6 +9,15 @@ module.exports.login = [
   check('email').exists(),
   check('password').exists(),
   async function (req, res) {
+    // TODO extract this to a common function somewhere
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.render('index', {
+        errors: errors.array().map(error => error.msg)
+      })
+      return
+    }
+
     const user = await users.get({ email: req.body.email })
     if (!await users.isPasswordCorrect(user, req.body.password)) {
       res.render('index', {

@@ -4,7 +4,8 @@ const db = require('../storage/db')
 
 module.exports = {
   get: async function ({ email }) {
-    return await db.from('users').where({ email }).first('id', 'email', 'passwordHash')
+    const user = await db.from('users').where({ email }).first('id', 'email', 'passwordHash')
+    return user
   },
 
   create: async function ({ email, password }) {
@@ -17,6 +18,7 @@ module.exports = {
     if (!user) {
       return false
     }
-    return await bcryptPromise.compare(password, user.passwordHash)
+    const passwordCorrect = await bcryptPromise.compare(password, user.passwordHash)
+    return passwordCorrect
   }
 }

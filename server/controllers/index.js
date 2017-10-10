@@ -6,8 +6,8 @@ module.exports.addRoutes = function addRoutes (app) {
   app.post('/login$', login.login)
   app.post('/logout$', login.logout)
 
-  const users = require('./users')
   // User creation is untested, so disabled for now.
+  // const users = require('./users')
   // app.post('/users$', users.create)
 
   const telegrams = require('./telegrams')

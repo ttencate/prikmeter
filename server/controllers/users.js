@@ -19,7 +19,7 @@ module.exports.create = [
 
     const userId = await users.create(req.body.email, req.body.password1)
 
-    session.user = users.get(userId)
+    req.session.user = await users.get(userId)
 
     res.redirect('/')
   }

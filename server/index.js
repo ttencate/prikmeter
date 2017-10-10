@@ -6,9 +6,7 @@ async function main () {
   if (process.env.NODE_ENV !== 'development') {
     process.env.NODE_ENV = 'production'
   }
-  const env = process.env.NODE_ENV
 
-  const db = require('./storage/db')
   await require('./storage/migrate')()
 
   const app = express()

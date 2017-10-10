@@ -7,6 +7,7 @@
     "run": "NODE_ENV=production node .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate": "./node_modules/.bin/knex migrate:latest",
+    "standard": "./node_modules/.bin/standard",
     "watch": "NODE_ENV=development ./node_modules/.bin/supervisor --watch . --timestamp ."
   },
   "keywords": [
@@ -30,7 +31,10 @@
     "pg": "^7.3.0",
     "promisify-node": "^0.4.0",
     "readline-sync": "^1.4.7",
-    "sqlite3": "^3.1.13",
+    "sqlite3": "^3.1.13"
+  },
+  "devDependencies": {
+    "standard": "^10.0.3",
     "supervisor": "^0.12.0"
   }
 }
