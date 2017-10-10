@@ -23,7 +23,7 @@ bool TelegramReader::addByte(byte b) {
   if (atStartOfLine) {
     if (b == '/') {
       // Start of telegram: truncate buffer.
-      size = 0;
+      reset();
     } else if (b == '!') {
       // Last line (checksum): remember this.
       inLastLine = true;

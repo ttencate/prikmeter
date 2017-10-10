@@ -12,7 +12,7 @@
 #define LED_PIN D4
 #define P1_BUFFER_SIZE_BYTES 64
 
-#define READ_TIMEOUT_MILLIS 2000
+#define READ_TIMEOUT_MILLIS 5000
 
 #ifndef SERVER_PORT
 #define SERVER_PORT 443
@@ -61,7 +61,7 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
       "\r\n");
   httpsClient.write(buffer, size);
 
-  Serial.print("Sent telegram of ");
+  Serial.print("Uploaded telegram of ");
   Serial.print(size);
   Serial.println(" bytes");
 
@@ -140,7 +140,7 @@ void loop() {
       unsigned int size = telegramReader.getSize();
       Serial.print("Received telegram of ");
       Serial.print(size);
-      Serial.println(" bytes; uploading");
+      Serial.println(" bytes");
 
       bool success = uploadTelegram(telegramReader.getBuffer(), size);
       telegramReader.reset();
