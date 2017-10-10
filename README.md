@@ -2,7 +2,10 @@ Prikmeter
 =========
 
 Prikmeter is a hobby project to fetch and store readings from my electricity
-meter, a Dutch "smart meter". It consists of three parts:
+meter, a Dutch "smart meter" which follows the DSMR (Dutch Smart Meter
+Requirements) standard.
+
+The prikmeter consists of three parts:
 
 * A hardware component based on a [ESP8266](http://esp8266.net/)
   System-on-Chip. This goes in your meter cabinet. Specs are in the
