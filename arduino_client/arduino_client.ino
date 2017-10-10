@@ -13,6 +13,8 @@
 
 #define MAX_TELEGRAM_SIZE 4096
 
+#define READ_TIMEOUT_MILLIS 1000
+
 #ifndef SERVER_PORT
 #define SERVER_PORT 443
 #endif
@@ -52,12 +54,22 @@ void readGarbage(bool warn) {
 uint16 readTelegram(byte *buffer, uint16 size) {
   uint16 i;
   byte state = 0;
+  unsigned long start_time = millis();
   for (i = 0; i < size; i++) {
-    int b = P1_INPUT.read();
-    if (b < 0) {
-      Serial.println("Read timed out before telegram end sequence");
-      return 0;
-    }
+    int b;
+    do {
+      unsigned long now = millis();
+      if (now - start_time > READ_TIMEOUT_MILLIS) {
+        Serial.print("Telegram read timed out after ");
+        Serial.print(READ_TIMEOUT_MILLIS);
+        Serial.print(" ms, having read ");
+        Serial.print(i);
+        Serial.println(" bytes");
+        return 0;
+      }
+
+      b = P1_INPUT.read();
+    } while (b < 0);
     buffer[i] = b;
 
     // Each telegram ends with a line like this:
@@ -89,15 +101,18 @@ uint16 readTelegram(byte *buffer, uint16 size) {
         if (b == '\n') state++; else state = 0;
     }
 
-    if (state == 8) {
+    if (state == 9) {
       readGarbage(true);
       return i;
     }
   }
+
   Serial.print("Telegram buffer overflow after ");
   Serial.print(size);
   Serial.println(" bytes");
+
   readGarbage(false);
+
   return 0;
 }
 
@@ -134,7 +149,8 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
 
   Serial.print("Sent telegram of ");
   Serial.print(size);
-  Serial.print(" bytes");
+  Serial.println(" bytes");
+
   return true;
 }
 
@@ -156,7 +172,6 @@ void setup() {
 
   Serial.println("Opening P1 port");
   p1.begin(115200);
-  p1.setTimeout(1000 /* milliseconds */);
 
   Serial.print("Connecting to wifi [");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
