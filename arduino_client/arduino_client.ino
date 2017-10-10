@@ -30,6 +30,10 @@ SoftwareSerial p1(SERIAL_RX_PIN, -1, true, P1_BUFFER_SIZE_BYTES);
 TelegramReader telegramReader;
 WiFiClientSecure httpsClient;
 
+void setLed(bool on) {
+  digitalWrite(LED_PIN, on ? LOW : HIGH);
+}
+
 /**
  * Uploads the telegram in the given `buffer` of `size` bytes to the server.
  * Returns `true` on success.
@@ -41,6 +45,8 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
     Serial.println();
     return false;
   }
+
+  setLed(true);
 
   // TODO figure out why this fails (https://github.com/esp8266/Arduino/issues/3340?)
   // if (!httpsClient.verifyCertChain(SERVER_HOST)) {
@@ -66,10 +72,6 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
   Serial.println(" bytes");
 
   return true;
-}
-
-void setLed(bool on) {
-  digitalWrite(LED_PIN, on ? LOW : HIGH);
 }
 
 void setup() {
@@ -125,6 +127,7 @@ void loop() {
   static unsigned long telegramStartTime = millis();
   if (millis() - telegramStartTime > READ_TIMEOUT_MILLIS) {
     telegramReader.reset();
+    setLed(false);
   }
 
   int b = P1_INPUT.read();
@@ -137,17 +140,19 @@ void loop() {
     telegramReader.addByte((byte) b);
 
     if (telegramReader.isComplete()) {
+      setLed(false);
+
       unsigned int size = telegramReader.getSize();
       Serial.print("Received telegram of ");
       Serial.print(size);
       Serial.println(" bytes");
 
       bool success = uploadTelegram(telegramReader.getBuffer(), size);
-      telegramReader.reset();
-
       if (success) {
         setLed(false);
       }
+
+      telegramReader.reset();
     }
   }
 }
