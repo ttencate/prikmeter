@@ -1,8 +1,5 @@
 -include config.in
 
-.PHONY: all
-all: config.h root_cert.cpp
-
 # TODO escape variables properly for use in C++ string literals
 config.h: config.in root.cert
 	echo '#define WIFI_SSID "$(WIFI_SSID)"' > $@
@@ -28,6 +25,8 @@ root_cert.cpp: root.cert
 clean_certs:
 	rm -f config.h root.cert root_cert.cpp
 
+clean: clean_certs
+
 # https://github.com/plerup/makeEspArduino
 SKETCH := arduino_client.ino
 CHIP := esp8266
@@ -36,3 +35,4 @@ UPLOAD_SPEED := 115200
 ESPTOOL_PY := ../esptool/esptool.py
 BUILD_ROOT := ./build
 include makeEspArduino.mk
+$(USER_OBJ): config.h root_cert.cpp
