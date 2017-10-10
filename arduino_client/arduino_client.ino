@@ -6,14 +6,13 @@
 
 #include "config.h"
 #include "root_cert.h"
+#include "telegram_reader.h"
 
 #define SERIAL_RX_PIN D5
 #define LED_PIN D4
 #define P1_BUFFER_SIZE_BYTES 64
 
-#define MAX_TELEGRAM_SIZE 4096
-
-#define READ_TIMEOUT_MILLIS 1000
+#define READ_TIMEOUT_MILLIS 2000
 
 #ifndef SERVER_PORT
 #define SERVER_PORT 443
@@ -28,93 +27,8 @@
 #define P1_INPUT p1
 
 SoftwareSerial p1(SERIAL_RX_PIN, -1, true, P1_BUFFER_SIZE_BYTES);
-
-byte telegramBuffer[MAX_TELEGRAM_SIZE];
-
+TelegramReader telegramReader;
 WiFiClientSecure httpsClient;
-
-void readGarbage(bool warn) {
-  uint16 count = 0;
-  while (P1_INPUT.available()) {
-    P1_INPUT.read();
-    count++;
-  }
-  if (warn && count) {
-    Serial.print("Found and discarded ");
-    Serial.print(count);
-    Serial.println(" bytes of garbage after telegram");
-  }
-}
-
-/**
- * Reads a telegram from the P1 port into the given `buffer`, reading at most
- * `size` bytes. Returns number of bytes read, or 0 on error (a valid telegram
- * is never 0 bytes).
- */
-uint16 readTelegram(byte *buffer, uint16 size) {
-  uint16 i;
-  byte state = 0;
-  unsigned long start_time = millis();
-  for (i = 0; i < size; i++) {
-    int b;
-    do {
-      unsigned long now = millis();
-      if (now - start_time > READ_TIMEOUT_MILLIS) {
-        Serial.print("Telegram read timed out after ");
-        Serial.print(READ_TIMEOUT_MILLIS);
-        Serial.print(" ms, having read ");
-        Serial.print(i);
-        Serial.println(" bytes");
-        return 0;
-      }
-
-      b = P1_INPUT.read();
-    } while (b < 0);
-    buffer[i] = b;
-
-    // Each telegram ends with a line like this:
-    // !abcd\r\n
-    switch (state) {
-      // Preceding line
-      case 0:
-        if (b == '\r') state++;
-        break;
-      case 1:
-        if (b == '\n') state++; else state = 0;
-        break;
-      // Exclamation point
-      case 2:
-        if (b == '!') state++; else state = 0;
-        break;
-      // 4-byte CRC (hex)
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-        state++;
-        break;
-      // End of line
-      case 7:
-        if (b == '\r') state++; else state = 0;
-        break;
-      case 8:
-        if (b == '\n') state++; else state = 0;
-    }
-
-    if (state == 9) {
-      readGarbage(true);
-      return i;
-    }
-  }
-
-  Serial.print("Telegram buffer overflow after ");
-  Serial.print(size);
-  Serial.println(" bytes");
-
-  readGarbage(false);
-
-  return 0;
-}
 
 /**
  * Uploads the telegram in the given `buffer` of `size` bytes to the server.
@@ -152,12 +66,6 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
   Serial.println(" bytes");
 
   return true;
-}
-
-void lockUp() {
-  while (true) {
-    yield();
-  }
 }
 
 void setLed(bool on) {
@@ -200,7 +108,6 @@ void setup() {
   // Serial.println("Loading SSL root CA certificate");
   // if (!httpsClient.setCACert(root_cert, root_cert_len)) {
   //   Serial.println("Failed to set root CA certificate");
-  //   lockUp();
   // }
 
   Serial.println("Up and running");
@@ -213,15 +120,34 @@ void setup() {
 }
 
 void loop() {
-  if (P1_INPUT.available()) {
-    setLed(true);
-    uint16 size = readTelegram(telegramBuffer, MAX_TELEGRAM_SIZE);
-    if (size > 0) {
+  // If we still don't have a complete telegram seconds after the start, assume
+  // read error and reset the reader for the next one.
+  static unsigned long telegramStartTime = millis();
+  if (millis() - telegramStartTime > READ_TIMEOUT_MILLIS) {
+    telegramReader.reset();
+  }
+
+  int b = P1_INPUT.read();
+  if (b >= 0) {
+    if (telegramReader.isEmpty()) {
+      telegramStartTime = millis();
+      setLed(true);
+    }
+
+    telegramReader.addByte((byte) b);
+
+    if (telegramReader.isComplete()) {
+      unsigned int size = telegramReader.getSize();
       Serial.print("Received telegram of ");
       Serial.print(size);
       Serial.println(" bytes; uploading");
-      uploadTelegram(telegramBuffer, size);
-      setLed(false);
+
+      bool success = uploadTelegram(telegramReader.getBuffer(), size);
+      telegramReader.reset();
+
+      if (success) {
+        setLed(false);
+      }
     }
   }
 }
