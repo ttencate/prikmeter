@@ -19,3 +19,10 @@ The prikmeter consists of three parts:
 * A webserver running [Node.js](https://nodejs.org/) and
   [Express](http://expressjs.com/), which stores the data in a
   [PostgreSQL](https://www.postgresql.org/) database.
+
+The firmware is kept as simple as possible, with most of the smart parts living
+on the server side. In particular, the "telegrams" from the smart meter are
+uploaded verbatim without so much as checksum verification on the client side.
+This makes the system easier to debug and easier to upgrade.
+
+![The hardware part](hardware/cable.jpg)
