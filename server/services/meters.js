@@ -6,6 +6,14 @@ module.exports = {
     return await db.from('meters').where({ id }).first('id', 'name')
   },
 
+  getForAuthToken: async function (authToken) {
+    authToken = authToken || ''
+    return await db.from('authTokens')
+        .where({ 'authTokens.token': authToken })
+        .leftJoin('meters', 'authTokens.meterId', 'meters.id')
+        .first('meters.id', 'meters.name')
+  },
+
   getForUser: async function (user) {
     const queryResult = await db.from('meters').where({ ownerUserId: user.id })
         .leftJoin('authTokens', 'meters.id', 'authTokens.meterId')

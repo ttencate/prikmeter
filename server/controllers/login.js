@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser')
 const { check, validationResult } = require('express-validator/check')
 const promisify = require('promisify-node')
+
 const users = require('../services/users')
 
 module.exports.login = [
