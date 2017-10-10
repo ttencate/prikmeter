@@ -2,12 +2,12 @@
   "name": "prikmeter",
   "version": "1.0.0",
   "description": "Server to receive and process values from a Dutch Smart Meter (DSMR)",
-  "main": "main.js",
+  "main": "index.js",
   "scripts": {
-    "run": "node main.js",
+    "run": "NODE_ENV=production node .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate": "./node_modules/.bin/knex migrate:latest",
-    "watch": "./node_modules/.bin/supervisor --watch . --timestamp main.js"
+    "watch": "NODE_ENV=development ./node_modules/.bin/supervisor --watch . --timestamp ."
   },
   "keywords": [
     "Smart  Metering"

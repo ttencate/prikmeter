@@ -1,7 +1,7 @@
-module.exports.createKnex = async function createKnex (env) {
-  env = env || 'development'
+function createKnex () {
+  const env = process.env.NODE_ENV || 'production'
 
-  const knexfile = require('./knexfile')
+  const knexfile = require('../knexfile')
   const knexConfig = knexfile[env]
   if (typeof knexConfig !== 'object') {
     throw new Error(`knexfile.js does not contain a configuration for the "${env}" environment`)
@@ -9,7 +9,7 @@ module.exports.createKnex = async function createKnex (env) {
 
   const knex = require('knex')(knexConfig)
 
-  await knex.migrate.latest()
-
   return knex
 }
+
+module.exports = createKnex()

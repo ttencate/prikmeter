@@ -1,20 +1,23 @@
 #!/usr/bin/env node
 
-const crypto = require('crypto')
 const readlineSync = require('readline-sync')
 require('make-promises-safe')
 
+const meters = require('../services/meters')
+
 async function main () {
-  const knex = await require('./db').createKnex()
+  await require('../storage/migrate')()
 
   const meterId = readlineSync.question('Meter ID: ')
+  const meter = await meters.get({ id: meterId })
+  if (!meter) {
+    throw Error('Meter not found')
+  }
 
-  const token = crypto.randomBytes(32).toString('hex')
-  await knex('authTokens').insert({ token: token, meterId: meterId })
+  const token = await meters.createAuthToken(meter)
   process.stdout.write(`Created token: ${token}\n`)
 
   process.exit(0)
 }
 
 main()
-
