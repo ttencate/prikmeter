@@ -10,6 +10,7 @@ You also need to create a file named `config.in` which looks like this:
     WIFI_SSID = your_network_name
     WIFI_PASSWORD = your_wifi_password
     SERVER_HOST = prikmeter.your-server.example.com
+    AUTH_TOKEN = your_auth_token
 
 Then you can just use the commands from
 [makeEspArduino](https://github.com/plerup/makeEspArduino); type `make help` to

@@ -8,6 +8,7 @@ config.h: config.in root.cert
 	echo '#define WIFI_SSID "$(WIFI_SSID)"' > $@
 	echo '#define WIFI_PASSWORD "$(WIFI_PASSWORD)"' >> $@
 	echo '#define SERVER_HOST "$(SERVER_HOST)"' >> $@
+	echo '#define AUTH_TOKEN "$(AUTH_TOKEN)"' >> $@
 
 # The first sed command prints everything between begin and end of each cert.
 # The second sed command operates on reversed output (tac) and prints

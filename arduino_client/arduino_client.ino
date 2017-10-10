@@ -127,6 +127,7 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
       "Content-Length: ");
   httpsClient.print(size);
   httpsClient.print("\r\n"
+      "X-Auth-Token: " AUTH_TOKEN "\r\n"
       "Connection: close\r\n"
       "\r\n");
   httpsClient.write(buffer, size);
@@ -179,6 +180,7 @@ void setup() {
   now = time(nullptr);
   Serial.print("Current time: ");
   Serial.print(ctime(&now));
+  Serial.println();
 
   // Serial.println("Loading SSL root CA certificate");
   // if (!httpsClient.setCACert(root_cert, root_cert_len)) {
@@ -187,6 +189,10 @@ void setup() {
   // }
 
   Serial.println("Up and running");
+
+  // Serial.println("Sending test telegram");
+  // char const *testTelegram = "/hello\r\n!world\r\n";
+  // uploadTelegram((byte const *) testTelegram, strlen(testTelegram));
 
   setLed(false);
 }
