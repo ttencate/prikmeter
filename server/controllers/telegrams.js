@@ -17,7 +17,7 @@ module.exports.create = [
     }
 
     const authToken = req.headers[AUTH_TOKEN_HEADER]
-    const telegram = req.body.toString('ascii')
+    const telegram = req.body.toString('ascii') // TODO see what happens if we shove it to the database as a Buffer directly
 
     const meter = await meters.getForAuthToken(authToken)
     if (!meter) {

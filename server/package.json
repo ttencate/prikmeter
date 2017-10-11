@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "run": "NODE_ENV=production node .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "run_watch": "NODE_ENV=development ./node_modules/.bin/supervisor --watch . --timestamp .",
+    "test": "./node_modules/.bin/mocha $(find . -name *.test.js -not -path './node_modules/*')",
+    "test_watch": "./node_modules/.bin/mocha -w $(find . -name *.test.js -not -path './node_modules/*')",
     "migrate": "./node_modules/.bin/knex migrate:latest",
-    "standard": "./node_modules/.bin/standard",
-    "watch": "NODE_ENV=development ./node_modules/.bin/supervisor --watch . --timestamp ."
+    "standard": "./node_modules/.bin/standard"
   },
   "keywords": [
     "Smart  Metering"
@@ -20,6 +21,7 @@
     "bcrypt": "^1.0.3",
     "bcrypt-promise": "^2.0.0",
     "body-parser": "^1.18.2",
+    "crc": "^3.5.0",
     "express": "^4.16.1",
     "express-nunjucks": "^2.2.3",
     "express-promise-router": "^2.0.0",
@@ -34,6 +36,9 @@
     "sqlite3": "^3.1.13"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^4.0.1",
     "standard": "^10.0.3",
     "supervisor": "^0.12.0"
   }
