@@ -24,6 +24,7 @@ describe('telegram', () => {
   describe('parse', () => {
     it('parses the example telegram', () => {
       const actual = telegram.parse(DATA)
+      expect(actual.totalConsumptionKwhLow).to.equal(1677.034)
     })
   })
 })
