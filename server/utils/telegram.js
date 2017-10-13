@@ -1,4 +1,5 @@
 const crc = require('crc')
+const moment = require('moment')
 
 function throwParseError (message) {
   throw new Error(`${message}`)
@@ -18,22 +19,42 @@ function canonicalObisCode (a, b, c, d, e, f) {
 }
 
 function stripParentheses (value) {
-  if (value.length < 2 || value[0] != '(' || value[value.length - 1] != ')') {
+  if (value.length < 2 || value[0] !== '(' || value[value.length - 1] !== ')') {
     throwParseError(`Value is not enclosed in parentheses: ${value}`)
   }
   return value.substring(1, value.length - 1)
 }
 
-function parseTimestamp (value) {
-  // TODO
+function timestamp (value) {
+  value = stripParentheses(value)
+  if (value.length < 1) {
+    throwParseError(`Timestamp is too short: ${value}`)
+  }
+
+  const dateTimeStr = value.substring(0, value.length - 1)
+  const dstFlag = value[value.length - 1]
+  // Assuming Dutch timezone. The standard makes no mention of time zones.
+  const timezoneOffset = {
+    'S': '+02:00',
+    'W': '+01:00'
+  }[dstFlag]
+  if (!timezoneOffset) {
+    throwParseError(`Invalid DST flag in timestamp: ${value}`)
+  }
+
+  const dateTime = moment(dateTimeStr + timezoneOffset, 'YYMMDDHHmmssZZ')
+  if (!dateTime.isValid()) {
+    throwParseError(`Could not parse timestamp: ${value}`)
+  }
+  return dateTime.toDate()
 }
 
-function parserFloatWithUnit (expectedUnit) {
+function floatWithUnit (expectedUnit) {
   return function parseFloatWithUnit (value) {
     value = stripParentheses(value)
 
     const parts = value.split('*')
-    if (parts.length != 2) {
+    if (parts.length !== 2) {
       throwParseError(`Value must contain exactly one *: ${value}`)
     }
 
@@ -51,14 +72,50 @@ function parserFloatWithUnit (expectedUnit) {
   }
 }
 
+function singleField (field, parser) {
+  return function handle (output, canonicalObisCode, value) {
+    output[field] = parser(value)
+  }
+}
+
+function multipleFields (handlers) {
+  return function handle (output, canonicalObisCode, value) {
+    const fieldRe = /\([^)]*\)/g
+    let match
+    let expectedIndex = 0
+    let handlerIndex = 0
+    while ((match = fieldRe.exec(value)) !== null) {
+      if (handlerIndex > handlers.length) {
+        throwParseError(`Found more than the expected ${handlers.length} fields in ${value}`)
+      }
+      if (match.index !== expectedIndex) {
+        throwParseError(`Garbage between fields in multi-valued field ${value}`)
+      }
+      expectedIndex = match.index + match[0].length
+      handlers[handlerIndex](output, canonicalObisCode, match[0])
+      handlerIndex++
+    }
+    if (handlerIndex !== handlers.length) {
+      throwParseError(`Found fewer than the expected ${handlers.length} fields in ${value}`)
+    }
+  }
+}
+
 const KNOWN_COSEM_OBJECTS = {
-  '0-0:1.0.0.255': { field: 'timestamp', parser: parseTimestamp },
-  '1-0:1.8.1.255': { field: 'totalConsumptionKwhLow', parser: parserFloatWithUnit('kWh') },
+  '0-0:1.0.0.255': singleField('electricityDateTime', timestamp),
+  '1-0:1.8.1.255': singleField('totalElectricityConsumptionKwhLow', floatWithUnit('kWh')),
+  '1-0:1.8.2.255': singleField('totalElectricityConsumptionKwhHigh', floatWithUnit('kWh')),
+  '1-0:2.8.1.255': singleField('totalElectricityProductionKwhLow', floatWithUnit('kWh')),
+  '1-0:2.8.2.255': singleField('totalElectricityProductionKwhHigh', floatWithUnit('kWh')),
+  '1-0:1.7.0.255': singleField('currentElectricityConsumptionKw', floatWithUnit('kW')),
+  '1-0:2.7.0.255': singleField('currentElectricityProductionKw', floatWithUnit('kW')),
+  // TODO actually this is 0-n, because the gas meter could be on a different channel
+  '0-1:24.2.1.255': multipleFields([singleField('gasDateTime', timestamp), singleField('totalGasConsumptionM3', floatWithUnit('m3'))])
 }
 
 module.exports = {
 
-  isCrcValid: function checkCrc(data) {
+  isCrcValid: function checkCrc (data) {
     // [^], unlike ., matches any character _including_ \r and \n.
     const match = /^([^]*!)([a-fA-F0-9]{4})\s*$/.exec(data)
     if (!match) {
@@ -75,7 +132,7 @@ module.exports = {
 
     const actualCrc = crc.crc16(match[1])
 
-    if (actualCrc != expectedCrc) {
+    if (actualCrc !== expectedCrc) {
       console.warn(`CRC mismatch: expected ${expectedCrc.toString(16)}, got ${actualCrc.toString(16)}`)
       return false
     }
@@ -85,24 +142,25 @@ module.exports = {
 
   parse: function parse (data) {
     const lines = data.split('\r\n').map(line => line.trim()).filter((line) => line.length > 0)
-    if (lines.length == 0) {
+    if (lines.length === 0) {
       throwParseError('No non-blank lines found in telegram')
     }
 
-    const fields = {}
+    const output = {}
 
     const dataItemRe = /^(\d+-|)(\d+:|)(\d+\.)(\d+)(\.\d+|)([^(]\d+|)(.*)\r\n/mg
     let match
-    while (match = dataItemRe.exec(data)) {
+    while ((match = dataItemRe.exec(data)) !== null) {
       const obisCode = canonicalObisCode(match[1], match[2], match[3], match[4], match[5], match[6])
-      const desc = KNOWN_COSEM_OBJECTS[obisCode]
-      if (!desc) {
+      const value = match[7]
+
+      const parse = KNOWN_COSEM_OBJECTS[obisCode]
+      if (!parse) {
         continue
       }
-      const value = desc.parser(match[7])
-      fields[desc.field] = value
+      parse(output, obisCode, value)
     }
 
-    return fields
-  },
+    return output
+  }
 }
