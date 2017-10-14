@@ -35,28 +35,36 @@ describe('telegram', () => {
       actual = telegram.parse(DATA)
     })
 
+    it('parses the electricity meter id', () => {
+      expect(actual[0].meterId).to.equal('E0005001563265514')
+    })
+
     it('parses the timestamp', () => {
-      expect(actual.electricityDateTime).to.equalDate(moment('2017-10-11T17:40:59+02:00').toDate())
+      expect(actual[0].electricityDateTime).to.equalDate(moment('2017-10-11T17:40:59+02:00').toDate())
     })
 
     it('parses total electricity consumption and production', () => {
-      expect(actual.totalElectricityConsumptionKwhLow).to.equal(1677.034)
-      expect(actual.totalElectricityConsumptionKwhHigh).to.equal(2060.771)
-      expect(actual.totalElectricityProductionKwhLow).to.equal(0.0)
-      expect(actual.totalElectricityProductionKwhHigh).to.equal(0.0)
+      expect(actual[0].totalElectricityConsumptionKwhLow).to.equal(1677.034)
+      expect(actual[0].totalElectricityConsumptionKwhHigh).to.equal(2060.771)
+      expect(actual[0].totalElectricityProductionKwhLow).to.equal(0.0)
+      expect(actual[0].totalElectricityProductionKwhHigh).to.equal(0.0)
     })
 
     it('parses current electricity consumption and production', () => {
-      expect(actual.currentElectricityConsumptionKw).to.equal(0.330)
-      expect(actual.currentElectricityProductionKw).to.equal(0.0)
+      expect(actual[0].currentElectricityConsumptionKw).to.equal(0.330)
+      expect(actual[0].currentElectricityProductionKw).to.equal(0.0)
+    })
+
+    it('parses the gas meter id', () => {
+      expect(actual[1].meterId).to.equal('G0002340134445914')
     })
 
     it('parses gas timestamp', () => {
-      expect(actual.gasDateTime).to.equalDate(moment('2017-10-11T17:00:00+02:00').toDate())
+      expect(actual[1].gasDateTime).to.equalDate(moment('2017-10-11T17:00:00+02:00').toDate())
     })
 
     it('parses total gas consumption', () => {
-      expect(actual.totalGasConsumptionM3).to.equal(3964.814)
+      expect(actual[1].totalGasConsumptionM3).to.equal(3964.814)
     })
   })
 })

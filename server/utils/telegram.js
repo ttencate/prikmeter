@@ -5,24 +5,28 @@ function throwParseError (message) {
   throw new Error(`${message}`)
 }
 
-function canonicalObisCode (a, b, c, d, e, f) {
-  if (f) {
-    f = '.' + f.substring(1)
-  } else {
-    f = '.255'
-  }
-  const joined = a + b + c + d + e + f
-  if (!a || !b || !e) {
-    throwParseError(`Current implementation cannot handle missing value groups A, B or E: ${joined}`)
-  }
-  return joined
-}
-
 function stripParentheses (value) {
   if (value.length < 2 || value[0] !== '(' || value[value.length - 1] !== ')') {
     throwParseError(`Value is not enclosed in parentheses: ${value}`)
   }
   return value.substring(1, value.length - 1)
+}
+
+function string (value) {
+  value = stripParentheses(value)
+  if (value.length % 2 !== 0) {
+    throwParseError(`Hex string has odd length: ${value}`)
+  }
+  const chars = []
+  for (let i = 0; i < value.length; i += 2) {
+    const substr = value.substr(i, 2)
+    const charCode = parseInt(substr, 16)
+    if (isNaN(charCode)) {
+      throwParseError(`Invalid hex sequence: ${substr}`)
+    }
+    chars.push(String.fromCharCode(charCode))
+  }
+  return chars.join('')
 }
 
 function timestamp (value) {
@@ -73,13 +77,13 @@ function floatWithUnit (expectedUnit) {
 }
 
 function singleField (field, parser) {
-  return function handle (output, canonicalObisCode, value) {
+  return function handle (output, value) {
     output[field] = parser(value)
   }
 }
 
 function multipleFields (handlers) {
-  return function handle (output, canonicalObisCode, value) {
+  return function handle (output, value) {
     const fieldRe = /\([^)]*\)/g
     let match
     let expectedIndex = 0
@@ -92,7 +96,7 @@ function multipleFields (handlers) {
         throwParseError(`Garbage between fields in multi-valued field ${value}`)
       }
       expectedIndex = match.index + match[0].length
-      handlers[handlerIndex](output, canonicalObisCode, match[0])
+      handlers[handlerIndex](output, match[0])
       handlerIndex++
     }
     if (handlerIndex !== handlers.length) {
@@ -101,17 +105,47 @@ function multipleFields (handlers) {
   }
 }
 
-const KNOWN_COSEM_OBJECTS = {
-  '0-0:1.0.0.255': singleField('electricityDateTime', timestamp),
-  '1-0:1.8.1.255': singleField('totalElectricityConsumptionKwhLow', floatWithUnit('kWh')),
-  '1-0:1.8.2.255': singleField('totalElectricityConsumptionKwhHigh', floatWithUnit('kWh')),
-  '1-0:2.8.1.255': singleField('totalElectricityProductionKwhLow', floatWithUnit('kWh')),
-  '1-0:2.8.2.255': singleField('totalElectricityProductionKwhHigh', floatWithUnit('kWh')),
-  '1-0:1.7.0.255': singleField('currentElectricityConsumptionKw', floatWithUnit('kW')),
-  '1-0:2.7.0.255': singleField('currentElectricityProductionKw', floatWithUnit('kW')),
-  // TODO actually this is 0-n, because the gas meter could be on a different channel
-  '0-1:24.2.1.255': multipleFields([singleField('gasDateTime', timestamp), singleField('totalGasConsumptionM3', floatWithUnit('m3'))])
+function ObisCode ({ a, b, c, d, e, f }) {
+  this.a = parseInt(a)
+  this.b = parseInt(b)
+  this.c = parseInt(c)
+  this.d = parseInt(d)
+  this.e = parseInt(e)
+  this.f = parseInt(f)
 }
+
+ObisCode.prototype.matchesPattern = function (pattern) {
+  return (
+    (pattern.a === undefined || this.a === pattern.a) &&
+    (pattern.b === undefined || this.b === pattern.b) &&
+    (pattern.c === undefined || this.c === pattern.c) &&
+    (pattern.d === undefined || this.d === pattern.d) &&
+    (pattern.e === undefined || this.e === pattern.e) &&
+    (pattern.f === undefined || this.f === pattern.f)
+  )
+}
+
+// Mapping from OBIS numbers to parsers. OBIS notation:
+// A- B: C. D .E *F
+// The parts "C." and "D" are required, the rest are optional. The character
+// before F can vary.
+//
+// Part ("value group") B is the channel number. This distinguishes the
+// electricity meter (channel 0) from any gas meters (channels 1-...).
+//
+// Part F is unused in DSMR and defaults to 255 in that case.
+const KNOWN_COSEM_OBJECTS = [
+  {obisCode: {a: 0, c: 96, d: 1}, parse: singleField('meterId', string)},
+  {obisCode: {a: 0, c: 1, d: 0, e: 0}, parse: singleField('electricityDateTime', timestamp)},
+  {obisCode: {a: 1, c: 1, d: 8, e: 1}, parse: singleField('totalElectricityConsumptionKwhLow', floatWithUnit('kWh'))},
+  {obisCode: {a: 1, c: 1, d: 8, e: 2}, parse: singleField('totalElectricityConsumptionKwhHigh', floatWithUnit('kWh'))},
+  {obisCode: {a: 1, c: 2, d: 8, e: 1}, parse: singleField('totalElectricityProductionKwhLow', floatWithUnit('kWh'))},
+  {obisCode: {a: 1, c: 2, d: 8, e: 2}, parse: singleField('totalElectricityProductionKwhHigh', floatWithUnit('kWh'))},
+  {obisCode: {a: 1, c: 1, d: 7, e: 0}, parse: singleField('currentElectricityConsumptionKw', floatWithUnit('kW'))},
+  {obisCode: {a: 1, c: 2, d: 7, e: 0}, parse: singleField('currentElectricityProductionKw', floatWithUnit('kW'))},
+  {obisCode: {a: 0, c: 24, d: 2, e: 1}, parse: multipleFields([singleField('gasDateTime', timestamp), singleField('totalGasConsumptionM3', floatWithUnit('m3'))])}
+  // eslint-disable: object-curly-spacing
+]
 
 module.exports = {
 
@@ -146,21 +180,27 @@ module.exports = {
       throwParseError('No non-blank lines found in telegram')
     }
 
-    const output = {}
+    const meters = []
 
-    const dataItemRe = /^(\d+-|)(\d+:|)(\d+\.)(\d+)(\.\d+|)([^(]\d+|)(.*)\r\n/mg
+    const dataItemRe = /^(?:(\d+)-|)(?:(\d+):|)(\d+)\.(\d+)(?:\.(\d+)|)(?:[^(](\d+)|)(.*)\r\n/mg
     let match
     while ((match = dataItemRe.exec(data)) !== null) {
-      const obisCode = canonicalObisCode(match[1], match[2], match[3], match[4], match[5], match[6])
-      const value = match[7]
-
-      const parse = KNOWN_COSEM_OBJECTS[obisCode]
-      if (!parse) {
-        continue
+      let [, a, b, c, d, e, f, value] = match
+      if (!a || !b || !e) {
+        throwParseError(`Current implementation cannot handle missing value groups A, B or E: ${match[0]}`)
       }
-      parse(output, obisCode, value)
+      const obisCode = new ObisCode({ a, b, c, d, e, f })
+      const channel = obisCode.b
+      const meter = meters[channel] = meters[channel] || {}
+
+      for (const obj of KNOWN_COSEM_OBJECTS) {
+        if (obisCode.matchesPattern(obj.obisCode)) {
+          obj.parse(meter, value)
+          break
+        }
+      }
     }
 
-    return output
+    return meters
   }
 }
