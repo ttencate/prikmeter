@@ -76,6 +76,24 @@ function floatWithUnit (expectedUnit) {
   }
 }
 
+function deviceType (value) {
+  value = stripParentheses(value)
+  const number = parseInt(value, 10)
+  if (isNaN(number)) {
+    throwParseError(`Could not parse device type number: ${value}`)
+  }
+  switch (number) {
+    case 3: return 'gas'
+    default: return undefined
+  }
+}
+
+function fixedValue (value) {
+  return function (_) {
+    return value
+  }
+}
+
 function singleField (field, parser) {
   return function handle (output, value) {
     output[field] = parser(value)
@@ -135,15 +153,17 @@ ObisCode.prototype.matchesPattern = function (pattern) {
 //
 // Part F is unused in DSMR and defaults to 255 in that case.
 const KNOWN_COSEM_OBJECTS = [
+  {obisCode: {a: 0, b: 0, c: 96, d: 1, e: 1}, parse: singleField('type', fixedValue('electricity'))},
   {obisCode: {a: 0, c: 96, d: 1}, parse: singleField('meterId', string)},
-  {obisCode: {a: 0, c: 1, d: 0, e: 0}, parse: singleField('electricityDateTime', timestamp)},
-  {obisCode: {a: 1, c: 1, d: 8, e: 1}, parse: singleField('totalElectricityConsumptionKwhLow', floatWithUnit('kWh'))},
-  {obisCode: {a: 1, c: 1, d: 8, e: 2}, parse: singleField('totalElectricityConsumptionKwhHigh', floatWithUnit('kWh'))},
-  {obisCode: {a: 1, c: 2, d: 8, e: 1}, parse: singleField('totalElectricityProductionKwhLow', floatWithUnit('kWh'))},
-  {obisCode: {a: 1, c: 2, d: 8, e: 2}, parse: singleField('totalElectricityProductionKwhHigh', floatWithUnit('kWh'))},
-  {obisCode: {a: 1, c: 1, d: 7, e: 0}, parse: singleField('currentElectricityConsumptionKw', floatWithUnit('kW'))},
-  {obisCode: {a: 1, c: 2, d: 7, e: 0}, parse: singleField('currentElectricityProductionKw', floatWithUnit('kW'))},
-  {obisCode: {a: 0, c: 24, d: 2, e: 1}, parse: multipleFields([singleField('gasDateTime', timestamp), singleField('totalGasConsumptionM3', floatWithUnit('m3'))])}
+  {obisCode: {a: 0, c: 1, d: 0, e: 0}, parse: singleField('dateTime', timestamp)},
+  {obisCode: {a: 1, c: 1, d: 8, e: 1}, parse: singleField('totalConsumptionKwhLow', floatWithUnit('kWh'))},
+  {obisCode: {a: 1, c: 1, d: 8, e: 2}, parse: singleField('totalConsumptionKwhHigh', floatWithUnit('kWh'))},
+  {obisCode: {a: 1, c: 2, d: 8, e: 1}, parse: singleField('totalProductionKwhLow', floatWithUnit('kWh'))},
+  {obisCode: {a: 1, c: 2, d: 8, e: 2}, parse: singleField('totalProductionKwhHigh', floatWithUnit('kWh'))},
+  {obisCode: {a: 1, c: 1, d: 7, e: 0}, parse: singleField('currentConsumptionKw', floatWithUnit('kW'))},
+  {obisCode: {a: 1, c: 2, d: 7, e: 0}, parse: singleField('currentProductionKw', floatWithUnit('kW'))},
+  {obisCode: {a: 0, c: 24, d: 1, e: 0}, parse: singleField('type', deviceType)},
+  {obisCode: {a: 0, c: 24, d: 2, e: 1}, parse: multipleFields([singleField('dateTime', timestamp), singleField('totalConsumptionM3', floatWithUnit('m3'))])}
   // eslint-disable: object-curly-spacing
 ]
 
@@ -196,11 +216,11 @@ module.exports = {
       for (const obj of KNOWN_COSEM_OBJECTS) {
         if (obisCode.matchesPattern(obj.obisCode)) {
           obj.parse(meter, value)
-          break
+          // Do continue
         }
       }
     }
 
-    return meters.filter(({ meterId }) => !!meterId)
+    return meters.filter(({ meterId, type }) => meterId && type)
   }
 }
