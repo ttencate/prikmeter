@@ -201,6 +201,6 @@ module.exports = {
       }
     }
 
-    return meters
+    return meters.filter(({ meterId }) => !!meterId)
   }
 }
