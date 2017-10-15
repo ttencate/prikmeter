@@ -50,7 +50,7 @@ function timestamp (value) {
   if (!dateTime.isValid()) {
     throwParseError(`Could not parse timestamp: ${value}`)
   }
-  return dateTime.toDate()
+  return dateTime.unix()
 }
 
 function floatWithUnit (expectedUnit) {
@@ -155,7 +155,7 @@ ObisCode.prototype.matchesPattern = function (pattern) {
 const KNOWN_COSEM_OBJECTS = [
   {obisCode: {a: 0, b: 0, c: 96, d: 1, e: 1}, parse: singleField('type', fixedValue('electricity'))},
   {obisCode: {a: 0, c: 96, d: 1}, parse: singleField('meterId', string)},
-  {obisCode: {a: 0, c: 1, d: 0, e: 0}, parse: singleField('dateTime', timestamp)},
+  {obisCode: {a: 0, c: 1, d: 0, e: 0}, parse: singleField('timestamp', timestamp)},
   {obisCode: {a: 1, c: 1, d: 8, e: 1}, parse: singleField('totalConsumptionKwhLow', floatWithUnit('kWh'))},
   {obisCode: {a: 1, c: 1, d: 8, e: 2}, parse: singleField('totalConsumptionKwhHigh', floatWithUnit('kWh'))},
   {obisCode: {a: 1, c: 2, d: 8, e: 1}, parse: singleField('totalProductionKwhLow', floatWithUnit('kWh'))},
@@ -163,7 +163,7 @@ const KNOWN_COSEM_OBJECTS = [
   {obisCode: {a: 1, c: 1, d: 7, e: 0}, parse: singleField('currentConsumptionKw', floatWithUnit('kW'))},
   {obisCode: {a: 1, c: 2, d: 7, e: 0}, parse: singleField('currentProductionKw', floatWithUnit('kW'))},
   {obisCode: {a: 0, c: 24, d: 1, e: 0}, parse: singleField('type', deviceType)},
-  {obisCode: {a: 0, c: 24, d: 2, e: 1}, parse: multipleFields([singleField('dateTime', timestamp), singleField('totalConsumptionM3', floatWithUnit('m3'))])}
+  {obisCode: {a: 0, c: 24, d: 2, e: 1}, parse: multipleFields([singleField('timestamp', timestamp), singleField('totalConsumptionM3', floatWithUnit('m3'))])}
   // eslint-disable: object-curly-spacing
 ]
 
