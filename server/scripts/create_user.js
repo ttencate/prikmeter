@@ -12,8 +12,8 @@ async function main () {
   const password = readlineSync.question('Password: ', { hideEchoBack: true, mask: '' })
 
   process.stdout.write('Creating user...\n')
-  const userId = await users.create({ email, password })
-  process.stdout.write(`User ${userId} created\n`)
+  const user = await users.create({ email, password })
+  process.stdout.write(`User ${user.id} created\n`)
 
   process.exit(0)
 }
