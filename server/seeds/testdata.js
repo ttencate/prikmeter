@@ -36,10 +36,11 @@ module.exports = {
 
   seed: async function (db) {
     await db('users').delete();
-    ([ data.user.id ] = await db('users').insert({ email: data.user.email, passwordHash: data.user.passwordHash }).returning('id'))
-    data.authToken.ownerUserId = data.user.id
-    data.telegram.ownerUserId = data.user.id
-    data.nonexistentUser.id = data.user.id + 1000000
+    const [ userId ] = await db('users').insert({ email: data.user.email, passwordHash: data.user.passwordHash }).returning('id')
+    data.user.id = userId
+    data.authToken.ownerUserId = userId
+    data.telegram.ownerUserId = userId
+    data.nonexistentUser.id = userId + 1000000
 
     await db('authTokens').delete()
     await db('authTokens').insert({ token: data.authToken.token, ownerUserId: data.authToken.ownerUserId })

@@ -16,7 +16,14 @@ describe('services/telegrams', () => {
 
   describe('getForUser', () => {
     it('returns all the user\'s telegrams', async () => {
-      expect(telegrams.getForUser({ id: testDb.data.user.id })).to.eventually.deep.equal([testDb.data.telegram])
+      const userTelegrams = await telegrams.getForUser({ id: testDb.data.user.id })
+
+      expect(userTelegrams).to.have.length(1)
+
+      const telegram = userTelegrams[0]
+      expect(telegram.uploadTimestamp).to.be.a('string')
+      delete telegram.uploadTimestamp
+      expect(telegram).to.deep.equal(testDb.data.telegram)
     })
   })
 })

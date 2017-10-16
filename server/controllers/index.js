@@ -1,15 +1,16 @@
+const login = require('./login')
+const root = require('./root')
+const telegrams = require('./telegrams')
+// const users = require('./users')
+
 module.exports.addRoutes = function addRoutes (app) {
-  const root = require('./root')
   app.use('/$', root.root)
 
-  const login = require('./login')
   app.post('/login$', login.login)
   app.post('/logout$', login.logout)
 
-  // User creation is untested, so disabled for now.
-  // const users = require('./users')
+  // User creation from the web interface is untested, so disabled for now.
   // app.post('/users$', users.create)
 
-  const telegrams = require('./telegrams')
   app.post('/telegrams$', telegrams.create)
 }
