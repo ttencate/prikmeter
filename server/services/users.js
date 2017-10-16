@@ -11,9 +11,9 @@ module.exports = {
     return user
   },
 
-  create: async function ({ email, password }) {
-    const passwordHash = await bcryptPromise.hash(password, 12)
-    const userId = await db('users').insert({ email, passwordHash }).returning('id')
+  create: async function ({ email, password, bcryptRounds = 12 }) {
+    const passwordHash = await bcryptPromise.hash(password, bcryptRounds)
+    const [ userId ] = await db('users').insert({ email, passwordHash }).returning('id')
     return userId
   },
 
