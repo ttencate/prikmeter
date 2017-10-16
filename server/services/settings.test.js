@@ -1,7 +1,10 @@
 const chai = { expect } = require('chai')
+const chaiAsPromised = require('chai-as-promised')
 
 const settings = require('./settings')
 const testDb = require('../storage/testDb')
+
+chai.use(chaiAsPromised)
 
 describe('settings', () => {
   beforeEach(testDb.reset)
