@@ -13,7 +13,8 @@ module.exports = {
 
   create: async function ({ email, password, bcryptRounds = 12 }) {
     const passwordHash = await bcryptPromise.hash(password, bcryptRounds)
-    const [ user ] = await db('users').insert({ email, passwordHash }).returning([ 'id', 'email', 'passwordHash' ])
+    const user = { email, passwordHash };
+    [ user.id ] = await db('users').insert(user).returning('id')
     return user
   },
 
