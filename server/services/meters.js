@@ -2,19 +2,25 @@ const db = require('../core/db')
 
 module.exports = {
   get: async function ({ id }) {
-    const meter = await db.from('meters').where({ id }).first('id', 'name')
+    const meter = await db.from('meters').where({ id }).first('id', 'type', 'ownerUserId')
     return meter
   },
 
   getForUser: async function (user) {
     const meters = await db.from('meters')
         .where({ ownerUserId: user.id })
-        .select('id', 'name')
+        .select('id', 'type', 'ownerUserId')
     return meters
   },
 
-  create: async function ({ name, ownerUserId }) {
-    const meterId = await db('meters').insert({ name, ownerUserId }).returning('id')
-    return meterId
+  createOrUpdate: async function ({ id, type, ownerUserId }) {
+    const meter = await db.from('meters').where({ id }).first('id', 'type', 'ownerUserId')
+    if (meter) {
+      if (meter.type !== type || meter.ownerUserId !== ownerUserId) {
+        await db('meters').where({ id }).update({ type, ownerUserId })
+      }
+    } else {
+      await db('meters').insert({ id, type, ownerUserId })
+    }
   }
 }

@@ -30,14 +30,26 @@ describe('controllers/telegram', () => {
       await expect(await telegramsService.getForUser({ id: testDb.data.user.id })).to.have.length(1)
     })
 
-    it('creates the telegram', async () => {
-      const res = await simulateRequest(telegrams.createFromBody, {
-        headers: { 'X-Auth-Token': testDb.data.authToken.token },
-        body: testDb.data.telegram.telegram
+    describe('when passed valid credentials and a valid telegram', async () => {
+      let res
+
+      beforeEach(async () => {
+        res = await simulateRequest(telegrams.createFromBody, {
+          headers: { 'X-Auth-Token': testDb.data.authToken.token },
+          body: testDb.data.telegram.telegram
+        })
       })
 
-      expect(res.statusCode).to.equal(200)
-      await expect(await telegramsService.getForUser({ id: testDb.data.user.id })).to.have.length(2)
+      it('returns a success response', () => {
+        expect(res.statusCode).to.equal(200)
+      })
+
+      it('creates the telegram', async () => {
+        await expect(await telegramsService.getForUser({ id: testDb.data.user.id })).to.have.length(2)
+      })
+
+      it('creates the meters', async () => {
+      })
     })
   })
 })

@@ -1,9 +1,10 @@
 const bodyParser = require('body-parser')
 const check = require('express-validator/check')
 
-const authTokens = require('../services/auth-tokens')
+const authTokens = require('../services/authTokens')
 const log = require('../core/log')
 const telegrams = require('../services/telegrams')
+const telegramParser = require('../services/telegramParser')
 
 const AUTH_TOKEN_HEADER = 'x-auth-token'
 
@@ -16,7 +17,7 @@ async function createFromBody (req, res) {
   }
 
   const token = req.headers[AUTH_TOKEN_HEADER] || ''
-  const telegram = req.body.toString('ascii') // TODO see what happens if we shove it to the database as a Buffer directly
+  const data = req.body.toString('ascii') // TODO see what happens if we shove it to the database as a Buffer directly
 
   const user = await authTokens.getOwnerUser({ token })
   if (!user) {
@@ -25,8 +26,18 @@ async function createFromBody (req, res) {
     return
   }
 
-  await telegrams.create({ ownerUserId: user.id, telegram })
-  log.info(`Stored ${telegram.length} byte telegram for user ${user.id}`)
+  const telegram = await telegrams.create({ ownerUserId: user.id, telegram: data })
+  log.info(`Stored ${data.length} byte telegram for user ${user.id}`)
+
+  if (telegramParser.isCrcValid(data)) {
+    let parsed
+    try {
+      parsed = telegramParser.parse(data)
+    } catch (ex) {
+      log.warn(`Error parsing telegram: ${ex}`)
+      throw ex
+    }
+  }
 
   res.sendStatus(200)
 }

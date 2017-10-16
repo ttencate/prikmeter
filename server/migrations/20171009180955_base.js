@@ -12,8 +12,8 @@ module.exports.up = async function (knex) {
   })
 
   await knex.schema.createTable('meters', function (table) {
-    table.increments('id')
-    table.string('name')
+    table.string('id').primary()
+    table.string('type')
     table.integer('ownerUserId')
     table.foreign('ownerUserId').references('users.id')
   })
@@ -31,9 +31,30 @@ module.exports.up = async function (knex) {
     table.binary('telegram')
     table.timestamp('uploadTimestamp').defaultTo(knex.fn.now())
   })
+
+  await knex.schema.createTable('electricityReadings', function (table) {
+    table.integer('meterId')
+    table.timestamp('timestamp')
+    table.float('totalConsumptionKwhLow')
+    table.float('totalConsumptionKwhHigh')
+    table.float('totalProductionKwhLow')
+    table.float('totalProductionKwhHigh')
+    table.float('currentConsumptionKw')
+    table.float('currentProductionKw')
+    table.primary(['meterId', 'timestamp'])
+  })
+
+  await knex.schema.createTable('gasReadings', function (table) {
+    table.integer('meterId')
+    table.timestamp('timestamp')
+    table.float('totalConsumptionM3')
+    table.primary(['meterId', 'timestamp'])
+  })
 }
 
 module.exports.down = async function (knex) {
+  await knex.schema.dropTable('gasReadings')
+  await knex.schema.dropTable('electricityReadings')
   await knex.schema.dropTable('telegrams')
   await knex.schema.dropTable('authTokens')
   await knex.schema.dropTable('meters')

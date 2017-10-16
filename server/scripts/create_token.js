@@ -3,7 +3,7 @@
 const readlineSync = require('readline-sync')
 require('make-promises-safe')
 
-const authTokens = require('../services/auth-tokens')
+const authTokens = require('../services/authTokens')
 const users = require('../services/users')
 
 async function main () {

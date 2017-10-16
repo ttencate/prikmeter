@@ -1,4 +1,4 @@
-const authTokens = require('../services/auth-tokens')
+const authTokens = require('../services/authTokens')
 const meters = require('../services/meters')
 
 module.exports.root = [

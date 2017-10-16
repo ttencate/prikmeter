@@ -2,7 +2,7 @@
 
 const { expect } = require('../core/chai')
 
-const authTokens = require('./auth-tokens')
+const authTokens = require('./authTokens')
 const testDb = require('../core/testDb')
 
 describe('services/auth-tokens', () => {
