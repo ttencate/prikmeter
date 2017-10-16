@@ -1,6 +1,6 @@
 const bcryptPromise = require('bcrypt-promise')
 
-const db = require('../storage/db')
+const db = require('../core/db')
 
 module.exports = {
   get: async function ({ id, email }) {

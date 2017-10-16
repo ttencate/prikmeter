@@ -3,7 +3,7 @@ const chaiAsPromised = require('chai-as-promised')
 
 const authTokens = require('./auth-tokens')
 const users = require('./users')
-const testDb = require('../storage/testDb')
+const testDb = require('../core/testDb')
 
 chai.use(chaiAsPromised)
 

@@ -2,7 +2,7 @@ const chai = { expect } = require('chai')
 const chaiAsPromised = require('chai-as-promised')
 
 const settings = require('./settings')
-const testDb = require('../storage/testDb')
+const testDb = require('../core/testDb')
 
 chai.use(chaiAsPromised)
 

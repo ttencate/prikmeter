@@ -6,7 +6,7 @@ require('make-promises-safe')
 const users = require('../services/users')
 
 async function main () {
-  await require('../storage/migrate')()
+  await require('../core/migrate')()
 
   const email = readlineSync.question('Email: ')
   const password = readlineSync.question('Password: ', { hideEchoBack: true, mask: '' })

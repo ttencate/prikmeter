@@ -1,5 +1,5 @@
 const crypto = require('crypto')
-const db = require('../storage/db')
+const db = require('../core/db')
 
 module.exports = {
   getForUser: async function (user) {

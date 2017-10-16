@@ -1,6 +1,8 @@
 const crc = require('crc')
 const moment = require('moment')
 
+const log = require('../core/log')
+
 function throwParseError (message) {
   throw new Error(`${message}`)
 }
@@ -174,20 +176,20 @@ module.exports = {
     const match = /^([^]*!)([a-fA-F0-9]{4})\s*$/.exec(data)
     if (!match) {
       const snippet = (data.length > 12 ? '...' : '') + data.substring(data.length - 12).replace(/\r/g, '\\r').replace(/\n/g, '\\n')
-      console.warn(`No CRC found at end of telegram: "${snippet}"`)
+      log.warn(`No CRC found at end of telegram: "${snippet}"`)
       return false
     }
 
     const expectedCrc = parseInt(match[2], 16)
     if (isNaN(expectedCrc)) {
-      console.warn(`Could not parse expected CRC ${match[2]}`)
+      log.warn(`Could not parse expected CRC ${match[2]}`)
       return false
     }
 
     const actualCrc = crc.crc16(match[1])
 
     if (actualCrc !== expectedCrc) {
-      console.warn(`CRC mismatch: expected ${expectedCrc.toString(16)}, got ${actualCrc.toString(16)}`)
+      log.warn(`CRC mismatch: expected ${expectedCrc.toString(16)}, got ${actualCrc.toString(16)}`)
       return false
     }
 

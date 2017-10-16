@@ -1,7 +1,7 @@
 const chai = { expect } = require('chai')
 
 const telegrams = require('./telegrams')
-const testDb = require('../storage/testDb')
+const testDb = require('../core/testDb')
 
 describe('settings', () => {
   beforeEach(testDb.reset)

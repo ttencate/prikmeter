@@ -7,7 +7,7 @@ const authTokens = require('../services/auth-tokens')
 const users = require('../services/users')
 
 async function main () {
-  await require('../storage/migrate')()
+  await require('../core/migrate')()
 
   const email = readlineSync.question('User email: ')
   const user = await users.get({ email })

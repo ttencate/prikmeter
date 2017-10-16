@@ -7,7 +7,7 @@ async function main () {
     process.env.NODE_ENV = 'production'
   }
 
-  await require('./storage/migrate')()
+  await require('./core/migrate')()
 
   const app = express()
   app.locals.devMode = app.get('env') === 'development'

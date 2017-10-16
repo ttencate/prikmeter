@@ -1,4 +1,4 @@
-const db = require('../storage/db')
+const db = require('../core/db')
 
 module.exports = {
   create: async function ({ ownerUserId, telegram }) {
