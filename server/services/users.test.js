@@ -1,10 +1,9 @@
-const chai = { expect } = require('chai')
-const chaiAsPromised = require('chai-as-promised')
+/* eslint-env mocha, chai */
+
+const { expect } = require('../core/chai')
 
 const users = require('./users')
 const testDb = require('../core/testDb')
-
-chai.use(chaiAsPromised)
 
 const BCRYPT_ROUNDS = 4 // Make tests fast. This appears to be the minimum.
 
@@ -12,7 +11,6 @@ describe('services/users', () => {
   beforeEach(testDb.reset)
 
   describe('get', () => {
-
     it('returns undefined if the user ID is not found', async () => {
       await expect(users.get({ id: testDb.data.nonexistentUser.id })).to.eventually.equal(undefined)
     })
@@ -47,4 +45,3 @@ describe('services/users', () => {
     })
   })
 })
-

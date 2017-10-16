@@ -1,11 +1,9 @@
-const chai = { expect } = require('chai')
-const chaiAsPromised = require('chai-as-promised')
+/* eslint-env mocha, chai */
+
+const { expect } = require('../core/chai')
 
 const authTokens = require('./auth-tokens')
-const users = require('./users')
 const testDb = require('../core/testDb')
-
-chai.use(chaiAsPromised)
 
 describe('services/auth-tokens', () => {
   beforeEach(testDb.reset)
@@ -27,4 +25,3 @@ describe('services/auth-tokens', () => {
     })
   })
 })
-

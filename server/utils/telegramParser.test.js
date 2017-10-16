@@ -1,6 +1,6 @@
 /* eslint-env mocha, chai */
 
-const { expect } = require('chai')
+const { expect } = require('../core/chai')
 const moment = require('moment')
 
 const telegramParser = require('./telegramParser')
@@ -23,8 +23,7 @@ describe('utils/telegramParser', () => {
 
   describe('parse', () => {
     it('parses the telegram', () => {
-      actual = telegramParser.parse(data.telegram.telegram)
-      expect(actual).to.deep.equal([
+      expect(telegramParser.parse(data.telegram.telegram)).to.deep.equal([
         {
           type: 'electricity',
           meterId: 'E0005001563265514',

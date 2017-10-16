@@ -28,7 +28,7 @@ function createLogger () {
     transports: [
       new winston.transports.Console({
         depth: 1,
-        humanReadableUnhandledException: true,
+        humanReadableUnhandledException: true
       })
     ]
   })

@@ -29,7 +29,7 @@ module.exports.up = async function (knex) {
     table.integer('ownerUserId')
     table.foreign('ownerUserId').references('users.id')
     table.binary('telegram')
-    table.timestamp('uploadTimestamp').defaultTo(knex.fn.now());
+    table.timestamp('uploadTimestamp').defaultTo(knex.fn.now())
   })
 }
 

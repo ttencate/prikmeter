@@ -1,4 +1,6 @@
-const chai = { expect } = require('chai')
+/* eslint-env mocha, chai */
+
+const { expect } = require('../core/chai')
 
 const telegrams = require('./telegrams')
 const testDb = require('../core/testDb')

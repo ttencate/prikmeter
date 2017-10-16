@@ -16,5 +16,5 @@ module.exports = {
   create: async function ({ name, ownerUserId }) {
     const meterId = await db('meters').insert({ name, ownerUserId }).returning('id')
     return meterId
-  },
+  }
 }

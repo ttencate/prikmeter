@@ -9,7 +9,8 @@
     "test": "NODE_ENV=testing ./node_modules/.bin/mocha $(find . -name *.test.js -not -path './node_modules/*')",
     "test_watch": "NODE_ENV=testing ./node_modules/.bin/mocha -w $(find . -name *.test.js -not -path './node_modules/*')",
     "migrate": "./node_modules/.bin/knex migrate:latest",
-    "standard": "./node_modules/.bin/standard"
+    "standard": "./node_modules/.bin/standard",
+    "standard_fix": "./node_modules/.bin/standard --fix"
   },
   "keywords": [
     "Smart  Metering"

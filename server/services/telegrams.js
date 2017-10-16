@@ -10,5 +10,5 @@ module.exports = {
         .where({ ownerUserId: user.id })
         .select('ownerUserId', 'telegram', 'uploadTimestamp')
     return telegrams
-  },
+  }
 }

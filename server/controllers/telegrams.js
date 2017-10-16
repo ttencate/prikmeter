@@ -3,7 +3,6 @@ const check = require('express-validator/check')
 
 const authTokens = require('../services/auth-tokens')
 const log = require('../core/log')
-const meters = require('../services/meters')
 const telegrams = require('../services/telegrams')
 
 const AUTH_TOKEN_HEADER = 'x-auth-token'

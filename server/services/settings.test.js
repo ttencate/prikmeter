@@ -1,10 +1,9 @@
-const chai = { expect } = require('chai')
-const chaiAsPromised = require('chai-as-promised')
+/* eslint-env mocha, chai */
+
+const { expect } = require('../core/chai')
 
 const settings = require('./settings')
 const testDb = require('../core/testDb')
-
-chai.use(chaiAsPromised)
 
 describe('services/settings', () => {
   beforeEach(testDb.reset)
