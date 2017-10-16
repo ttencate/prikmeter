@@ -6,7 +6,7 @@ const testDb = require('../core/testDb')
 
 chai.use(chaiAsPromised)
 
-describe('settings', () => {
+describe('services/settings', () => {
   beforeEach(testDb.reset)
 
   describe('getValue', () => {

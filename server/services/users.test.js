@@ -8,7 +8,7 @@ chai.use(chaiAsPromised)
 
 const BCRYPT_ROUNDS = 4 // Make tests fast. This appears to be the minimum.
 
-describe('users', () => {
+describe('services/users', () => {
   beforeEach(testDb.reset)
 
   describe('get', () => {

@@ -7,7 +7,7 @@ const testDb = require('../core/testDb')
 
 chai.use(chaiAsPromised)
 
-describe('settings', () => {
+describe('services/auth-tokens', () => {
   beforeEach(testDb.reset)
 
   describe('getForUser', () => {
