@@ -2,6 +2,7 @@ const bodyParser = require('body-parser')
 const check = require('express-validator/check')
 
 const authTokens = require('../services/auth-tokens')
+const log = require('../core/log')
 const meters = require('../services/meters')
 const telegrams = require('../services/telegrams')
 
@@ -12,7 +13,7 @@ module.exports.create = [
   async function (req, res) {
     const errors = check.validationResult(req)
     if (!errors.isEmpty()) {
-      console.warn(errors.array())
+      log.warn(errors.array())
       res.sendStatus(400)
       return
     }
@@ -22,13 +23,13 @@ module.exports.create = [
 
     const user = await authTokens.getOwnerUser({ token })
     if (!user) {
-      console.warn(`Auth token ${token} is invalid`)
+      log.warn(`Auth token ${token} is invalid`)
       res.sendStatus(403)
       return
     }
 
     await telegrams.create({ ownerUserId: user.id, telegram })
-    console.log(`Stored ${telegram.length} byte telegram for user ${user.id}`)
+    log.info(`Stored ${telegram.length} byte telegram for user ${user.id}`)
 
     res.sendStatus(200)
   }

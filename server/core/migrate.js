@@ -1,4 +1,5 @@
 const db = require('./db')
+const log = require('./log')
 
 module.exports = async function migrate () {
   let currentVersion = await db.migrate.currentVersion()
@@ -6,10 +7,10 @@ module.exports = async function migrate () {
   let latestVersion = await db.migrate.currentVersion()
 
   if (currentVersion !== latestVersion) {
-    console.log(`Upgrading database from version ${currentVersion} to version ${latestVersion}...`)
+    log.info(`Upgrading database from version ${currentVersion} to version ${latestVersion}...`)
     await db.migrate.latest()
-    console.log('Database upgraded')
+    log.info('Database upgraded')
   } else {
-    console.log('Database is already at latest version ' + latestVersion)
+    log.info('Database is already at latest version ' + latestVersion)
   }
 }

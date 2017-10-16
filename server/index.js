@@ -1,6 +1,8 @@
 const express = require('express')
 require('make-promises-safe')
 
+const log = require('./core/log')
+
 async function main () {
   // Err on the side of caution: development can leak stack traces and such.
   if (process.env.NODE_ENV !== 'development') {
@@ -18,7 +20,7 @@ async function main () {
   const LISTEN_HOST = process.env.LISTEN_HOST || 'localhost'
   const LISTEN_PORT = parseInt(process.env.LISTEN_PORT) || 3000
   app.listen(LISTEN_PORT, LISTEN_HOST)
-  console.log(`Listening on http://${LISTEN_HOST}:${LISTEN_PORT}/`)
+  log.info(`Listening on http://${LISTEN_HOST}:${LISTEN_PORT}/`)
 }
 
 main()

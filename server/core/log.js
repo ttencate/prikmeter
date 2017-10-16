@@ -1,48 +1,37 @@
 const winston = require('winston')
 
+const LEVELS = {
+  development: 'debug',
+  testing: 'error',
+  production: 'warn'
+}
+
 function createLogger () {
-  const env = process.env.NODE_ENV
-  switch (env) {
+  const env = process.env.NODE_ENV || 'production'
 
-    case 'development':
-      return winston.createLogger({
-        level: 'debug',
-        format: winston.format.simple(),
-        transports: [
-          new winston.transports.Console({
-            colorize: true,
-            humanReadableUnhandledException: true,
-          })
-        ]
-      })
+  let format = winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.align(),
+    winston.format.printf(info => `${info.timestamp} ${info.level} ${info.message}`)
+  )
 
-    case 'testing':
-      return winston.createLogger({
-        level: 'error',
-        format: winston.format.simple(),
-        transports: [
-          new winston.transports.Console({
-            colorize: true,
-            humanReadableUnhandledException: true,
-          })
-        ]
-      })
-
-    case 'production':
-    default:
-      return winston.createLogger({
-        level: 'warn',
-        format: winston.format.simple(),
-        transports: [
-          new winston.transports.Console({
-            colorize: false,
-            humanReadableUnhandledException: true,
-            depth: 1,
-          })
-        ]
-      })
-
+  if (env !== 'production') {
+    format = winston.format.combine(
+      winston.format.colorize(),
+      format
+    )
   }
+
+  return winston.createLogger({
+    level: LEVELS[env] || LEVELS['production'],
+    format: format,
+    transports: [
+      new winston.transports.Console({
+        depth: 1,
+        humanReadableUnhandledException: true,
+      })
+    ]
+  })
 }
 
 module.exports = createLogger()
