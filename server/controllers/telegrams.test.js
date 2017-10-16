@@ -3,6 +3,7 @@
 const { expect } = require('chai')
 
 const { simulateRequest } = require('./testing')
+const meters = require('../services/meters')
 const telegrams = require('./telegrams')
 const telegramsService = require('../services/telegrams')
 const testDb = require('../core/testDb')
@@ -49,6 +50,19 @@ describe('controllers/telegram', () => {
       })
 
       it('creates the meters', async () => {
+        await expect(await meters.get({ id: 'E0005001563265514' })).to.deep.equal({
+          id: 'E0005001563265514',
+          type: 'electricity',
+          ownerUserId: testDb.data.user.id
+        })
+        await expect(await meters.get({ id: 'G0002340134445914' })).to.deep.equal({
+          id: 'G0002340134445914',
+          type: 'gas',
+          ownerUserId: testDb.data.user.id
+        })
+      })
+
+      xit('creates the readings', async () => {
       })
     })
   })
