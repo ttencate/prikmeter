@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const data = {
   user: {
     id: undefined,
@@ -35,10 +37,36 @@ const data = {
     type: 'electricity',
     ownerUserId: undefined
   },
+  electricityMeter: {
+    id: 'E0005001563265514',
+    type: 'electricity',
+    ownerUserId: undefined
+  },
+  gasMeter: {
+    id: 'G0002340134445914',
+    type: 'gas',
+    ownerUserId: undefined
+  },
   nonexistentMeter: {
     id: 'G9876543210',
     type: 'gas',
     ownerUserId: undefined
+  },
+
+  electricityReading: {
+    meterId: 'E0005001563265514',
+    timestamp: moment('2017-10-11T17:40:59+02:00').unix(),
+    totalConsumptionKwhLow: 1677.034,
+    totalConsumptionKwhHigh: 2060.771,
+    totalProductionKwhLow: 0.0,
+    totalProductionKwhHigh: 0.0,
+    currentConsumptionKw: 0.330,
+    currentProductionKw: 0.0
+  },
+  gasReading: {
+    meterId: 'G0002340134445914',
+    timestamp: moment('2017-10-11T17:00:00+02:00').unix(),
+    totalConsumptionM3: 3964.814
   }
 }
 
@@ -52,6 +80,8 @@ module.exports = {
     data.authToken.ownerUserId = userId
     data.telegram.ownerUserId = userId
     data.meter.ownerUserId = userId
+    data.electricityMeter.ownerUserId = userId
+    data.gasMeter.ownerUserId = userId
     data.nonexistentMeter.ownerUserId = userId
     data.nonexistentUser.id = userId + 1000000
 
@@ -63,5 +93,9 @@ module.exports = {
 
     await db('meters').delete()
     await db('meters').insert(data.meter)
+
+    await db('electricityReadings').delete()
+
+    await db('gasReadings').delete()
   }
 }

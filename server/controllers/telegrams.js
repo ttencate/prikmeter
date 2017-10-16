@@ -4,6 +4,7 @@ const check = require('express-validator/check')
 const authTokens = require('../services/authTokens')
 const log = require('../core/log')
 const meters = require('../services/meters')
+const readings = require('../services/readings')
 const telegrams = require('../services/telegrams')
 const telegramParser = require('../services/telegramParser')
 
@@ -31,17 +32,27 @@ async function createFromBody (req, res) {
   log.info(`Stored ${data.length} byte telegram for user ${user.id}`)
 
   if (telegramParser.isCrcValid(data)) {
-    let readings
+    let telegramReadings
     try {
-      readings = telegramParser.parse(data)
+      telegramReadings = telegramParser.parse(data)
     } catch (ex) {
       log.warn(`Error parsing telegram: ${ex}`)
       throw ex
     }
-    log.debug(`Parsed telegram: ${JSON.stringify(readings)}`)
+    log.debug(`Parsed telegram: ${JSON.stringify(telegramReadings)}`)
 
-    for (reading of readings) {
+    for (reading of telegramReadings) {
       const meter = await meters.createOrUpdate({ id: reading.meterId, type: reading.type, ownerUserId: user.id })
+      switch (reading.type) {
+        case 'electricity':
+          await readings.createElectricity(reading)
+          break
+        case 'gas':
+          await readings.createGas(reading)
+          break
+        default:
+          log.warn(`Unknown reading type "${reading.type}"`)
+      }
     }
   }
 

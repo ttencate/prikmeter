@@ -24,23 +24,8 @@ describe('utils/telegramParser', () => {
   describe('parse', () => {
     it('parses the telegram', () => {
       expect(telegramParser.parse(data.telegram.telegram)).to.deep.equal([
-        {
-          type: 'electricity',
-          meterId: 'E0005001563265514',
-          timestamp: moment('2017-10-11T17:40:59+02:00').unix(),
-          totalConsumptionKwhLow: 1677.034,
-          totalConsumptionKwhHigh: 2060.771,
-          totalProductionKwhLow: 0.0,
-          totalProductionKwhHigh: 0.0,
-          currentConsumptionKw: 0.330,
-          currentProductionKw: 0.0
-        },
-        {
-          type: 'gas',
-          meterId: 'G0002340134445914',
-          timestamp: moment('2017-10-11T17:00:00+02:00').unix(),
-          totalConsumptionM3: 3964.814
-        }
+        Object.assign({}, data.electricityReading, { type: 'electricity' }),
+        Object.assign({}, data.gasReading, { type: 'gas' })
       ])
     })
   })
