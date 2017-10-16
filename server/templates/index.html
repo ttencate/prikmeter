@@ -20,13 +20,13 @@
       <h4>Meters</h4>
       {% for meter in meters %}
       <h5>{{ meter.name }}</h5>
-      <p>Auth tokens:</p>
+      {% endfor %}
+      <h4>Auth tokens</h4>
       <ul>
-        {% for token in meter.authTokens %}
-          <li><code>{{ token }}</code></li>
+        {% for authToken in authTokens %}
+          <li><code>{{ authToken.token }}</code></li>
         {% endfor %}
       </ul>
-      {% endfor %}
     {% else %}
       <h4>Log in</h4>
       <form action="/login" method="POST">

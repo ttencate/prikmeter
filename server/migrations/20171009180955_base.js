@@ -20,16 +20,16 @@ module.exports.up = async function (knex) {
 
   await knex.schema.createTable('authTokens', function (table) {
     table.string('token', 64).primary().notNullable()
-    table.integer('meterId').notNullable()
-    table.foreign('meterId').references('meters.id')
+    table.integer('ownerUserId')
+    table.foreign('ownerUserId').references('users.id')
   })
 
   await knex.schema.createTable('telegrams', function (table) {
     table.increments('id')
-    table.integer('meterId').notNullable()
-    table.foreign('meterId').references('meters.id')
+    table.integer('ownerUserId')
+    table.foreign('ownerUserId').references('users.id')
     table.binary('telegram')
-    table.index('meterId')
+    table.timestamp('uploadTimestamp').defaultTo(knex.fn.now());
   })
 }
 

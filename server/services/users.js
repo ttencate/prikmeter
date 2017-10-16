@@ -3,8 +3,11 @@ const bcryptPromise = require('bcrypt-promise')
 const db = require('../storage/db')
 
 module.exports = {
-  get: async function ({ email }) {
-    const user = await db.from('users').where({ email }).first('id', 'email', 'passwordHash')
+  get: async function ({ id, email }) {
+    const query = {}
+    if (id) query.id = id
+    if (email) query.email = email
+    const user = await db.from('users').where(query).first('id', 'email', 'passwordHash')
     return user
   },
 

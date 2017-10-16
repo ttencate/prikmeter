@@ -3,18 +3,19 @@
 const readlineSync = require('readline-sync')
 require('make-promises-safe')
 
-const meters = require('../services/meters')
+const authTokens = require('../services/auth-tokens')
+const users = require('../services/users')
 
 async function main () {
   await require('../storage/migrate')()
 
-  const meterId = readlineSync.question('Meter ID: ')
-  const meter = await meters.get({ id: meterId })
-  if (!meter) {
-    throw Error('Meter not found')
+  const email = readlineSync.question('User email: ')
+  const user = await users.get({ email })
+  if (!user) {
+    throw Error('User not found')
   }
 
-  const token = await meters.createAuthToken(meter)
+  const token = await authTokens.create(user)
   process.stdout.write(`Created token: ${token}\n`)
 
   process.exit(0)

@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser')
 const check = require('express-validator/check')
 
+const authTokens = require('../services/auth-tokens')
 const meters = require('../services/meters')
 const telegrams = require('../services/telegrams')
 
@@ -16,18 +17,18 @@ module.exports.create = [
       return
     }
 
-    const authToken = req.headers[AUTH_TOKEN_HEADER]
+    const token = req.headers[AUTH_TOKEN_HEADER]
     const telegram = req.body.toString('ascii') // TODO see what happens if we shove it to the database as a Buffer directly
 
-    const meter = await meters.getForAuthToken(authToken)
-    if (!meter) {
-      console.warn(`Auth token ${authToken} is invalid`)
+    const user = await authTokens.getOwnerUser({ token })
+    if (!user) {
+      console.warn(`Auth token ${token} is invalid`)
       res.sendStatus(403)
       return
     }
 
-    await telegrams.create({ meterId: meter.id, telegram })
-    console.log(`Stored ${telegram.length} byte telegram for meter ${meter.id}`)
+    await telegrams.create({ ownerUserId: user.id, telegram })
+    console.log(`Stored ${telegram.length} byte telegram for user ${user.id}`)
 
     res.sendStatus(200)
   }
