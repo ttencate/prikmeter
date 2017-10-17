@@ -33,7 +33,7 @@ module.exports.up = async function (knex) {
   })
 
   await knex.schema.createTable('electricityReadings', function (table) {
-    table.integer('meterId')
+    table.string('meterId')
     table.timestamp('timestamp')
     table.float('totalConsumptionKwhLow')
     table.float('totalConsumptionKwhHigh')
