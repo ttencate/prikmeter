@@ -15,8 +15,8 @@ async function main () {
     throw Error('User not found')
   }
 
-  const token = await authTokens.create(user)
-  process.stdout.write(`Created token: ${token}\n`)
+  const authToken = await authTokens.create(user)
+  process.stdout.write(`Created token: ${authToken.token}\n`)
 
   process.exit(0)
 }
