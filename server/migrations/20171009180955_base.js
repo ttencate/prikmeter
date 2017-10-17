@@ -29,12 +29,12 @@ module.exports.up = async function (knex) {
     table.integer('ownerUserId')
     table.foreign('ownerUserId').references('users.id')
     table.binary('telegram')
-    table.timestamp('uploadTimestamp').defaultTo(knex.fn.now())
+    table.timestamp('uploadTimestamp', true).defaultTo(knex.fn.now())
   })
 
   await knex.schema.createTable('electricityReadings', function (table) {
     table.string('meterId')
-    table.timestamp('timestamp')
+    table.timestamp('timestamp', true)
     table.float('totalConsumptionKwhLow')
     table.float('totalConsumptionKwhHigh')
     table.float('totalProductionKwhLow')
@@ -46,7 +46,7 @@ module.exports.up = async function (knex) {
 
   await knex.schema.createTable('gasReadings', function (table) {
     table.integer('meterId')
-    table.timestamp('timestamp')
+    table.timestamp('timestamp', true)
     table.float('totalConsumptionM3')
     table.primary(['meterId', 'timestamp'])
   })
