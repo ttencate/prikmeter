@@ -31,9 +31,9 @@ describe('services/meters', () => {
     })
 
     it('updates the meter if the data is different', async () => {
-      await meters.createOrUpdate({ id: testDb.data.meter.id, type: 'gas', ownerUserId: testDb.data.nonexistentUser.id })
+      await meters.createOrUpdate({ id: testDb.data.meter.id, type: 'gas', ownerUserId: testDb.data.user.id })
       await expect(meters.get({ id: testDb.data.meter.id })).to.eventually.deep.equal(
-        { id: testDb.data.meter.id, type: 'gas', ownerUserId: testDb.data.nonexistentUser.id })
+        { id: testDb.data.meter.id, type: 'gas', ownerUserId: testDb.data.user.id })
     })
 
     it('creates the meter if it does not exist', async () => {

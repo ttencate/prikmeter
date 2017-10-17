@@ -15,19 +15,19 @@ module.exports.up = async function (knex) {
     table.string('id').primary()
     table.string('type')
     table.integer('ownerUserId')
-    table.foreign('ownerUserId').references('users.id')
+    table.foreign('ownerUserId').references('users.id').onDelete('set null')
   })
 
   await knex.schema.createTable('authTokens', function (table) {
     table.string('token', 64).primary().notNullable()
     table.integer('ownerUserId')
-    table.foreign('ownerUserId').references('users.id')
+    table.foreign('ownerUserId').references('users.id').onDelete('set null')
   })
 
   await knex.schema.createTable('telegrams', function (table) {
     table.increments('id')
     table.integer('ownerUserId')
-    table.foreign('ownerUserId').references('users.id')
+    table.foreign('ownerUserId').references('users.id').onDelete('set null')
     table.binary('telegram')
     table.timestamp('uploadTimestamp', true).defaultTo(knex.fn.now())
   })
@@ -35,19 +35,19 @@ module.exports.up = async function (knex) {
   await knex.schema.createTable('electricityReadings', function (table) {
     table.string('meterId')
     table.timestamp('timestamp', true)
-    table.float('totalConsumptionKwhLow')
-    table.float('totalConsumptionKwhHigh')
-    table.float('totalProductionKwhLow')
-    table.float('totalProductionKwhHigh')
-    table.float('currentConsumptionKw')
-    table.float('currentProductionKw')
+    table.double('totalConsumptionKwhLow')
+    table.double('totalConsumptionKwhHigh')
+    table.double('totalProductionKwhLow')
+    table.double('totalProductionKwhHigh')
+    table.double('currentConsumptionKw')
+    table.double('currentProductionKw')
     table.primary(['meterId', 'timestamp'])
   })
 
   await knex.schema.createTable('gasReadings', function (table) {
     table.string('meterId')
     table.timestamp('timestamp', true)
-    table.float('totalConsumptionM3')
+    table.double('totalConsumptionM3')
     table.primary(['meterId', 'timestamp'])
   })
 }

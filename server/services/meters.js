@@ -17,6 +17,8 @@ module.exports = {
     const meter = await db.from('meters').where({ id }).first('id', 'type', 'ownerUserId')
     if (meter) {
       if (meter.type !== type || meter.ownerUserId !== ownerUserId) {
+        console.log(JSON.stringify(meter))
+        console.log(ownerUserId)
         await db('meters').where({ id }).update({ type, ownerUserId })
       }
     } else {

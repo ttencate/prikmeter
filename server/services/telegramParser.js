@@ -52,7 +52,8 @@ function timestamp (value) {
   if (!dateTime.isValid()) {
     throwParseError(`Could not parse timestamp: ${value}`)
   }
-  return dateTime.unix()
+  dateTime.utcOffset(0) // Convert to UTC.
+  return dateTime.toDate()
 }
 
 function floatWithUnit (expectedUnit) {

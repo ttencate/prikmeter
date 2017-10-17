@@ -11,7 +11,8 @@ async function createOrIgnore (table, keys, reading) {
   try {
     await db(table).insert(object)
   } catch (ex) {
-    if (ex.code == 'SQLITE_CONSTRAINT') {
+    if (ex.code === 'SQLITE_CONSTRAINT' /* SQLite */
+      || (ex.constraint || '').endsWith('_pkey') /* PostgreSQL */) {
       return
     }
     throw ex

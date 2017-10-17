@@ -55,7 +55,7 @@ const data = {
 
   electricityReading: {
     meterId: 'E0005001563265514',
-    timestamp: moment('2017-10-11T17:40:59+02:00').unix(),
+    timestamp: moment('2017-10-11T15:40:59+00:00').toDate(),
     totalConsumptionKwhLow: 1677.034,
     totalConsumptionKwhHigh: 2060.771,
     totalProductionKwhLow: 0.0,
@@ -65,7 +65,7 @@ const data = {
   },
   gasReading: {
     meterId: 'G0002340134445914',
-    timestamp: moment('2017-10-11T17:00:00+02:00').unix(),
+    timestamp: moment('2017-10-11T15:00:00+00:00').toDate(),
     totalConsumptionM3: 3964.814
   }
 }
