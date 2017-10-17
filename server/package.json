@@ -22,6 +22,7 @@
     "bcrypt": "^1.0.3",
     "bcrypt-promise": "^2.0.0",
     "body-parser": "^1.18.2",
+    "connect-session-knex": "^1.4.0",
     "crc": "^3.5.0",
     "express": "^4.16.1",
     "express-nunjucks": "^2.2.3",
