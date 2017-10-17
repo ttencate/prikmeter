@@ -45,7 +45,7 @@ module.exports.up = async function (knex) {
   })
 
   await knex.schema.createTable('gasReadings', function (table) {
-    table.integer('meterId')
+    table.string('meterId')
     table.timestamp('timestamp', true)
     table.float('totalConsumptionM3')
     table.primary(['meterId', 'timestamp'])
