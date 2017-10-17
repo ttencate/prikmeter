@@ -32,6 +32,16 @@ describe('controllers/telegram', () => {
       await expect(await telegramsService.getForUser({ id: testDb.data.user.id })).to.have.length(1)
     })
 
+    it('rejects telegrams whose CRC does not match, but stores the telegram anyway', async () => {
+      const res = await simulateRequest(telegrams.createFromBody, {
+        headers: { 'X-Auth-Token': testDb.data.authToken.token },
+        body: testDb.data.telegram.corruptTelegram
+      })
+
+      expect(res.statusCode).to.equal(400)
+      await expect(await telegramsService.getForUser({ id: testDb.data.user.id })).to.have.length(2)
+    })
+
     describe('when passed valid credentials and a valid telegram', async () => {
       let res
 

@@ -31,28 +31,32 @@ async function createFromBody (req, res) {
   const telegram = await telegrams.create({ ownerUserId: user.id, telegram: data })
   log.info(`Stored ${data.length} byte telegram for user ${user.id}`)
 
-  if (telegramParser.isCrcValid(data)) {
-    let telegramReadings
-    try {
-      telegramReadings = telegramParser.parse(data)
-    } catch (ex) {
-      log.warn(`Error parsing telegram: ${ex}`)
-      throw ex
-    }
-    log.debug(`Parsed telegram: ${JSON.stringify(telegramReadings)}`)
+  if (!telegramParser.isCrcValid(data)) {
+    res.status(400)
+    res.send('CRC mismatch')
+    return
+  }
 
-    for (reading of telegramReadings) {
-      const meter = await meters.createOrUpdate({ id: reading.meterId, type: reading.type, ownerUserId: user.id })
-      switch (reading.type) {
-        case 'electricity':
-          await readings.createElectricity(reading)
-          break
-        case 'gas':
-          await readings.createGas(reading)
-          break
-        default:
-          log.warn(`Unknown reading type "${reading.type}"`)
-      }
+  let telegramReadings
+  try {
+    telegramReadings = telegramParser.parse(data)
+  } catch (ex) {
+    log.warn(`Error parsing telegram: ${ex}`)
+    throw ex
+  }
+  log.debug(`Parsed telegram: ${JSON.stringify(telegramReadings)}`)
+
+  for (reading of telegramReadings) {
+    const meter = await meters.createOrUpdate({ id: reading.meterId, type: reading.type, ownerUserId: user.id })
+    switch (reading.type) {
+      case 'electricity':
+        await readings.createElectricity(reading)
+        break
+      case 'gas':
+        await readings.createGas(reading)
+        break
+      default:
+        log.warn(`Unknown reading type "${reading.type}"`)
     }
   }
 
