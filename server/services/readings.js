@@ -19,8 +19,25 @@ async function createOrIgnore (table, keys, reading) {
   }
 }
 
-async function getForMeter (table, keys, meter) {
-  const readings = await db.from(table).where({ meterId: meter.id }).select(...keys)
+async function getForMeter (table, keys, meter, { startTime, endTime, resolution }) {
+  let query = db.from(table)
+    .where({ meterId: meter.id })
+    .orderBy('timestamp', 'asc')
+  if (startTime) {
+    query = query.whereRaw('timestamp >= ?', [startTime])
+  }
+  if (endTime) {
+    query = query.whereRaw('timestamp <= ?', [endTime])
+  }
+  // TODO downsample using max() and mean() aggregates per column as appropriate
+  // switch (resolution) {
+  //   case 'hour':
+  //     query = query.groupBy()
+  //     break
+  //   default:
+  // }
+
+  const readings = await query.select(...keys)
   readings.forEach((reading) => {
     reading.type = meter.type
   })
@@ -39,12 +56,12 @@ module.exports = {
     }
   },
 
-  getForMeter: async function (meter) {
+  getForMeter: async function (meter, params = {}) {
     switch (meter.type) {
       case 'electricity':
-        return getForMeter('electricityReadings', ELECTRICITY_KEYS, meter)
+        return getForMeter('electricityReadings', ELECTRICITY_KEYS, meter, params)
       case 'gas':
-        return getForMeter('gasReadings', GAS_KEYS, meter)
+        return getForMeter('gasReadings', GAS_KEYS, meter, params)
       default:
         throw new Error(`Unknown reading type "${reading}"`)
     }

@@ -19,7 +19,11 @@
       </form>
       <h4>Meters</h4>
       {% for meter in meters %}
+      {% set meterIndex = loop.index %}
       <h5>{{ meter.id }}</h5>
+      {% for reading in readings[meterIndex] %}
+      {{ reading.timestamp }}<br>
+      {% endfor %}
       {% endfor %}
       <h4>Auth tokens</h4>
       <ul>

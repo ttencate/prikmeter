@@ -18,8 +18,9 @@ module.exports.root = [
       meters.getForUser(user),
       authTokens.getForUser(user)
     ])
+    const nowMillis = Date.now()
     const [ userReadings ] = await Promise.all(userMeters.map((meter) => {
-      readings.getForMeter(meter)
+      readings.getForMeter(meter, { start: new Date(nowMillis - 7 * 24 * 60 * 60 * 1000), end: new Date(nowMillis) })
     }))
     res.render('index', {
       return_url: req.url,
