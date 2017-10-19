@@ -12,14 +12,14 @@ describe('services/readings', () => {
     it('creates a reading', async () => {
       const reading = testDb.data.electricityReading
       await readings.createElectricity(reading)
-      await expect(readings.getElectricityForMeter({ id: reading.meterId })).to.eventually.deep.equal([reading])
+      await expect(readings.getElectricityForMeter({ id: reading.meterId })).to.eventually.deep.equal([testDb.datesToTimestamps(reading)])
     })
     
     it('does not create a reading if a matching one already exists', async () => {
       const reading = testDb.data.electricityReading
       await readings.createElectricity(reading)
       await readings.createElectricity(reading)
-      await expect(readings.getElectricityForMeter({ id: reading.meterId })).to.eventually.deep.equal([reading])
+      await expect(readings.getElectricityForMeter({ id: reading.meterId })).to.eventually.deep.equal([testDb.datesToTimestamps(reading)])
     })
   })
 
@@ -27,14 +27,14 @@ describe('services/readings', () => {
     it('creates a reading', async () => {
       const reading = testDb.data.gasReading
       await readings.createGas(reading)
-      await expect(readings.getGasForMeter({ id: reading.meterId })).to.eventually.deep.equal([reading])
+      await expect(readings.getGasForMeter({ id: reading.meterId })).to.eventually.deep.equal([testDb.datesToTimestamps(reading)])
     })
     
     it('does not create a reading if a matching one already exists', async () => {
       const reading = testDb.data.gasReading
       await readings.createGas(reading)
       await readings.createGas(reading)
-      await expect(readings.getGasForMeter({ id: reading.meterId })).to.eventually.deep.equal([reading])
+      await expect(readings.getGasForMeter({ id: reading.meterId })).to.eventually.deep.equal([testDb.datesToTimestamps(reading)])
     })
   })
 })

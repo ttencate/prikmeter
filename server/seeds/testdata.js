@@ -1,5 +1,7 @@
 const moment = require('moment')
 
+const dbConfig = require('../core/dbConfig')
+
 const data = {
   user: {
     id: undefined,

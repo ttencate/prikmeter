@@ -9,7 +9,7 @@ const telegrams = require('./telegrams')
 const telegramsService = require('../services/telegrams')
 const testDb = require('../core/testDb')
 
-describe('controllers/telegram', () => {
+describe('controllers/telegrams', () => {
   beforeEach(testDb.reset)
 
   describe('createFromBody', () => {
@@ -74,8 +74,8 @@ describe('controllers/telegram', () => {
       })
 
       it('creates the readings', async () => {
-        await expect(readings.getElectricityForMeter({ id: testDb.data.electricityReading.meterId })).to.eventually.deep.equal([testDb.data.electricityReading])
-        await expect(readings.getGasForMeter({ id: testDb.data.gasReading.meterId })).to.eventually.deep.equal([testDb.data.gasReading])
+        await expect(readings.getElectricityForMeter({ id: testDb.data.electricityReading.meterId })).to.eventually.deep.equal([testDb.datesToTimestamps(testDb.data.electricityReading)])
+        await expect(readings.getGasForMeter({ id: testDb.data.gasReading.meterId })).to.eventually.deep.equal([testDb.datesToTimestamps(testDb.data.gasReading)])
       })
     })
   })

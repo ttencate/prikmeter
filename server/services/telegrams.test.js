@@ -21,7 +21,7 @@ describe('services/telegrams', () => {
       expect(userTelegrams).to.have.length(1)
 
       const telegram = userTelegrams[0]
-      expect(telegram.uploadTimestamp).to.be.a('date')
+      expect(telegram.uploadTimestamp).to.exist
       delete telegram.uploadTimestamp
       telegram.telegram = telegram.telegram.toString()
       expect(telegram).to.deep.equal(testDb.data.telegram)
