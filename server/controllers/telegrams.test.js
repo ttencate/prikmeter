@@ -73,9 +73,14 @@ describe('controllers/telegrams', () => {
         })
       })
 
-      it('creates the readings', async () => {
-        await expect(readings.getElectricityForMeter({ id: testDb.data.electricityReading.meterId })).to.eventually.deep.equal([testDb.datesToTimestamps(testDb.data.electricityReading)])
-        await expect(readings.getGasForMeter({ id: testDb.data.gasReading.meterId })).to.eventually.deep.equal([testDb.datesToTimestamps(testDb.data.gasReading)])
+      it('creates the electricity reading', async () => {
+        const reading = testDb.datesToTimestamps(Object.assign({}, testDb.data.electricityReading, { type: 'electricity' }))
+        await expect(readings.getForMeter({ id: testDb.data.electricityReading.meterId, type: 'electricity' })).to.eventually.deep.equal([reading])
+      })
+
+      it('creates the gas reading', async () => {
+        const reading = testDb.datesToTimestamps(Object.assign({}, testDb.data.gasReading, { type: 'gas' }))
+        await expect(readings.getForMeter({ id: testDb.data.gasReading.meterId, type: 'gas' })).to.eventually.deep.equal([reading])
       })
     })
   })

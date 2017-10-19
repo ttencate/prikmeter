@@ -21,23 +21,32 @@ async function createOrIgnore (table, keys, reading) {
 
 async function getForMeter (table, keys, meter) {
   const readings = await db.from(table).where({ meterId: meter.id }).select(...keys)
+  readings.forEach((reading) => {
+    reading.type = meter.type
+  })
   return readings
 }
 
 module.exports = {
-  createElectricity: async function (reading) {
-    await createOrIgnore('electricityReadings', ELECTRICITY_KEYS, reading)
+  create: async function (reading) {
+    switch (reading.type) {
+      case 'electricity':
+        return createOrIgnore('electricityReadings', ELECTRICITY_KEYS, reading)
+      case 'gas':
+        return createOrIgnore('gasReadings', GAS_KEYS, reading)
+      default:
+        throw new Error(`Unknown reading type "${reading}"`)
+    }
   },
 
-  createGas: async function (reading) {
-    await createOrIgnore('gasReadings', GAS_KEYS, reading)
-  },
-
-  getElectricityForMeter: async function (meter) {
-    return getForMeter('electricityReadings', ELECTRICITY_KEYS, meter)
-  },
-
-  getGasForMeter: async function (meter) {
-    return getForMeter('gasReadings', GAS_KEYS, meter)
+  getForMeter: async function (meter) {
+    switch (meter.type) {
+      case 'electricity':
+        return getForMeter('electricityReadings', ELECTRICITY_KEYS, meter)
+      case 'gas':
+        return getForMeter('gasReadings', GAS_KEYS, meter)
+      default:
+        throw new Error(`Unknown reading type "${reading}"`)
+    }
   }
 }

@@ -46,18 +46,10 @@ async function createFromBody (req, res) {
   }
   log.debug(`Parsed telegram: ${JSON.stringify(telegramReadings)}`)
 
+  // TODO parallelize
   for (reading of telegramReadings) {
     const meter = await meters.createOrUpdate({ id: reading.meterId, type: reading.type, ownerUserId: user.id })
-    switch (reading.type) {
-      case 'electricity':
-        await readings.createElectricity(reading)
-        break
-      case 'gas':
-        await readings.createGas(reading)
-        break
-      default:
-        log.warn(`Unknown reading type "${reading.type}"`)
-    }
+    await readings.create(reading)
   }
 
   res.sendStatus(200)
