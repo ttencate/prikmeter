@@ -5,7 +5,7 @@
   </head>
   <body>
     {% if errors %}
-      <h4>Errors</h4>
+      <h3>Errors</h3>
       <ul>
       {% for error in errors %}
         <li>{{ error }}</li>
@@ -13,33 +13,29 @@
       </ul>
     {% endif %}
     {% if user %}
-      <h4>Logged in as {{ user.email }}</h4>
+      <h3>Logged in as {{ user.email }}</h3>
       <form action="/logout" method="POST">
         <input value="Log out" type="submit">
       </form>
-      <h4>Meters</h4>
       {% for meter in meters %}
-      {% set meterIndex = loop.index %}
-      <h5>{{ meter.id }}</h5>
-      {% for reading in readings[meterIndex] %}
-      {{ reading.timestamp }}<br>
+        <h3>{{ meter.type | title }}: <code>{{ meter.id }}</code></h3>
+        <div class="meterReadings" data-index="{{ loop.index0 }}"></div>
       {% endfor %}
-      {% endfor %}
-      <h4>Auth tokens</h4>
+      <h3>Auth tokens</h3>
       <ul>
         {% for authToken in authTokens %}
           <li><code>{{ authToken.token }}</code></li>
         {% endfor %}
       </ul>
     {% else %}
-      <h4>Log in</h4>
+      <h3>Log in</h3>
       <form action="/login" method="POST">
         Email: <input name="email" type="email">
         Password: <input name="password" type="password">
         <input name="return_url" type="hidden" value="{{ return_url }}">
         <input value="Log in" type="submit">
       </form>
-      <h4>Create account</h4>
+      <h3>Create account</h3>
       <form action="/users" method="POST">
         Email: <input name="email" type="email">
         Password: <input name="password1" type="password">
@@ -48,5 +44,10 @@
         <input value="Create account" type="submit">
       </form>
     {% endif %}
+    <script src="//www.gstatic.com/charts/loader.js"></script>
+    <script>
+      var meters = {{ meters | jsonInsideScriptTag }};
+    </script>
+    <script src="/static/scripts/bundle.js"></script>
   </body>
 </html>

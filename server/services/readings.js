@@ -19,25 +19,24 @@ async function createOrIgnore (table, keys, reading) {
   }
 }
 
+
+/**
+ * resolution: one of https://www.postgresql.org/docs/9.1/static/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC
+ */
 async function getForMeter (table, keys, meter, { startTime, endTime, resolution }) {
+  resolution = resolution || 'second'
   let query = db.from(table)
     .where({ meterId: meter.id })
     .orderBy('timestamp', 'asc')
   if (startTime) {
-    query = query.whereRaw('timestamp >= ?', [startTime])
+    query = query.where(db.raw('timestamp >= ?', [startTime]))
   }
   if (endTime) {
-    query = query.whereRaw('timestamp <= ?', [endTime])
+    query = query.where(db.raw('timestamp <= ?', [endTime]))
   }
-  // TODO downsample using max() and mean() aggregates per column as appropriate
-  // switch (resolution) {
-  //   case 'hour':
-  //     query = query.groupBy()
-  //     break
-  //   default:
-  // }
-
-  const readings = await query.select(...keys)
+  query = query.groupBy(db.raw('date_trunc(?, timestamp)', [resolution]))
+  const select = db.raw(keys.map(key => `max("${key}") as "${key}"`).join(', '))
+  const readings = await query.select(select)
   readings.forEach((reading) => {
     reading.type = meter.type
   })
