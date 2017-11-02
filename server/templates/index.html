@@ -46,7 +46,9 @@
     {% endif %}
     <script src="//www.gstatic.com/charts/loader.js"></script>
     <script>
-      var meters = {{ meters | jsonInsideScriptTag }};
+      {% if meters %}
+        var meters = {{ meters | jsonInsideScriptTag }};
+      {% endif %}
     </script>
     <script src="/static/scripts/bundle.js"></script>
   </body>

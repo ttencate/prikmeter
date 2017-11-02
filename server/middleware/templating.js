@@ -8,7 +8,10 @@ function jsonInsideScriptTag (value, spaces) {
   if (value instanceof nunjucks.runtime.SafeString) {
     value = value.toString()
   }
-  const jsonString = JSON.stringify(value, null, spaces).replace(/</g, '\\u003c')
+  let jsonString = JSON.stringify(value, null, spaces)
+  if (jsonString) {
+    jsonString = jsonString.replace(/</g, '\\u003c')
+  }
   return nunjucks.runtime.markSafe(jsonString)
 }
 
