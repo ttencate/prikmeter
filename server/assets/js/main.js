@@ -12,13 +12,20 @@ Vue.component('MeterReadings', {
     meterType: String
   },
   data: function () {
+    const now = new Date()
+    const days = []
+    for (let i = 0; i < 7; i++) {
+      days.push(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i))
+    }
+    console.log(days)
     return {
+      days: days,
       readings: null,
-      error: null
+      error: null,
     }
   },
-  computed: {
-    options: function () {
+  methods: {
+    optionsForDay: function (day) {
       const vAxisTitles = {
         electricity: 'Electricity consumption (W)',
         gas: 'Gas consumption (m³/h)'
@@ -27,20 +34,36 @@ Vue.component('MeterReadings', {
         electricity: '#FF851B',
         gas: '#0074D9'
       }
+      const nextDay = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1)
       const options = {
-        title: this.meterId,
-        width: 900,
-        height: 300,
+        width: 500,
+        height: 200,
+        title: day.toDateString(),
         bar: {
           groupWidth: '100%'
         },
         colors: [barColors[this.meterType]],
         hAxis: {
-          title: 'Time',
-          format: 'EEE\nd MMM'
+          format: 'HH:mm', // For days, use: 'EEE\nd MMM'
+          viewWindow: {
+            min: day,
+            max: nextDay
+          },
+          gridlines: {
+            count: 8
+          },
+          minorGridlines: {
+            count: 2
+          }
         },
         vAxis: {
           title: vAxisTitles[this.meterType]
+        },
+        chartArea: {
+          left: 50,
+          width: 450,
+          top: 10,
+          height: 160,
         },
         legend: {
           position: 'none'
@@ -48,6 +71,8 @@ Vue.component('MeterReadings', {
       }
       return options
     },
+  },
+  computed: {
     yColumn: function () {
       return {
         electricity: 'currentConsumptionW',
@@ -85,7 +110,11 @@ Vue.component('MeterReadings', {
     this.$data.readings = readings
   },
   template:
-`<ColumnChart v-if="readings" :data="readings" x-column="centerTimestamp" :y-column="yColumn" :options="options"/>
+`<div v-if="readings">
+  <div v-for="day in days">
+    <ColumnChart :data="readings" x-column="centerTimestamp" :y-column="yColumn" :options="optionsForDay(day)"/>
+  </div>
+</div>
 <p v-else-if="error">Error fetching meter readings: {{ error }}</p>
 <p v-else>Loading…</p>`
 })
