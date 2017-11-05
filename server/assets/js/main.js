@@ -6,7 +6,7 @@ Vue.component('meters', {
   props: ['meters'],
   methods: {
     type: function (meter) {
-      return meter.type
+      return meter.type.substr(0, 1).toUpperCase() + meter.type.substr(1)
     }
   },
   template:
