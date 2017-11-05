@@ -62,8 +62,8 @@ Vue.component('MeterReadings', {
         chartArea: {
           left: 50,
           width: 450,
-          top: 10,
-          height: 160,
+          top: 25,
+          height: 150,
         },
         legend: {
           position: 'none'
