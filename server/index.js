@@ -17,7 +17,7 @@ async function main () {
   }
 
   await require('./middleware').install(app)
-  require('./controllers').addRoutes(app)
+  await require('./controllers').addRoutes(app)
 
   const LISTEN_HOST = process.env.LISTEN_HOST || 'localhost'
   const LISTEN_PORT = parseInt(process.env.LISTEN_PORT) || 3000

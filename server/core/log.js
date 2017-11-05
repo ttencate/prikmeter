@@ -3,7 +3,7 @@ const winston = require('winston')
 const LEVELS = {
   development: 'debug',
   testing: 'error',
-  production: 'warn'
+  production: 'info'
 }
 
 function createLogger () {
