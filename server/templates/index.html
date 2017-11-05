@@ -18,7 +18,10 @@
         <input value="Log out" type="submit">
       </form>
       <div id="main">
-        <pm-meters v-bind:meters="meters"></meters>
+        {% for meter in meters %}
+          <h3>{{ meter.type | title }}: <code>{{ meter.id }}</code></h3>
+          <meter-readings meter-type="{{ meter.type }}" meter-id="{{ meter.id }}"></meter-readings>
+        {% endfor %}
         <h3>Auth tokens</h3>
         <ul>
           {% for authToken in authTokens %}
@@ -44,11 +47,6 @@
       </form>
     {% endif %}
     <script src="//www.gstatic.com/charts/loader.js"></script>
-    <script>
-      {% if meters %}
-        var meters = {{ meters | jsonInsideScriptTag }};
-      {% endif %}
-    </script>
     <script src="/static/main.js"></script>
   </body>
 </html>

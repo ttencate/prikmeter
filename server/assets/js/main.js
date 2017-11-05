@@ -1,57 +1,46 @@
 require('babel-polyfill')
+require('whatwg-fetch')
 
 const Vue = require('../../node_modules/vue/dist/vue.common.js')
 
-Vue.component('PmMeters', {
-  props: {
-    meters: Array
-  },
-  methods: {
-    type: function (meter) {
-      return meter.type.substr(0, 1).toUpperCase() + meter.type.substr(1)
-    }
-  },
-  template:
-`<div>
-  <div v-for="meter of meters" :key="meter.id">
-    <h3>{{ type(meter) }}: <code>{{ meter.id }}</code></h3>
-    <PmMeterReadings :meter="meter"/>
-  </div>
-</div>`
-})
+// https://developers.google.com/chart/interactive/docs/release_notes#official-releases
+google.charts.load('45.2', {'packages': ['corechart']})
 
-Vue.component('PmMeterReadings', {
+Vue.component('MeterReadings', {
   props: {
-    meter: Object
+    meterId: String,
+    meterType: String
+  },
+  data: function () {
+    return {
+      readings: null,
+      error: null
+    }
   },
   computed: {
     options: function () {
-      let vAxisTitle
-      let barColor
-      switch (this.meter.type) {
-        case 'electricity':
-          barColor = '#FF851B'
-          vAxisTitle = 'Electricity consumption (W)'
-          break
-        case 'gas':
-          barColor = '#0074D9'
-          vAxisTitle = 'Gas consumption (m³/h)'
-          break
+      const vAxisTitles = {
+        electricity: 'Electricity consumption (W)',
+        gas: 'Gas consumption (m³/h)'
+      }
+      const barColors = {
+        electricity: '#FF851B',
+        gas: '#0074D9'
       }
       const options = {
-        title: this.meter.id,
+        title: this.meterId,
         width: 900,
         height: 300,
         bar: {
           groupWidth: '100%'
         },
-        colors: [barColor],
+        colors: [barColors[this.meterType]],
         hAxis: {
           title: 'Time',
           format: 'EEE\nd MMM'
         },
         vAxis: {
-          title: vAxisTitle
+          title: vAxisTitles[this.meterType]
         },
         legend: {
           position: 'none'
@@ -60,18 +49,48 @@ Vue.component('PmMeterReadings', {
       return options
     },
     yColumn: function () {
-      switch (this.meter.type) {
-        case 'electricity':
-          return 'currentConsumptionW'
-        case 'gas':
-          return 'currentConsumptionM3PerH'
-      }
+      return {
+        electricity: 'currentConsumptionW',
+        gas: 'currentConsumptionM3PerH'
+      }[this.meterType]
     }
   },
-  template: '<PmColumnChart :data="meter.readings" x-column="centerTimestamp" :y-column="yColumn" :options="options"/>'
+  mounted: async function () {
+    const response = await fetch(`/meters/${this.meterId}/readings`, { credentials: 'same-origin' })
+    if (!response.ok) {
+      this.$data.error = response.statusText
+      return
+    }
+
+    const readings = await response.json()
+
+    const secondsPerHour = 60 * 60
+    switch (this.meterType) {
+      case 'electricity':
+        addDeltaColumn(readings, ['totalConsumptionKwhLow', 'totalConsumptionKwhHigh'], 'currentConsumptionW', 1000 * secondsPerHour)
+        break
+      case 'gas':
+        addDeltaColumn(readings, ['totalConsumptionM3'], 'currentConsumptionM3PerH', secondsPerHour)
+        break
+    }
+
+    const timestampIndex = readings[0].indexOf('timestamp')
+    const centerTimestampIndex = readings[0].indexOf('centerTimestamp')
+    for (let i = 1; i < readings.length; i++) {
+      const row = readings[i]
+      row[timestampIndex] = new Date(row[timestampIndex] * 1000)
+      row[centerTimestampIndex] = new Date(row[centerTimestampIndex] * 1000)
+    }
+
+    this.$data.readings = readings
+  },
+  template:
+`<ColumnChart v-if="readings" :data="readings" x-column="centerTimestamp" :y-column="yColumn" :options="options"/>
+<p v-else-if="error">Error fetching meter readings: {{ error }}</p>
+<p v-else>Loading…</p>`
 })
 
-Vue.component('PmColumnChart', googleChartsComponent({
+Vue.component('ColumnChart', googleChartsComponent({
   props: {
     data: Array,
     xColumn: String,
@@ -98,29 +117,14 @@ Vue.component('PmColumnChart', googleChartsComponent({
   }
 }))
 
-let googleChartsState = 'unloaded'
-let googleChartsComponentResolvers = []
 function googleChartsComponent (component) {
   return function (resolve, reject) {
-    switch (googleChartsState) {
-      case 'unloaded':
-        google.charts.load('current', {'packages': ['corechart']})
-        google.charts.setOnLoadCallback(function () {
-          googleChartsState = 'loaded'
-          for (const resolver of googleChartsComponentResolvers) {
-            resolver()
-          }
-          googleChartsComponentResolvers = []
-        })
-        googleChartsState = 'loading'
-        // Fallthrough!
-      case 'loading':
-        googleChartsComponentResolvers.push(function () { resolve(component) })
-        break
-      case 'loaded':
-        resolve(component)
-        break
-    }
+    // Adding a callback after it's already loaded will just immediately call
+    // the callback. This is undocumented, but sensible enough that we can rely
+    // on it.
+    google.charts.setOnLoadCallback(function () {
+      resolve(component)
+    })
   }
 }
 
@@ -149,31 +153,6 @@ function addDeltaColumn (readings, totalKeys, deltaKey, timeUnitSeconds) {
   }
 }
 
-function prepareData () {
-  const secondsPerHour = 60 * 60
-
-  for (const meter of meters) {
-    switch (meter.type) {
-      case 'electricity':
-        addDeltaColumn(meter.readings, ['totalConsumptionKwhLow', 'totalConsumptionKwhHigh'], 'currentConsumptionW', 1000 * secondsPerHour)
-        break
-      case 'gas':
-        addDeltaColumn(meter.readings, ['totalConsumptionM3'], 'currentConsumptionM3PerH', secondsPerHour)
-        break
-    }
-
-    const timestampIndex = meter.readings[0].indexOf('timestamp')
-    const centerTimestampIndex = meter.readings[0].indexOf('centerTimestamp')
-    for (let i = 1; i < meter.readings.length; i++) {
-      const row = meter.readings[i]
-      row[timestampIndex] = new Date(row[timestampIndex] * 1000)
-      row[centerTimestampIndex] = new Date(row[centerTimestampIndex] * 1000)
-    }
-  }
-}
-
-prepareData()
-const vm = new Vue({
-  el: '#main',
-  data: { meters }
+new Vue({
+  el: '#main'
 })

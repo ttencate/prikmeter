@@ -1,6 +1,7 @@
 const path = require('path')
 
 const login = require('./login')
+const readings = require('./readings')
 const root = require('./root')
 const static = require('./static')
 const telegrams = require('./telegrams')
@@ -22,4 +23,6 @@ module.exports.addRoutes = async function addRoutes (app) {
   // app.post('/users$', users.create)
 
   app.post('/telegrams$', telegrams.create)
+
+  app.get('/meters/:meterId/readings$', readings.get)
 }

@@ -45,6 +45,7 @@
     "vue": "^2.5.3",
     "webpack": "^3.8.1",
     "webpack-merge": "^4.1.1",
+    "whatwg-fetch": "^2.0.3",
     "winston": "^3.0.0-rc0"
   },
   "devDependencies": {
