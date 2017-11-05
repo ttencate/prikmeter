@@ -11,45 +11,16 @@ Vue.component('meters', {
   },
   template:
 `<div>
-  <div v-for="meter of meters" v-bind:key="meter.id">
+  <div v-for="meter of meters" :key="meter.id">
     <h3>{{ type(meter) }}: <code>{{ meter.id }}</code></h3>
-    <meter-readings v-bind:meter="meter"></meter-readings>
+    <meter-readings :meter="meter"></meter-readings>
   </div>
 </div>`
 })
 
-Vue.component('meter-readings', googleChartsComponent({
+Vue.component('meter-readings', {
   props: ['meter'],
   computed: {
-    data: function () {
-      if (!this.meter.readings.dataTable) {
-        const data = this.meter.readings.data
-        this.meter.readings.data.unshift(this.meter.readings.keys)
-        this.meter.readings.dataTable = google.visualization.arrayToDataTable(data)
-      }
-
-      const dataView = new google.visualization.DataView(this.meter.readings.dataTable)
-      function getColumnIndex (label) {
-        const n = dataView.getNumberOfColumns()
-        for (let i = 0; i < n; i++) {
-          if (dataView.getColumnLabel(i) === label) {
-            return i
-          }
-        }
-        return -1
-      }
-
-      switch (this.meter.type) {
-        case 'electricity':
-          dataView.setColumns(['centerTimestamp', 'currentConsumptionW'].map(getColumnIndex))
-          break
-        case 'gas':
-          dataView.setColumns(['centerTimestamp', 'currentConsumptionM3PerH'].map(getColumnIndex))
-          break
-      }
-
-      return dataView
-    },
     options: function () {
       let vAxisTitle
       let barColor
@@ -83,17 +54,38 @@ Vue.component('meter-readings', googleChartsComponent({
         }
       }
       return options
+    },
+    yColumn: function () {
+      switch (this.meter.type) {
+        case 'electricity':
+          return 'currentConsumptionW'
+        case 'gas':
+          return 'currentConsumptionM3PerH'
+      }
     }
   },
-  template: '<column-chart v-bind:data="data" v-bind:options="options"></column-chart>'
-}))
+  template: '<column-chart :data="meter.readings" x-column="centerTimestamp" :y-column="yColumn" :options="options"></column-chart>'
+})
 
 Vue.component('column-chart', googleChartsComponent({
-  props: ['data', 'options'],
+  props: ['data', 'x-column', 'y-column', 'options'],
   template: '<div></div>',
   mounted: function () {
+    const dataTable = google.visualization.arrayToDataTable(this.data)
+    const dataView = new google.visualization.DataView(dataTable)
+    function getColumnIndex (label) {
+      const n = dataView.getNumberOfColumns()
+      for (let i = 0; i < n; i++) {
+        if (dataView.getColumnLabel(i) === label) {
+          return i
+        }
+      }
+      return -1
+    }
+    dataView.setColumns([this.xColumn, this.yColumn].map(getColumnIndex))
+
     const chart = new google.visualization.ColumnChart(this.$el)
-    chart.draw(this.data, this.options)
+    chart.draw(dataView, this.options)
   }
 }))
 
@@ -124,18 +116,18 @@ function googleChartsComponent (component) {
 }
 
 function addDeltaColumn (readings, totalKeys, deltaKey, timeUnitSeconds) {
-  const timestampIndex = readings.keys.indexOf('timestamp')
-  const totalIndices = totalKeys.map(totalKey => readings.keys.indexOf(totalKey))
-  readings.keys.push('centerTimestamp')
-  readings.keys.push(deltaKey)
-  let previousRow = readings.data[0]
+  const timestampIndex = readings[0].indexOf('timestamp')
+  const totalIndices = totalKeys.map(totalKey => readings[0].indexOf(totalKey))
+  readings[0].push('centerTimestamp')
+  readings[0].push(deltaKey)
+  let previousRow = readings[1]
   previousRow.push(NaN)
   previousRow.push(NaN)
-  for (let i = 1; i < readings.data.length; i++) {
-    const currentRow = readings.data[i]
+  for (let i = 2; i < readings.length; i++) {
+    const currentRow = readings[i]
     const deltaTime = currentRow[timestampIndex] - previousRow[timestampIndex]
     let deltaValue = 0
-    for (let totalIndex of totalIndices) {
+    for (const totalIndex of totalIndices) {
       const d = currentRow[totalIndex] - previousRow[totalIndex]
       if (d < 0) {
         deltaValue = NaN
@@ -161,9 +153,10 @@ function prepareData () {
         break
     }
 
-    const timestampIndex = meter.readings.keys.indexOf('timestamp')
-    const centerTimestampIndex = meter.readings.keys.indexOf('centerTimestamp')
-    for (const row of meter.readings.data) {
+    const timestampIndex = meter.readings[0].indexOf('timestamp')
+    const centerTimestampIndex = meter.readings[0].indexOf('centerTimestamp')
+    for (let i = 1; i < meter.readings.length; i++) {
+      const row = meter.readings[i]
       row[timestampIndex] = new Date(row[timestampIndex] * 1000)
       row[centerTimestampIndex] = new Date(row[centerTimestampIndex] * 1000)
     }

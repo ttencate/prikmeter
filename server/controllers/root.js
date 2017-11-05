@@ -5,14 +5,12 @@ const meters = require('../services/meters')
 const readings = require('../services/readings')
 
 function compressReadings (readings) {
-  if (readings.length === 0) {
-    return [];
-  }
-
   function includeKey (key) {
     return ['meterId', 'type'].indexOf(key) === -1
   }
   const keys = Object.keys(readings[0]).filter(includeKey)
+
+  const out = [ keys ]
 
   function getValue (reading, key) {
     const value = reading[key]
@@ -23,8 +21,11 @@ function compressReadings (readings) {
         return value
     }
   }
-  const data = readings.map(reading => keys.map(key => getValue(reading, key)))
-  return { keys, data }
+  for (reading of readings) {
+    out.push(keys.map(key => getValue(reading, key)))
+  }
+
+  return out
 }
 
 module.exports.root = [
