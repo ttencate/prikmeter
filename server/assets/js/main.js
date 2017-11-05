@@ -1,7 +1,114 @@
+require('babel-polyfill')
+
+const Vue = require('../../node_modules/vue/dist/vue.common.js')
+
 google.charts.load('current', {'packages': ['corechart']})
-google.charts.setOnLoadCallback(drawCharts)
+google.charts.setOnLoadCallback(init)
 
 prepareData()
+
+Vue.component('meters', {
+  props: ['meters'],
+  methods: {
+    type: function (meter) {
+      return meter.type
+    }
+  },
+  template:
+`<div>
+  <div v-for="meter of meters" v-bind:key="meter.id">
+    <h3>{{ type(meter) }}: <code>{{ meter.id }}</code></h3>
+    <meter-readings v-bind:meter="meter"></meter-readings>
+  </div>
+</div>`
+})
+
+Vue.component('meter-readings', {
+  props: ['meter'],
+  computed: {
+    data: function () {
+      if (!this.meter.readings.dataTable) {
+        const data = this.meter.readings.data
+        this.meter.readings.data.unshift(this.meter.readings.keys)
+        this.meter.readings.dataTable = google.visualization.arrayToDataTable(data)
+      }
+
+      const dataView = new google.visualization.DataView(this.meter.readings.dataTable)
+      function getColumnIndex (label) {
+        const n = dataView.getNumberOfColumns()
+        for (let i = 0; i < n; i++) {
+          if (dataView.getColumnLabel(i) === label) {
+            return i
+          }
+        }
+        return -1
+      }
+
+      switch (this.meter.type) {
+        case 'electricity':
+          dataView.setColumns(['centerTimestamp', 'currentConsumptionW'].map(getColumnIndex))
+          break
+        case 'gas':
+          dataView.setColumns(['centerTimestamp', 'currentConsumptionM3PerH'].map(getColumnIndex))
+          break
+      }
+
+      return dataView
+    },
+    options: function () {
+      let vAxisTitle
+      let barColor
+      switch (this.meter.type) {
+        case 'electricity':
+          barColor = '#FF851B'
+          vAxisTitle = 'Electricity consumption (W)'
+          break
+        case 'gas':
+          barColor = '#0074D9'
+          vAxisTitle = 'Gas consumption (m³/h)'
+          break
+      }
+      const options = {
+        title: this.meter.id,
+        width: 900,
+        height: 300,
+        bar: {
+          groupWidth: '100%'
+        },
+        colors: [barColor],
+        hAxis: {
+          title: 'Time',
+          format: 'EEE\nd MMM'
+        },
+        vAxis: {
+          title: vAxisTitle
+        },
+        legend: {
+          position: 'none'
+        }
+      }
+      return options
+    }
+  },
+  template: '<column-chart v-bind:data="data" v-bind:options="options"></column-chart>'
+})
+
+// TODO use async component, https://vuejs.org/v2/guide/components.html#Async-Components
+Vue.component('column-chart', {
+  props: ['data', 'options'],
+  template: '<div></div>',
+  mounted: function () {
+    const chart = new google.visualization.ColumnChart(this.$el)
+    chart.draw(this.data, this.options)
+  }
+})
+
+function init () {
+  const vm = new Vue({
+    el: '#main',
+    data: { meters }
+  })
+}
 
 function addDeltaColumn (readings, totalKeys, deltaKey, timeUnitSeconds) {
   const timestampIndex = readings.keys.indexOf('timestamp')
@@ -47,79 +154,5 @@ function prepareData () {
       row[timestampIndex] = new Date(row[timestampIndex] * 1000)
       row[centerTimestampIndex] = new Date(row[centerTimestampIndex] * 1000)
     }
-
-    console.log(meter.readings.keys)
-    console.log(meter.readings.data[0])
-    console.log(meter.readings.data[1])
-    console.log(meter.readings.data[2])
-    console.log(meter.readings.data[3])
   }
-}
-
-function createDataTables () {
-  for (const meter of meters) {
-    const data = meter.readings.data
-    meter.readings.data.unshift(meter.readings.keys)
-    meter.readings.dataTable = google.visualization.arrayToDataTable(data)
-  }
-}
-
-function drawCharts () {
-  createDataTables()
-
-  const chartDivs = document.getElementsByClassName('meterReadings')
-  for (const div of chartDivs) {
-    const index = div.dataset['index']
-    drawChart(meters[index], div)
-  }
-}
-
-function drawChart (meter, div) {
-  const dataView = new google.visualization.DataView(meter.readings.dataTable)
-  function getColumnIndex (label) {
-    const n = dataView.getNumberOfColumns()
-    for (let i = 0; i < n; i++) {
-      if (dataView.getColumnLabel(i) === label) {
-        return i
-      }
-    }
-    return -1
-  }
-
-  let vAxisTitle
-  let barColor
-  switch (meter.type) {
-    case 'electricity':
-      dataView.setColumns(['centerTimestamp', 'currentConsumptionW'].map(getColumnIndex))
-      barColor = '#FF851B'
-      vAxisTitle = 'Electricity consumption (W)'
-      break
-    case 'gas':
-      dataView.setColumns(['centerTimestamp', 'currentConsumptionM3PerH'].map(getColumnIndex))
-      barColor = '#0074D9'
-      vAxisTitle = 'Gas consumption (m³/h)'
-      break
-  }
-
-  const options = {
-    title: meter.id,
-    width: 900,
-    height: 300,
-    bar: {
-      groupWidth: '100%'
-    },
-    colors: [barColor],
-    hAxis: {
-      title: 'Time',
-      format: 'EEE\nd MMM'
-    },
-    vAxis: {
-      title: vAxisTitle
-    },
-    legend: {
-      position: 'none'
-    }
-  }
-  const chart = new google.visualization.ColumnChart(div)
-  chart.draw(dataView, options)
 }

@@ -17,16 +17,15 @@
       <form action="/logout" method="POST">
         <input value="Log out" type="submit">
       </form>
-      {% for meter in meters %}
-        <h3>{{ meter.type | title }}: <code>{{ meter.id }}</code></h3>
-        <div class="meterReadings" data-index="{{ loop.index0 }}"></div>
-      {% endfor %}
-      <h3>Auth tokens</h3>
-      <ul>
-        {% for authToken in authTokens %}
-          <li><code>{{ authToken.token }}</code></li>
-        {% endfor %}
-      </ul>
+      <div id="main">
+        <meters v-bind:meters="meters"></meters>
+        <h3>Auth tokens</h3>
+        <ul>
+          {% for authToken in authTokens %}
+            <li><code>{{ authToken.token }}</code></li>
+          {% endfor %}
+        </ul>
+      </div>
     {% else %}
       <h3>Log in</h3>
       <form action="/login" method="POST">

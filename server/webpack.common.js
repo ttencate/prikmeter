@@ -15,7 +15,9 @@ const babelOptions = {
         },
         // https://github.com/babel/babel/tree/master/experimental/babel-preset-env#usebuiltins
         // Requires babel-core >= 7 (otherwise just true and false are supported).
-        useBuiltIns: 'usage'
+        // TODO Once Babel 7 stabilizes, set to 'usage' and remove require('babel-polyfill') from main.js
+        // useBuiltIns: 'usage'
+        useBuiltIns: true
       }
     ]
   ]
@@ -53,6 +55,7 @@ module.exports = {
   stats: {
     chunks: false,
     colors: true,
+    modules: false,
     performance: false,
     warnings: true
   }
