@@ -18,8 +18,8 @@ function jsonInsideScriptTag (value, spaces) {
 module.exports.install = function install (app) {
   app.set('views', TEMPLATES_DIR)
   const nj = expressNunjucks(app, {
-    watch: app.locals.devMode,
-    noCache: app.locals.devMode
+    watch: app.get('env') === 'development',
+    noCache: app.get('env') === 'development'
   })
 
   nj.env.addFilter('jsonInsideScriptTag', jsonInsideScriptTag)

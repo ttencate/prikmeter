@@ -28,10 +28,15 @@ function createStore() {
 module.exports.install = async function install (app) {
   const cookieSecret = await getCookieSecret()
   app.use(expressSession({
-    cookie: { httpOnly: true },
+    cookie: {
+      httpOnly: true,
+      secure: app.get('env') === 'production',
+      maxAge: 1000 * 60 * 60 * 24 * 31 // One month
+    },
+    name: 's',
     secret: cookieSecret,
     saveUninitialized: false,
     store: createStore(),
-    resave: false
+    resave: false,
   }))
 }

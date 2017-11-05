@@ -5,14 +5,16 @@ const log = require('./core/log')
 
 async function main () {
   // Err on the side of caution: development can leak stack traces and such.
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'testing') {
     process.env.NODE_ENV = 'production'
   }
 
   await require('./core/migrate')()
 
   const app = express()
-  app.locals.devMode = app.get('env') === 'development'
+  if (app.get('env') === 'production') {
+    app.set('trust proxy', 1); // Needed for https-only cookies
+  }
 
   await require('./middleware').install(app)
   require('./controllers').addRoutes(app)
