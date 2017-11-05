@@ -2,11 +2,6 @@ require('babel-polyfill')
 
 const Vue = require('../../node_modules/vue/dist/vue.common.js')
 
-google.charts.load('current', {'packages': ['corechart']})
-google.charts.setOnLoadCallback(init)
-
-prepareData()
-
 Vue.component('meters', {
   props: ['meters'],
   methods: {
@@ -23,7 +18,7 @@ Vue.component('meters', {
 </div>`
 })
 
-Vue.component('meter-readings', {
+Vue.component('meter-readings', googleChartsComponent({
   props: ['meter'],
   computed: {
     data: function () {
@@ -91,23 +86,41 @@ Vue.component('meter-readings', {
     }
   },
   template: '<column-chart v-bind:data="data" v-bind:options="options"></column-chart>'
-})
+}))
 
-// TODO use async component, https://vuejs.org/v2/guide/components.html#Async-Components
-Vue.component('column-chart', {
+Vue.component('column-chart', googleChartsComponent({
   props: ['data', 'options'],
   template: '<div></div>',
   mounted: function () {
     const chart = new google.visualization.ColumnChart(this.$el)
     chart.draw(this.data, this.options)
   }
-})
+}))
 
-function init () {
-  const vm = new Vue({
-    el: '#main',
-    data: { meters }
-  })
+let googleChartsState = 'unloaded'
+let googleChartsComponentResolvers = []
+function googleChartsComponent (component) {
+  return function (resolve, reject) {
+    switch (googleChartsState) {
+      case 'unloaded':
+        google.charts.load('current', {'packages': ['corechart']})
+        google.charts.setOnLoadCallback(function () {
+          googleChartsState = 'loaded'
+          for (const resolver of googleChartsComponentResolvers) {
+            resolver()
+          }
+          googleChartsComponentResolvers = []
+        })
+        googleChartsState = 'loading'
+        // Fallthrough!
+      case 'loading':
+        googleChartsComponentResolvers.push(function () { resolve(component) })
+        break
+      case 'loaded':
+        resolve(component)
+        break
+    }
+  }
 }
 
 function addDeltaColumn (readings, totalKeys, deltaKey, timeUnitSeconds) {
@@ -156,3 +169,9 @@ function prepareData () {
     }
   }
 }
+
+prepareData()
+const vm = new Vue({
+  el: '#main',
+  data: { meters }
+})
