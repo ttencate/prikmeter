@@ -2,8 +2,10 @@ require('babel-polyfill')
 
 const Vue = require('../../node_modules/vue/dist/vue.common.js')
 
-Vue.component('meters', {
-  props: ['meters'],
+Vue.component('PmMeters', {
+  props: {
+    meters: Array
+  },
   methods: {
     type: function (meter) {
       return meter.type.substr(0, 1).toUpperCase() + meter.type.substr(1)
@@ -13,13 +15,15 @@ Vue.component('meters', {
 `<div>
   <div v-for="meter of meters" :key="meter.id">
     <h3>{{ type(meter) }}: <code>{{ meter.id }}</code></h3>
-    <meter-readings :meter="meter"></meter-readings>
+    <PmMeterReadings :meter="meter"/>
   </div>
 </div>`
 })
 
-Vue.component('meter-readings', {
-  props: ['meter'],
+Vue.component('PmMeterReadings', {
+  props: {
+    meter: Object
+  },
   computed: {
     options: function () {
       let vAxisTitle
@@ -64,12 +68,17 @@ Vue.component('meter-readings', {
       }
     }
   },
-  template: '<column-chart :data="meter.readings" x-column="centerTimestamp" :y-column="yColumn" :options="options"></column-chart>'
+  template: '<PmColumnChart :data="meter.readings" x-column="centerTimestamp" :y-column="yColumn" :options="options"/>'
 })
 
-Vue.component('column-chart', googleChartsComponent({
-  props: ['data', 'x-column', 'y-column', 'options'],
-  template: '<div></div>',
+Vue.component('PmColumnChart', googleChartsComponent({
+  props: {
+    data: Array,
+    xColumn: String,
+    yColumn: String,
+    options: Object
+  },
+  template: '<div/>',
   mounted: function () {
     const dataTable = google.visualization.arrayToDataTable(this.data)
     const dataView = new google.visualization.DataView(dataTable)
