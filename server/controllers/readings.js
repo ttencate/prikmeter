@@ -4,6 +4,9 @@ const meters = require('../services/meters')
 const readings = require('../services/readings')
 
 function compressReadings (readings) {
+  if (!readings.length) {
+    return [[]];
+  }
   function includeKey (key) {
     return ['meterId', 'type'].indexOf(key) === -1
   }
@@ -27,6 +30,14 @@ function compressReadings (readings) {
   return out
 }
 
+function parseDate(timestampStringMillis) {
+  const timestampMillis = parseInt(timestampStringMillis)
+  if (isNaN(timestampMillis)) {
+    return null
+  }
+  return new Date(timestampMillis)
+}
+
 module.exports = {
   get: async function (req, res) {
     const user = req.session.user
@@ -41,10 +52,16 @@ module.exports = {
       return
     }
 
-    const nowMillis = Date.now()
-    const now = new Date(nowMillis);
-    const oneWeekAgo = new Date(nowMillis - 7 * 24 * 60 * 60 * 1000);
-    const meterReadings = await readings.getForMeter(meter, { startTime: oneWeekAgo, endTime: now, resolution: 'hour' })
+    const startTime = parseDate(req.query.startTime)
+    const endTime = parseDate(req.query.endTime)
+    const resolution = req.query.resolution
+    if (!startTime || !endTime || ['second', 'minute', 'hour', 'day'].indexOf(resolution) === -1) {
+      console.log(startTime, endTime, resolution, req.query)
+      res.sendStatus(400)
+      return
+    }
+
+    const meterReadings = await readings.getForMeter(meter, { startTime, endTime, resolution })
 
     res.json(compressReadings(meterReadings))
   }

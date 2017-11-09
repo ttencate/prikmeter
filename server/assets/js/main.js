@@ -6,6 +6,39 @@ const Vue = require('../../node_modules/vue/dist/vue.common.js')
 // https://developers.google.com/chart/interactive/docs/release_notes#official-releases
 google.charts.load('45.2', {'packages': ['corechart']})
 
+function defaultChartOptions (meterType) {
+  const barColors = {
+    electricity: '#FF851B',
+    gas: '#0074D9'
+  }
+  const vAxisTitles = {
+    electricity: 'Electricity consumption (W)',
+    gas: 'Gas consumption (m³/h)'
+  }
+  return {
+    width: 500,
+    height: 200,
+    title: '',
+    bar: {
+      groupWidth: '100%'
+    },
+    colors: [barColors[meterType]],
+    hAxis: {},
+    vAxis: {
+      title: vAxisTitles[meterType]
+    },
+    chartArea: {
+      left: 50,
+      width: 450,
+      top: 25,
+      height: 150,
+    },
+    legend: {
+      position: 'none'
+    }
+  }
+}
+
 Vue.component('MeterReadings', {
   props: {
     meterId: String,
@@ -20,57 +53,45 @@ Vue.component('MeterReadings', {
     console.log(days)
     return {
       days: days,
-      readings: null,
+      readingsByHour: null,
+      readingsByMinute: null,
       error: null,
     }
   },
   methods: {
     optionsForDay: function (day) {
-      const vAxisTitles = {
-        electricity: 'Electricity consumption (W)',
-        gas: 'Gas consumption (m³/h)'
-      }
-      const barColors = {
-        electricity: '#FF851B',
-        gas: '#0074D9'
-      }
+      const options = defaultChartOptions(this.meterType)
+      options.title = day.toDateString()
       const nextDay = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1)
-      const options = {
-        width: 500,
-        height: 200,
-        title: day.toDateString(),
-        bar: {
-          groupWidth: '100%'
+      options.hAxis = {
+        format: 'HH:mm', // For days, use: 'EEE\nd MMM'
+        viewWindow: {
+          min: day,
+          max: nextDay
         },
-        colors: [barColors[this.meterType]],
-        hAxis: {
-          format: 'HH:mm', // For days, use: 'EEE\nd MMM'
-          viewWindow: {
-            min: day,
-            max: nextDay
-          },
-          gridlines: {
-            count: 8
-          },
-          minorGridlines: {
-            count: 2
-          }
+        gridlines: {
+          count: 8
         },
-        vAxis: {
-          title: vAxisTitles[this.meterType]
-        },
-        chartArea: {
-          left: 50,
-          width: 450,
-          top: 25,
-          height: 150,
-        },
-        legend: {
-          position: 'none'
+        minorGridlines: {
+          count: 2
         }
       }
       return options
     },
+    optionsForHour: function () {
+      const options = defaultChartOptions(this.meterType)
+      options.title = 'Past hour'
+      options.hAxis = {
+        format: 'HH:mm',
+        gridlines: {
+          count: 6,
+        },
+        minorGridlines: {
+          count: 9
+        }
+      }
+      return options
+    }
   },
   computed: {
     yColumn: function () {
@@ -81,38 +102,57 @@ Vue.component('MeterReadings', {
     }
   },
   mounted: async function () {
-    const response = await fetch(`/meters/${this.meterId}/readings`, { credentials: 'same-origin' })
-    if (!response.ok) {
-      this.$data.error = response.statusText
-      return
+    const fetchReadings = async (query) => {
+      const encodedQuery = Object.entries(query)
+        .map(([ key, value ]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+        .join('&')
+      const response = await fetch(`/meters/${this.meterId}/readings?${encodedQuery}`, { credentials: 'same-origin' })
+      if (!response.ok) {
+        this.$data.error = response.statusText
+        return
+      }
+
+      const readings = await response.json()
+
+      const secondsPerHour = 60 * 60
+      switch (this.meterType) {
+        case 'electricity':
+          addDeltaColumn(readings, ['totalConsumptionKwhLow', 'totalConsumptionKwhHigh'], 'currentConsumptionW', 1000 * secondsPerHour)
+          break
+        case 'gas':
+          addDeltaColumn(readings, ['totalConsumptionM3'], 'currentConsumptionM3PerH', secondsPerHour)
+          break
+      }
+
+      const timestampIndex = readings[0].indexOf('timestamp')
+      const centerTimestampIndex = readings[0].indexOf('centerTimestamp')
+      for (let i = 1; i < readings.length; i++) {
+        const row = readings[i]
+        row[timestampIndex] = new Date(row[timestampIndex] * 1000)
+        row[centerTimestampIndex] = new Date(row[centerTimestampIndex] * 1000)
+      }
+
+      return readings
     }
 
-    const readings = await response.json()
+    const nowMillis = Date.now()
+    const oneHourAgoMillis = new Date(nowMillis - 60 * 60 * 1000).getTime();
+    const oneWeekAgoMillis = new Date(nowMillis - 7 * 24 * 60 * 60 * 1000).getTime();
 
-    const secondsPerHour = 60 * 60
-    switch (this.meterType) {
-      case 'electricity':
-        addDeltaColumn(readings, ['totalConsumptionKwhLow', 'totalConsumptionKwhHigh'], 'currentConsumptionW', 1000 * secondsPerHour)
-        break
-      case 'gas':
-        addDeltaColumn(readings, ['totalConsumptionM3'], 'currentConsumptionM3PerH', secondsPerHour)
-        break
-    }
-
-    const timestampIndex = readings[0].indexOf('timestamp')
-    const centerTimestampIndex = readings[0].indexOf('centerTimestamp')
-    for (let i = 1; i < readings.length; i++) {
-      const row = readings[i]
-      row[timestampIndex] = new Date(row[timestampIndex] * 1000)
-      row[centerTimestampIndex] = new Date(row[centerTimestampIndex] * 1000)
-    }
-
-    this.$data.readings = readings
+    const [ readingsByMinute, readingsByHour ] = await Promise.all([
+      await fetchReadings({ startTime: oneHourAgoMillis, endTime: nowMillis, resolution: 'minute' }),
+      await fetchReadings({ startTime: oneWeekAgoMillis, endTime: nowMillis, resolution: 'hour' })
+    ])
+    this.$data.readingsByHour = readingsByHour;
+    this.$data.readingsByMinute = readingsByMinute;
   },
   template:
-`<div v-if="readings">
+`<div v-if="readingsByHour">
+  <div v-if="meterType == 'electricity'">
+    <ColumnChart :data="readingsByMinute" x-column="centerTimestamp" :y-column="yColumn" :options="optionsForHour()"/>
+  </div>
   <div v-for="day in days">
-    <ColumnChart :data="readings" x-column="centerTimestamp" :y-column="yColumn" :options="optionsForDay(day)"/>
+    <ColumnChart :data="readingsByHour" x-column="centerTimestamp" :y-column="yColumn" :options="optionsForDay(day)"/>
   </div>
 </div>
 <p v-else-if="error">Error fetching meter readings: {{ error }}</p>

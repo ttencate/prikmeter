@@ -22,6 +22,7 @@ async function createOrIgnore (table, keys, reading) {
 
 /**
  * resolution: one of https://www.postgresql.org/docs/9.1/static/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC
+ * e.g. 'day', 'hour', 'minute', 'second'
  */
 async function getForMeter (table, keys, meter, { startTime, endTime, resolution }) {
   resolution = resolution || 'second'
