@@ -1,6 +1,7 @@
 require('babel-polyfill')
 require('whatwg-fetch')
 
+const roundDate = require('round-date')
 const Vue = require('../../node_modules/vue/dist/vue.common.js')
 
 // https://developers.google.com/chart/interactive/docs/release_notes#official-releases
@@ -20,7 +21,7 @@ function defaultChartOptions (meterType, vAxisMax) {
     height: 200,
     title: '',
     bar: {
-      groupWidth: '100%'
+      groupWidth: '80%'
     },
     colors: [barColors[meterType]],
     hAxis: {},
@@ -130,12 +131,18 @@ Vue.component('MeterReadings', {
       const readings = await response.json()
 
       const secondsPerHour = 60 * 60
+      const intervalSeconds = {
+        second: 1,
+        minute: 60,
+        hour: 60 * 60,
+        day: 24 * 60 * 60
+      }[query.resolution]
       switch (this.meterType) {
         case 'electricity':
-          addDeltaColumn(readings, ['totalConsumptionKwhLow', 'totalConsumptionKwhHigh'], 'currentConsumptionW', 1000 * secondsPerHour)
+          addDeltaColumn(readings, ['totalConsumptionKwhLow', 'totalConsumptionKwhHigh'], 'currentConsumptionW', intervalSeconds, 1000 * secondsPerHour)
           break
         case 'gas':
-          addDeltaColumn(readings, ['totalConsumptionM3'], 'currentConsumptionM3PerH', secondsPerHour)
+          addDeltaColumn(readings, ['totalConsumptionM3'], 'currentConsumptionM3PerH', intervalSeconds, secondsPerHour)
           break
       }
 
@@ -228,18 +235,16 @@ function googleChartsComponent (component) {
   }
 }
 
-function addDeltaColumn (readings, totalKeys, deltaKey, timeUnitSeconds) {
+function addDeltaColumn (readings, totalKeys, deltaKey, intervalSeconds, timeUnitSeconds) {
   // TODO ensure that the server always sends headings, even if the data is empty, then remove this
   if (readings.length <= 1) {
     return
   }
   const timestampIndex = readings[0].indexOf('timestamp')
   const totalIndices = totalKeys.map(totalKey => readings[0].indexOf(totalKey))
-  readings[0].push('centerTimestamp')
-  readings[0].push(deltaKey)
+  readings[0].push('centerTimestamp', deltaKey)
   let previousRow = readings[1]
-  previousRow.push(NaN)
-  previousRow.push(NaN)
+  previousRow.push(NaN, NaN)
   for (let i = 2; i < readings.length; i++) {
     const currentRow = readings[i]
     const deltaTime = currentRow[timestampIndex] - previousRow[timestampIndex]
@@ -251,8 +256,10 @@ function addDeltaColumn (readings, totalKeys, deltaKey, timeUnitSeconds) {
       }
       deltaValue += d
     }
-    currentRow.push((previousRow[timestampIndex] + currentRow[timestampIndex]) / 2)
-    currentRow.push(deltaValue / deltaTime * timeUnitSeconds)
+    const centerTimestamp = (currentRow[timestampIndex] + previousRow[timestampIndex]) / 2
+    const centerTimestampRounded = roundDate.floor(intervalSeconds, new Date(centerTimestamp * 1000 - intervalSeconds / 2)).getTime() / 1000 + intervalSeconds / 2
+    const delta = deltaValue / deltaTime * timeUnitSeconds
+    currentRow.push(centerTimestampRounded, delta)
     previousRow = currentRow
   }
 }
