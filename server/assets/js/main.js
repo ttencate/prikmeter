@@ -21,7 +21,7 @@ function defaultChartOptions (meterType, vAxisMax) {
     height: 200,
     title: '',
     bar: {
-      groupWidth: '80%'
+      groupWidth: '90%'
     },
     colors: [barColors[meterType]],
     hAxis: {},
@@ -50,12 +50,37 @@ function roundUpToNiceNumber (value) {
   }
   const multipleOf10 = Math.pow(10, Math.floor(Math.log10(value)))
   const mantissa = value / multipleOf10
-  const niceNumbers = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]
+  const niceNumbers = [1, 1.2, 1.4, 1.6, 1.8, 2, 2.5, 3, 4, 5, 6, 8, 10]
   const roundedMantissa = niceNumbers.find(n => n >= mantissa)
   if (!roundedMantissa) {
     return value // This should not happen.
   }
   return roundedMantissa * multipleOf10
+}
+
+function parseHash (hash) {
+  const obj = {}
+  if (hash) {
+    const parts = hash.substring(1, hash.length).split('&')
+    for (const part of parts) {
+      const [key, value] = part.split('=')
+      obj[decodeURIComponent(key)] = decodeURIComponent(value)
+    }
+  }
+  return obj
+}
+
+function getNow () {
+  const hash = parseHash(window.location.hash)
+  const hashNow = hash['now']
+  if (hashNow) {
+    const typedHashNow = /^\d+$/.test(hash['now']) ? parseInt(hashNow) : hashNow
+    const now = new Date(typedHashNow)
+    console.log(`Pretending current time is ${now}`)
+    return now
+  } else {
+    return new Date()
+  }
 }
 
 Vue.component('MeterReadings', {
@@ -64,7 +89,7 @@ Vue.component('MeterReadings', {
     meterType: String
   },
   data: function () {
-    const now = new Date()
+    const now = getNow()
     const days = []
     for (let i = 0; i < 7; i++) {
       days.push(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i))
@@ -120,11 +145,6 @@ Vue.component('MeterReadings', {
           break
       }
 
-      console.log(readings[0])
-      console.log(readings[1])
-      console.log(readings[2])
-      console.log(readings[3])
-      console.log(readings[readings.length - 1])
       return readings
     }
 
@@ -174,7 +194,7 @@ Vue.component('MeterReadings', {
             :title="day.toDateString()"
             :yColumn="yColumn"
             :vAxisMax="vAxisMax"
-            :endTime="day"
+            :endTime="new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1)"
             :durationMillis="24 * 60 * 60 * 1000"
             :majorGridlines="8"
             :minorGridlines="3"/>

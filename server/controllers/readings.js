@@ -29,7 +29,6 @@ module.exports = {
     const endTime = timestampStringToDate(req.query.endTime)
     const resolution = req.query.resolution
     if (!startTime || !endTime || ['second', 'minute', 'hour', 'day'].indexOf(resolution) === -1) {
-      console.log(startTime, endTime, resolution, req.query)
       res.sendStatus(400)
       return
     }
