@@ -6,7 +6,7 @@ const Vue = require('../../node_modules/vue/dist/vue.common.js')
 // https://developers.google.com/chart/interactive/docs/release_notes#official-releases
 google.charts.load('45.2', {'packages': ['corechart']})
 
-function defaultChartOptions (meterType) {
+function defaultChartOptions (meterType, vAxisMax) {
   const barColors = {
     electricity: '#FF851B',
     gas: '#0074D9'
@@ -25,7 +25,11 @@ function defaultChartOptions (meterType) {
     colors: [barColors[meterType]],
     hAxis: {},
     vAxis: {
-      title: vAxisTitles[meterType]
+      title: vAxisTitles[meterType],
+      viewWindow: {
+        min: 0,
+        max: vAxisMax
+      }
     },
     chartArea: {
       left: 50,
@@ -39,28 +43,47 @@ function defaultChartOptions (meterType) {
   }
 }
 
+function roundUpToNiceNumber (value) {
+  if (value <= 0) {
+    return 0
+  }
+  const multipleOf10 = Math.pow(10, Math.floor(Math.log10(value)))
+  const mantissa = value / multipleOf10
+  const niceNumbers = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]
+  const roundedMantissa = niceNumbers.find(n => n >= mantissa)
+  if (!roundedMantissa) {
+    return value // This should not happen.
+  }
+  return roundedMantissa * multipleOf10
+}
+
 Vue.component('MeterReadings', {
   props: {
     meterId: String,
     meterType: String
   },
   data: function () {
+    const yColumn = {
+      electricity: 'currentConsumptionW',
+      gas: 'currentConsumptionM3PerH'
+    }[this.meterType]
     const now = new Date()
     const days = []
     for (let i = 0; i < 7; i++) {
       days.push(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i))
     }
-    console.log(days)
     return {
+      yColumn: yColumn,
       days: days,
       readingsByHour: null,
       readingsByMinute: null,
+      vAxisMax: 0,
       error: null,
     }
   },
   methods: {
     optionsForDay: function (day) {
-      const options = defaultChartOptions(this.meterType)
+      const options = defaultChartOptions(this.meterType, this.$data.vAxisMax)
       options.title = day.toDateString()
       const nextDay = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1)
       options.hAxis = {
@@ -79,7 +102,7 @@ Vue.component('MeterReadings', {
       return options
     },
     optionsForHour: function () {
-      const options = defaultChartOptions(this.meterType)
+      const options = defaultChartOptions(this.meterType, this.$data.vAxisMax)
       options.title = 'Past hour'
       options.hAxis = {
         format: 'HH:mm',
@@ -91,14 +114,6 @@ Vue.component('MeterReadings', {
         }
       }
       return options
-    }
-  },
-  computed: {
-    yColumn: function () {
-      return {
-        electricity: 'currentConsumptionW',
-        gas: 'currentConsumptionM3PerH'
-      }[this.meterType]
     }
   },
   mounted: async function () {
@@ -143,8 +158,24 @@ Vue.component('MeterReadings', {
       await fetchReadings({ startTime: oneHourAgoMillis, endTime: nowMillis, resolution: 'minute' }),
       await fetchReadings({ startTime: oneWeekAgoMillis, endTime: nowMillis, resolution: 'hour' })
     ])
+    const maxValue = (readings) => {
+      let max = 0
+      let columnIndex = readings[0].indexOf(this.$data.yColumn)
+      for (let i = 1; i < readings.length; i++) {
+        const reading = readings[i][columnIndex]
+        if (!isNaN(reading)) {
+          max = Math.max(max, reading)
+        }
+      }
+      return max
+    }
+
     this.$data.readingsByHour = readingsByHour;
     this.$data.readingsByMinute = readingsByMinute;
+    this.$data.vAxisMax = roundUpToNiceNumber(Math.max(maxValue(readingsByMinute), maxValue(readingsByHour)))
+
+    // TODO this is needed because optionsForDay(day) changed, but is horrendously bad style -- refactor to fix
+    this.$forceUpdate()
   },
   template:
 `<div v-if="readingsByHour">
@@ -198,6 +229,10 @@ function googleChartsComponent (component) {
 }
 
 function addDeltaColumn (readings, totalKeys, deltaKey, timeUnitSeconds) {
+  // TODO ensure that the server always sends headings, even if the data is empty, then remove this
+  if (readings.length <= 1) {
+    return
+  }
   const timestampIndex = readings[0].indexOf('timestamp')
   const totalIndices = totalKeys.map(totalKey => readings[0].indexOf(totalKey))
   readings[0].push('centerTimestamp')
