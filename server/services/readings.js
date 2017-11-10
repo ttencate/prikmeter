@@ -32,18 +32,22 @@ async function createOrIgnore (table, keys, reading) {
  * e.g. 'day', 'hour', 'minute', 'second'
  */
 async function getForMeter (table, keys, meter, { startTime, endTime, resolution }) {
-  resolution = resolution || 'second'
   let query = db.from(table)
-    .where({ meterId: meter.id })
-    .orderBy('timestamp', 'asc')
+      .where({ meterId: meter.id })
+      .orderBy('timestamp', 'asc')
   if (startTime) {
     query = query.where(db.raw('timestamp >= ?', [startTime]))
   }
   if (endTime) {
     query = query.where(db.raw('timestamp <= ?', [endTime]))
   }
-  query = query.groupBy(db.raw('date_trunc(?, timestamp)', [resolution]))
-  const select = db.raw(keys.map(key => `max("${key}") as "${key}"`).join(', '))
+  let select
+  if (resolution) {
+    query = query.groupBy(db.raw('date_trunc(?, timestamp)', [resolution]))
+    select = db.raw(keys.map(key => `max("${key}") as "${key}"`).join(', '))
+  } else {
+    select = keys
+  }
   const readings = await query.select(select)
   readings.forEach((reading) => {
     reading.type = meter.type
@@ -64,7 +68,7 @@ module.exports = {
     if (!table || !keys) {
       throw new Error(`Unknown reading type "${reading.type}"`)
     }
-    createOrIgnore(table, keys, reading)
+    await createOrIgnore(table, keys, reading)
   },
 
   getForMeter: async function (meter, params = {}) {

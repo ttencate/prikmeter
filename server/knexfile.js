@@ -1,13 +1,16 @@
 module.exports = {
   testing: {
-    client: 'sqlite3',
+    client: 'postgresql',
     connection: {
-      filename: ':memory:'
+      database: 'prikmeter_test',
+    },
+    pool: {
+      min: 2,
+      max: 10
     },
     migrations: {
       tableName: 'knex_migrations'
-    },
-    useNullAsDefault: true
+    }
   },
 
   development: {
@@ -21,8 +24,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'knex_migrations'
-    },
-    useNullAsDefault: true
+    }
   },
 
   production: {
@@ -38,7 +40,6 @@ module.exports = {
     },
     migrations: {
       tableName: 'knex_migrations'
-    },
-    useNullAsDefault: true
+    }
   }
 }
