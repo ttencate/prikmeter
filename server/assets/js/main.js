@@ -64,57 +64,23 @@ Vue.component('MeterReadings', {
     meterType: String
   },
   data: function () {
-    const yColumn = {
-      electricity: 'currentConsumptionW',
-      gas: 'currentConsumptionM3PerH'
-    }[this.meterType]
     const now = new Date()
     const days = []
     for (let i = 0; i < 7; i++) {
       days.push(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i))
     }
+    const yColumn = {
+      electricity: 'currentConsumptionW',
+      gas: 'currentConsumptionM3PerH'
+    }[this.$props.meterType]
     return {
-      yColumn: yColumn,
+      now: now,
       days: days,
+      yColumn: yColumn,
       readingsByHour: null,
       readingsByMinute: null,
       vAxisMax: 0,
       error: null,
-    }
-  },
-  methods: {
-    optionsForDay: function (day) {
-      const options = defaultChartOptions(this.meterType, this.$data.vAxisMax)
-      options.title = day.toDateString()
-      const nextDay = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1)
-      options.hAxis = {
-        format: 'HH:mm', // For days, use: 'EEE\nd MMM'
-        viewWindow: {
-          min: day,
-          max: nextDay
-        },
-        gridlines: {
-          count: 8
-        },
-        minorGridlines: {
-          count: 2
-        }
-      }
-      return options
-    },
-    optionsForHour: function () {
-      const options = defaultChartOptions(this.meterType, this.$data.vAxisMax)
-      options.title = 'Past hour'
-      options.hAxis = {
-        format: 'HH:mm',
-        gridlines: {
-          count: 6,
-        },
-        minorGridlines: {
-          count: 9
-        }
-      }
-      return options
     }
   },
   mounted: async function () {
@@ -157,7 +123,7 @@ Vue.component('MeterReadings', {
       return readings
     }
 
-    const nowMillis = Date.now()
+    const nowMillis = this.$data.now.getTime()
     const oneHourAgoMillis = new Date(nowMillis - 60 * 60 * 1000).getTime();
     const oneWeekAgoMillis = new Date(nowMillis - 7 * 24 * 60 * 60 * 1000).getTime();
 
@@ -165,6 +131,7 @@ Vue.component('MeterReadings', {
       await fetchReadings({ startTime: oneHourAgoMillis, endTime: nowMillis, resolution: 'minute' }),
       await fetchReadings({ startTime: oneWeekAgoMillis, endTime: nowMillis, resolution: 'hour' })
     ])
+
     const maxValue = (readings) => {
       let max = 0
       let columnIndex = readings[0].indexOf(this.$data.yColumn)
@@ -180,21 +147,79 @@ Vue.component('MeterReadings', {
     this.$data.readingsByHour = readingsByHour;
     this.$data.readingsByMinute = readingsByMinute;
     this.$data.vAxisMax = roundUpToNiceNumber(Math.max(maxValue(readingsByMinute), maxValue(readingsByHour)))
-
-    // TODO this is needed because optionsForDay(day) changed, but is horrendously bad style -- refactor to fix
-    this.$forceUpdate()
   },
-  template:
-`<div v-if="readingsByHour">
-  <div v-if="meterType == 'electricity'">
-    <ColumnChart :data="readingsByMinute" x-column="centerTimestamp" :y-column="yColumn" :options="optionsForHour()"/>
-  </div>
-  <div v-for="day in days">
-    <ColumnChart :data="readingsByHour" x-column="centerTimestamp" :y-column="yColumn" :options="optionsForDay(day)"/>
-  </div>
-</div>
-<p v-else-if="error">Error fetching meter readings: {{ error }}</p>
-<p v-else>Loading…</p>`
+  template: `
+    <div v-if="readingsByHour">
+      <div v-if="meterType == 'electricity'">
+        <MeterReadingsChart
+            :meterType="meterType"
+            :data="readingsByMinute"
+            :title="'Past hour'"
+            :yColumn="yColumn"
+            :vAxisMax="vAxisMax"
+            :endTime="now"
+            :duration="60 * 60 * 1000"
+            :majorGridlines="6"
+            :minorGridlines="10"/>
+      </div>
+      <div v-for="day in days">
+        <MeterReadingsChart
+            :meterType="meterType"
+            :data="readingsByHour"
+            :title="day.toDateString()"
+            :yColumn="yColumn"
+            :vAxisMax="vAxisMax"
+            :endTime="day"
+            :duration="24 * 60 * 60 * 1000"
+            :majorGridlines="8"
+            :minorGridlines="3"/>
+      </div>
+    </div>
+    <p v-else-if="error">Error fetching meter readings: {{ error }}</p>
+    <p v-else>Loading…</p>
+  `
+})
+
+Vue.component('MeterReadingsChart', {
+  props: {
+    meterType: String,
+    data: Array,
+    title: String,
+    yColumn: String,
+    vAxisMax: Number,
+    endTime: Date,
+    duration: Number,
+    majorGridlines: Number,
+    minorGridlines: Number
+  },
+  computed: {
+    options: function () {
+      const options = defaultChartOptions(this.$props.meterType, this.$props.vAxisMax)
+      options.title = this.$props.title
+      options.hAxis = {
+        format: 'HH:mm', // For days, use: 'EEE\nd MMM'
+        viewWindow: {
+          min: new Date(this.$props.endTime.getTime() - this.$props.duration),
+          max: this.$props.endTime
+        },
+        gridlines: {
+          count: this.$props.majorGridlines // It's subdivisions, not lines.
+        },
+        minorGridlines: {
+          count: this.$props.minorGridlines - 1 // It's lines, not subdivisions.
+        }
+      }
+      return options
+    }
+  },
+  template: `
+    <ColumnChart
+      :data="data"
+      :x-column="'centerTimestamp'"
+      :y-column="yColumn"
+      :options="options"
+    />
+  `
 })
 
 Vue.component('ColumnChart', googleChartsComponent({
