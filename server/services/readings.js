@@ -57,7 +57,7 @@ async function getForMeter (table, keys, meter, { startTime, endTime, resolution
 
 function objectsToArrays (keys, objects) {
   const arrays = objects.map(obj => keys.map(key => obj[key]))
-  arrays.unshift(keys)
+  arrays.unshift(keys.slice())
   return arrays
 }
 
