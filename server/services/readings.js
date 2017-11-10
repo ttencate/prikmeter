@@ -1,7 +1,14 @@
 const db = require('../core/db')
 
-const ELECTRICITY_KEYS = ['meterId', 'timestamp', 'totalConsumptionKwhLow', 'totalConsumptionKwhHigh', 'totalProductionKwhLow', 'totalProductionKwhHigh', 'currentConsumptionKw', 'currentProductionKw']
-const GAS_KEYS = ['meterId', 'timestamp', 'totalConsumptionM3']
+const KEYS = {
+  electricity: ['meterId', 'timestamp', 'totalConsumptionKwhLow', 'totalConsumptionKwhHigh', 'totalProductionKwhLow', 'totalProductionKwhHigh', 'currentConsumptionKw', 'currentProductionKw'],
+  gas: ['meterId', 'timestamp', 'totalConsumptionM3']
+}
+
+const TABLES = {
+  electricity: 'electricityReadings',
+  gas: 'gasReadings'
+}
 
 async function createOrIgnore (table, keys, reading) {
   const object = {}
@@ -44,26 +51,37 @@ async function getForMeter (table, keys, meter, { startTime, endTime, resolution
   return readings
 }
 
+function objectsToArrays (keys, objects) {
+  const arrays = objects.map(obj => keys.map(key => obj[key]))
+  arrays.unshift(keys)
+  return arrays
+}
+
 module.exports = {
   create: async function (reading) {
-    switch (reading.type) {
-      case 'electricity':
-        return createOrIgnore('electricityReadings', ELECTRICITY_KEYS, reading)
-      case 'gas':
-        return createOrIgnore('gasReadings', GAS_KEYS, reading)
-      default:
-        throw new Error(`Unknown reading type "${reading}"`)
+    const table = TABLES[meter.type]
+    const keys = KEYS[meter.type]
+    if (!table || !keys) {
+      throw new Error(`Unknown reading type "${meter.type}"`)
     }
+    createOrIgnore(table, keys, reading)
   },
 
   getForMeter: async function (meter, params = {}) {
-    switch (meter.type) {
-      case 'electricity':
-        return getForMeter('electricityReadings', ELECTRICITY_KEYS, meter, params)
-      case 'gas':
-        return getForMeter('gasReadings', GAS_KEYS, meter, params)
-      default:
-        throw new Error(`Unknown reading type "${reading}"`)
+    const table = TABLES[meter.type]
+    const keys = KEYS[meter.type]
+    if (!table || !keys) {
+      throw new Error(`Unknown reading type "${meter.type}"`)
     }
+    return getForMeter(table, keys, meter, params)
+  },
+
+  getForMeterAsArray: async function (meter, params = {}) {
+    const table = TABLES[meter.type]
+    const keys = KEYS[meter.type]
+    if (!table || !keys) {
+      throw new Error(`Unknown reading type "${meter.type}"`)
+    }
+    return objectsToArrays(keys, await getForMeter(table, keys, meter, params))
   }
 }

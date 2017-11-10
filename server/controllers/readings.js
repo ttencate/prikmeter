@@ -3,34 +3,7 @@ const moment = require('moment')
 const meters = require('../services/meters')
 const readings = require('../services/readings')
 
-function compressReadings (readings) {
-  if (!readings.length) {
-    return [[]];
-  }
-  function includeKey (key) {
-    return ['meterId', 'type'].indexOf(key) === -1
-  }
-  const keys = Object.keys(readings[0]).filter(includeKey)
-
-  const out = [ keys ]
-
-  function getValue (reading, key) {
-    const value = reading[key]
-    switch (key) {
-      case 'timestamp':
-        return moment(reading[key]).valueOf() / 1000
-      default:
-        return value
-    }
-  }
-  for (reading of readings) {
-    out.push(keys.map(key => getValue(reading, key)))
-  }
-
-  return out
-}
-
-function parseDate(timestampStringMillis) {
+function timestampStringToDate(timestampStringMillis) {
   const timestampMillis = parseInt(timestampStringMillis)
   if (isNaN(timestampMillis)) {
     return null
@@ -52,8 +25,8 @@ module.exports = {
       return
     }
 
-    const startTime = parseDate(req.query.startTime)
-    const endTime = parseDate(req.query.endTime)
+    const startTime = timestampStringToDate(req.query.startTime)
+    const endTime = timestampStringToDate(req.query.endTime)
     const resolution = req.query.resolution
     if (!startTime || !endTime || ['second', 'minute', 'hour', 'day'].indexOf(resolution) === -1) {
       console.log(startTime, endTime, resolution, req.query)
@@ -61,8 +34,16 @@ module.exports = {
       return
     }
 
-    const meterReadings = await readings.getForMeter(meter, { startTime, endTime, resolution })
+    const meterReadings = await readings.getForMeterAsArray(meter, { startTime, endTime, resolution })
 
-    res.json(compressReadings(meterReadings))
+    // Drop the meterId column for compactness
+    const meterIdColumnIndex = meterReadings[0].indexOf('meterId')
+    if (meterIdColumnIndex >= 0) {
+      for (const row of meterReadings) {
+        row.splice(meterIdColumnIndex, 1)
+      }
+    }
+
+    res.json(meterReadings)
   }
 }

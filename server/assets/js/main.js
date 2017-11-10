@@ -86,8 +86,8 @@ Vue.component('MeterReadings', {
   mounted: async function () {
     const fetchReadings = async (query) => {
       const encodedQuery = Object.entries(query)
-        .map(([ key, value ]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&')
+          .map(([ key, value ]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+          .join('&')
       const response = await fetch(`/meters/${this.meterId}/readings?${encodedQuery}`, { credentials: 'same-origin' })
       if (!response.ok) {
         this.$data.error = response.statusText
@@ -96,30 +96,35 @@ Vue.component('MeterReadings', {
 
       const readings = await response.json()
 
-      const secondsPerHour = 60 * 60
-      const intervalSeconds = {
-        second: 1,
-        minute: 60,
-        hour: 60 * 60,
-        day: 24 * 60 * 60
-      }[query.resolution]
-      switch (this.meterType) {
-        case 'electricity':
-          addDeltaColumn(readings, ['totalConsumptionKwhLow', 'totalConsumptionKwhHigh'], 'currentConsumptionW', intervalSeconds, 1000 * secondsPerHour)
-          break
-        case 'gas':
-          addDeltaColumn(readings, ['totalConsumptionM3'], 'currentConsumptionM3PerH', intervalSeconds, secondsPerHour)
-          break
-      }
-
+      // Convert date/time strings into real Date objects
       const timestampIndex = readings[0].indexOf('timestamp')
-      const centerTimestampIndex = readings[0].indexOf('centerTimestamp')
       for (let i = 1; i < readings.length; i++) {
         const row = readings[i]
-        row[timestampIndex] = new Date(row[timestampIndex] * 1000)
-        row[centerTimestampIndex] = new Date(row[centerTimestampIndex] * 1000)
+        row[timestampIndex] = new Date(row[timestampIndex])
       }
 
+      const INTERVALS = {
+        second: 1000,
+        minute: 60 * 1000,
+        hour: 60 * 60 * 1000,
+        day: 24 * 60 * 60 * 1000
+      }
+      const intervalMillis = INTERVALS[query.resolution]
+      const timeUnitMillis = INTERVALS['hour']
+      switch (this.meterType) {
+        case 'electricity':
+          addDeltaColumn(readings, ['totalConsumptionKwhLow', 'totalConsumptionKwhHigh'], 'currentConsumptionW', intervalMillis, timeUnitMillis * 1000 /* kW -> W */)
+          break
+        case 'gas':
+          addDeltaColumn(readings, ['totalConsumptionM3'], 'currentConsumptionM3PerH', intervalMillis, timeUnitMillis)
+          break
+      }
+
+      console.log(readings[0])
+      console.log(readings[1])
+      console.log(readings[2])
+      console.log(readings[3])
+      console.log(readings[readings.length - 1])
       return readings
     }
 
@@ -158,7 +163,7 @@ Vue.component('MeterReadings', {
             :yColumn="yColumn"
             :vAxisMax="vAxisMax"
             :endTime="now"
-            :duration="60 * 60 * 1000"
+            :durationMillis="60 * 60 * 1000"
             :majorGridlines="6"
             :minorGridlines="10"/>
       </div>
@@ -170,7 +175,7 @@ Vue.component('MeterReadings', {
             :yColumn="yColumn"
             :vAxisMax="vAxisMax"
             :endTime="day"
-            :duration="24 * 60 * 60 * 1000"
+            :durationMillis="24 * 60 * 60 * 1000"
             :majorGridlines="8"
             :minorGridlines="3"/>
       </div>
@@ -188,7 +193,7 @@ Vue.component('MeterReadingsChart', {
     yColumn: String,
     vAxisMax: Number,
     endTime: Date,
-    duration: Number,
+    durationMillis: Number,
     majorGridlines: Number,
     minorGridlines: Number
   },
@@ -199,7 +204,7 @@ Vue.component('MeterReadingsChart', {
       options.hAxis = {
         format: 'HH:mm', // For days, use: 'EEE\nd MMM'
         viewWindow: {
-          min: new Date(this.$props.endTime.getTime() - this.$props.duration),
+          min: new Date(this.$props.endTime.getTime() - this.$props.durationMillis),
           max: this.$props.endTime
         },
         gridlines: {
@@ -231,6 +236,9 @@ Vue.component('ColumnChart', googleChartsComponent({
   },
   template: '<div/>',
   mounted: function () {
+    // TODO if there are no data rows, the column type is misdetected
+    // and we get an error when drawing the chart:
+    // Data column(s) for axis #0 cannot be of type string
     const dataTable = google.visualization.arrayToDataTable(this.data)
     const dataView = new google.visualization.DataView(dataTable)
     function getColumnIndex (label) {
@@ -260,19 +268,20 @@ function googleChartsComponent (component) {
   }
 }
 
-function addDeltaColumn (readings, totalKeys, deltaKey, intervalSeconds, timeUnitSeconds) {
-  // TODO ensure that the server always sends headings, even if the data is empty, then remove this
-  if (readings.length <= 1) {
-    return
-  }
+function addDeltaColumn (readings, totalKeys, deltaKey, intervalMillis, timeUnitMillis) {
   const timestampIndex = readings[0].indexOf('timestamp')
   const totalIndices = totalKeys.map(totalKey => readings[0].indexOf(totalKey))
+
   readings[0].push('centerTimestamp', deltaKey)
+
   let previousRow = readings[1]
-  previousRow.push(NaN, NaN)
+  if (!previousRow) {
+    return
+  }
+  previousRow.push(new Date(NaN), NaN)
+
   for (let i = 2; i < readings.length; i++) {
     const currentRow = readings[i]
-    const deltaTime = currentRow[timestampIndex] - previousRow[timestampIndex]
     let deltaValue = 0
     for (const totalIndex of totalIndices) {
       const d = currentRow[totalIndex] - previousRow[totalIndex]
@@ -281,14 +290,18 @@ function addDeltaColumn (readings, totalKeys, deltaKey, intervalSeconds, timeUni
       }
       deltaValue += d
     }
-    const centerTimestamp = (currentRow[timestampIndex] + previousRow[timestampIndex]) / 2
-    const centerTimestampRounded = roundDate.floor(intervalSeconds, new Date(centerTimestamp * 1000 - intervalSeconds / 2)).getTime() / 1000 + intervalSeconds / 2
-    const delta = deltaValue / deltaTime * timeUnitSeconds
-    currentRow.push(centerTimestampRounded, delta)
+
+    const centerTimestampMillis = (previousRow[timestampIndex].getTime() + currentRow[timestampIndex].getTime()) / 2
+    const centerTimestampMillisRounded = roundDate.floor(intervalMillis / 1000, new Date(centerTimestampMillis - intervalMillis / 2)).getTime() + intervalMillis / 2
+    const centerTimestamp = new Date(centerTimestampMillisRounded)
+
+    const deltaTimeMillis = currentRow[timestampIndex].getTime() - previousRow[timestampIndex].getTime()
+    const delta = deltaValue / deltaTimeMillis * timeUnitMillis
+
+    currentRow.push(centerTimestamp, delta)
+
     previousRow = currentRow
   }
 }
 
-new Vue({
-  el: '#main'
-})
+new Vue({ el: '#main' })
