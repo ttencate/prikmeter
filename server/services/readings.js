@@ -59,10 +59,10 @@ function objectsToArrays (keys, objects) {
 
 module.exports = {
   create: async function (reading) {
-    const table = TABLES[meter.type]
-    const keys = KEYS[meter.type]
+    const table = TABLES[reading.type]
+    const keys = KEYS[reading.type]
     if (!table || !keys) {
-      throw new Error(`Unknown reading type "${meter.type}"`)
+      throw new Error(`Unknown reading type "${reading.type}"`)
     }
     createOrIgnore(table, keys, reading)
   },
@@ -71,7 +71,7 @@ module.exports = {
     const table = TABLES[meter.type]
     const keys = KEYS[meter.type]
     if (!table || !keys) {
-      throw new Error(`Unknown reading type "${meter.type}"`)
+      throw new Error(`Unknown meter type "${meter.type}"`)
     }
     return getForMeter(table, keys, meter, params)
   },
@@ -80,7 +80,7 @@ module.exports = {
     const table = TABLES[meter.type]
     const keys = KEYS[meter.type]
     if (!table || !keys) {
-      throw new Error(`Unknown reading type "${meter.type}"`)
+      throw new Error(`Unknown meter type "${meter.type}"`)
     }
     return objectsToArrays(keys, await getForMeter(table, keys, meter, params))
   }
