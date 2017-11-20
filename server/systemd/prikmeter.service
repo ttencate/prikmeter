@@ -7,6 +7,7 @@ After=network.target
 Type=simple
 WorkingDirectory=/var/www/prikmeter.frozenfractal.com/server
 ExecStart=/usr/bin/npm run run
+Restart=always
 User=nobody
 Group=nogroup
 
