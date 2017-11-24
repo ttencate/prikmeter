@@ -31,7 +31,7 @@ async function init (app) {
         const info = stats.toJson()
 
         if (stats.hasErrors()) {
-          console.error(info.errors)
+          log.error(info.errors)
           reject(info.errors)
           return
         }
