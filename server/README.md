@@ -14,3 +14,25 @@ SQLite single-file store.
 There is a lot of code out there with similar purposes, for example [DSMR
 Reader](https://github.com/dennissiemensma/dsmr-reader) by Dennis Siemensma,
 but as this is a hobby project, I just like to roll my own.
+
+Running
+-------
+
+Development mode:
+
+    npm run run_watch
+
+Production mode:
+
+    npm run run
+
+Testing
+-------
+
+Continuously:
+
+    npm run test_watch
+
+Once:
+
+    npm run test
