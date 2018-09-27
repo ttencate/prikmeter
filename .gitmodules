@@ -1,8 +1,8 @@
 [submodule "nodemcu_client/nodemcu-firmware"]
-	path = nodemcu_client/nodemcu-firmware
+	path = client_nodemcu/nodemcu-firmware
 	url = https://github.com/nodemcu/nodemcu-firmware.git
 [submodule "nodemcu_client/nodemcu-uploader"]
-	path = nodemcu_client/nodemcu-uploader
+	path = client_nodemcu/nodemcu-uploader
 	url = https://github.com/kmpm/nodemcu-uploader.git
 [submodule "arduino_client/esptool"]
 	path = esptool

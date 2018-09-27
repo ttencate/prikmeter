@@ -13,12 +13,14 @@ The prikmeter consists of three parts:
 
 * A firmware component written in C++ using the
   [ESP8266 core for Arduino](https://github.com/esp8266/Arduino). Its code is in
-  the [`arduino_client/`](arduino_client) directory. (There is also a
-  discontinued [`nodemcu_client/`](nodemcu_client) which uses NodeMCU and Lua.)
+  the [`client_arduino/`](arduino_client) directory. (There is also a
+  discontinued [`client_nodemcu/`](nodemcu_client) which uses NodeMCU and Lua.)
 
 * A webserver running [Node.js](https://nodejs.org/) and
   [Express](http://expressjs.com/), which stores the data in a
-  [PostgreSQL](https://www.postgresql.org/) database.
+  [PostgreSQL](https://www.postgresql.org/) database. Its code is in the
+  [`server_node/`](server_node) directory. (There is also a work-in-progress
+  Django server in [`server_django/`](server_django).
 
 The firmware is kept as simple as possible, with most of the smart parts living
 on the server side. In particular, the "telegrams" from the smart meter are
