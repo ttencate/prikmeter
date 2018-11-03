@@ -32,8 +32,62 @@ SoftwareSerial p1(SERIAL_RX_PIN, -1, true, P1_BUFFER_SIZE_BYTES);
 TelegramReader telegramReader;
 WiFiClientSecure httpsClient;
 
+enum ErrorCode {
+  NO_ERROR = 0,
+  WIFI_CONNECT_ERROR = 1,
+  NTP_ERROR = 2,
+  TELEGRAM_READ_ERROR = 3,
+  TELEGRAM_CHECKSUM_ERROR = 4,
+  SERVER_CONNECT_ERROR = 5,
+  SERVER_SSL_ERROR = 6,
+  SERVER_READ_ERROR = 7,
+  SERVER_PROTOCOL_ERROR = 8,
+  SERVER_RESPONSE_ERROR = 9,
+};
+
 void setLed(bool on) {
   digitalWrite(LED_PIN, on ? LOW : HIGH);
+}
+
+void blinkLed(int ms) {
+  setLed(true);
+  delay(ms);
+  setLed(false);
+}
+
+/**
+ * Flashes out an error in a kind of "decimal morse code", for example:
+ * 502 = ..... _ ..
+ */
+void flashNumber(uint16 number) {
+  byte digits[5]; // Maximum 65535.
+  byte numDigits = 0;
+  while (number) {
+    digits[numDigits] = number % 10;
+    numDigits++;
+    number /= 10;
+  }
+  if (numDigits == 0) {
+    digits[0] = 0;
+    numDigits = 1;
+  }
+  while (numDigits) {
+    numDigits--;
+    setLed(false);
+    delay(500);
+
+    byte digit = digits[numDigits];
+    if (digit) {
+      while (digit) {
+        digit--;
+        blinkLed(150);
+        delay(150);
+      }
+    } else {
+      blinkLed(500);
+      delay(150);
+    }
+  }
 }
 
 /**
@@ -45,13 +99,14 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
     Serial.print("Failed to connect to " SERVER_HOST ":");
     Serial.print(SERVER_PORT);
     Serial.println();
+    flashNumber(SERVER_CONNECT_ERROR);
     return false;
   }
 
-  setLed(true);
-
   if (!httpsClient.verify(SERVER_CERTIFICATE_FINGERPRINT, SERVER_HOST)) {
     Serial.println("Certificate verification failed");
+    httpsClient.stop();
+    flashNumber(SERVER_SSL_ERROR);
     return false;
   }
 
@@ -68,9 +123,71 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
       "\r\n");
   httpsClient.write(buffer, size);
 
+  // "HTTPS/1.1 ", we stop reading after the space.
+  while (true) {
+    byte b = httpsClient.read();
+    if (b < 0) {
+      httpsClient.stop();
+      flashNumber(SERVER_READ_ERROR);
+      return false;
+    }
+    if (b == ' ') {
+      break;
+    }
+  }
+  // "200 ", we stop reading after the space.
+  int statusCode = 0;
+  while (true) {
+    byte b = httpsClient.read();
+    if (b < 0) {
+      httpsClient.stop();
+      flashNumber(SERVER_READ_ERROR);
+      return false;
+    }
+    if (!isDigit(b)) {
+      break;
+    }
+    statusCode = (statusCode * 10) + (b - '0');
+    if (statusCode > 999) {
+      httpsClient.stop();
+      flashNumber(SERVER_PROTOCOL_ERROR);
+      return false;
+    }
+  }
+  if (statusCode != 200) {
+    Serial.print("Non-success HTTP response code from server: ");
+    Serial.print(statusCode);
+    Serial.print(" ");
+    // "OK" or whatever descriptive message there is.
+    while (true) {
+      int b = httpsClient.read();
+      if (b < 0) {
+        httpsClient.stop();
+        flashNumber(SERVER_READ_ERROR);
+        return false;
+      }
+      if (b == '\r') {
+        break;
+      }
+      Serial.write((byte) b);
+    }
+    Serial.println();
+    httpsClient.stop();
+    if (statusCode == 400) {
+      flashNumber(TELEGRAM_CHECKSUM_ERROR);
+      return false;
+    } else {
+      flashNumber(SERVER_RESPONSE_ERROR);
+      delay(500);
+      flashNumber(statusCode);
+      return false;
+    }
+  }
+
   Serial.print("Uploaded telegram of ");
   Serial.print(size);
   Serial.println(" bytes");
+  flashNumber(NO_ERROR);
 
   return true;
 }
@@ -129,7 +246,7 @@ void loop() {
     Serial.print(READ_TIMEOUT_MILLIS);
     Serial.println(" ms");
     telegramReader.reset();
-    setLed(false);
+    flashNumber(TELEGRAM_READ_ERROR);
   }
 
   int b = P1_INPUT.read();
@@ -149,10 +266,7 @@ void loop() {
       Serial.print(size);
       Serial.println(" bytes");
 
-      bool success = uploadTelegram(telegramReader.getBuffer(), size);
-      if (success) {
-        setLed(false);
-      }
+      uploadTelegram(telegramReader.getBuffer(), size);
 
       telegramReader.reset();
     }
