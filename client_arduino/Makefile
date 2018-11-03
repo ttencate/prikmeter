@@ -1,5 +1,9 @@
 -include config.in
 
+ifeq ($(READ_FROM_SERIAL), 1)
+  BUILD_EXTRA_FLAGS := -DREAD_FROM_SERIAL
+endif
+
 # TODO escape variables properly for use in C++ string literals
 config.h: config.in
 	echo '#define WIFI_SSID "$(WIFI_SSID)"' > $@
