@@ -1,0 +1,5 @@
+/XMX5LGBBFFB231117791
+
+This is not a real telegram, but you can send it through the serial port using e.g.:
+cat test_telegram.txt > /dev/ttyUSB0
+!443D

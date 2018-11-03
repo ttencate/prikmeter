@@ -107,10 +107,8 @@ void setup() {
   Serial.print(ctime(&now));
   Serial.println();
 
-  // Serial.println("Loading SSL root CA certificate");
-  // if (!httpsClient.setCACert(root_cert, root_cert_len)) {
-  //   Serial.println("Failed to set root CA certificate");
-  // }
+  Serial.println("Enabling auto sleep");
+  WiFi.setSleepMode(WIFI_MODEM_SLEEP);
 
   Serial.println("Up and running");
 
