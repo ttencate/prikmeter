@@ -5,7 +5,6 @@
 #include <WiFiClientSecure.h>
 
 #include "config.h"
-#include "root_cert.h"
 #include "telegram_reader.h"
 
 #define SERIAL_RX_PIN D5

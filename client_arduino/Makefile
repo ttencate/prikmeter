@@ -1,7 +1,7 @@
 -include config.in
 
 # TODO escape variables properly for use in C++ string literals
-config.h: config.in root.cert
+config.h: config.in
 	echo '#define WIFI_SSID "$(WIFI_SSID)"' > $@
 	echo '#define WIFI_PASSWORD "$(WIFI_PASSWORD)"' >> $@
 	echo '#define SERVER_HOST "$(SERVER_HOST)"' >> $@
@@ -16,4 +16,4 @@ UPLOAD_SPEED := 115200
 ESPTOOL_PY := ../esptool/esptool.py
 BUILD_ROOT := ./build
 include makeEspArduino.mk
-$(USER_OBJ): config.h root_cert.cpp
+$(USER_OBJ): config.h
