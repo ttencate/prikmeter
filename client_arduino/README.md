@@ -16,14 +16,14 @@ Configuration
 
 You need to create a file named `config.in` which looks like this:
 
-    WIFI_SSID = "your_network_name"
-    WIFI_PASSWORD = "your_wifi_password"
-    SERVER_HOST = "upload.your-prikmeter-server.example.com"
-    SERVER_CERTIFICATE_FINGERPRINT = "9C:35:5A:83:7C:8A:5F:13:C8:D0:98:9B:D3:9E:84:27:1B:BD:FA:30"
-    AUTH_TOKEN = "your_auth_token"
+    WIFI_SSID = your_network_name
+    WIFI_PASSWORD = your_wifi_password
+    SERVER_HOST = upload.your-prikmeter-server.example.com
+    SERVER_CERTIFICATE_FINGERPRINT = 9C:35:5A:83:7C:8A:5F:13:C8:D0:98:9B:D3:9E:84:27:1B:BD:FA:30
+    AUTH_TOKEN = your_auth_token
 
-This file is parsed as a `Makefile` snippet, so quote and escape your values
-accordingly if needed.
+This file is parsed as a `Makefile` snippet, so escape your values accordingly
+if needed.
 
 To get your server's certificate fingerprint, a command like this might be
 useful:

@@ -23,8 +23,8 @@
 #define VERSION "1.0.0"
 
 // Change to Serial for easy debugging, p1 for release.
-#define P1_INPUT Serial
-// #define P1_INPUT p1
+// #define P1_INPUT Serial
+#define P1_INPUT p1
 
 SoftwareSerial p1(SERIAL_RX_PIN, -1, true, P1_BUFFER_SIZE_BYTES);
 TelegramReader telegramReader;
