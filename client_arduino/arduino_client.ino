@@ -24,7 +24,8 @@
 #define VERSION "1.0.0"
 
 // Change to Serial for easy debugging, p1 for release.
-#define P1_INPUT p1
+#define P1_INPUT Serial
+// #define P1_INPUT p1
 
 SoftwareSerial p1(SERIAL_RX_PIN, -1, true, P1_BUFFER_SIZE_BYTES);
 TelegramReader telegramReader;
@@ -48,11 +49,10 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
 
   setLed(true);
 
-  // TODO figure out why this fails (https://github.com/esp8266/Arduino/issues/3340?)
-  // if (!httpsClient.verifyCertChain(SERVER_HOST)) {
-  //   Serial.println("Certificate verification failed");
-  //   return false;
-  // }
+  if (!httpsClient.verify(SERVER_CERTIFICATE_FINGERPRINT, SERVER_HOST)) {
+    Serial.println("Certificate verification failed");
+    return false;
+  }
 
   httpsClient.print(
       "POST /telegrams HTTP/1.1\r\n"
@@ -125,7 +125,10 @@ void loop() {
   // If we still don't have a complete telegram seconds after the start, assume
   // read error and reset the reader for the next one.
   static unsigned long telegramStartTime = millis();
-  if (millis() - telegramStartTime > READ_TIMEOUT_MILLIS) {
+  if (!telegramReader.isEmpty() && millis() - telegramStartTime > READ_TIMEOUT_MILLIS) {
+    Serial.print("Telegram still not completed after ");
+    Serial.print(READ_TIMEOUT_MILLIS);
+    Serial.println(" ms");
     telegramReader.reset();
     setLed(false);
   }
