@@ -1,8 +1,9 @@
 -include config.in
 
-ifeq ($(READ_FROM_SERIAL), 1)
-  BUILD_EXTRA_FLAGS := -DREAD_FROM_SERIAL
-endif
+BUILD_EXTRA_FLAGS := \
+  $(if $(READ_FROM_SERIAL), -DREAD_FROM_SERIAL) \
+  $(if $(PRINT_TELEGRAM), -DPRINT_TELEGRAM) \
+  $(if $(DONT_SEND_TELEGRAM), -DDONT_SEND_TELEGRAM)
 
 # TODO escape variables properly for use in C++ string literals
 config.h: config.in

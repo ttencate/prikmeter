@@ -60,6 +60,11 @@ this:
 If this doesn't work, it might help to run `make flash` first. Presumably this
 sets up the serial port in the right state.
 
-For debugging and testing without an actual smart meter connected, it's useful
-to add `READ_FROM_SERIAL=1` to the `make` command. That will let you send test
-telegrams on the serial port.
+For debugging and testing without an actual smart meter connected, the
+following arguments can be added to the `make` command line:
+
+* `READ_FROM_SERIAL=1` reads the telegram input from the serial port, instead
+  of the P1 port.
+* `PRINT_TELEGRAM=1` prints telegram bytes verbatim to the serial port (among
+  the other debugging info).
+* `DONT_SEND_TELEGRAM=1` skips uploading the telegram.

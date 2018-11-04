@@ -257,6 +257,9 @@ void loop() {
     }
 
     telegramReader.addByte((byte) b);
+#ifdef PRINT_TELEGRAM
+    Serial.write((byte) b);
+#endif
 
     if (telegramReader.isComplete()) {
       setLed(false);
@@ -266,7 +269,9 @@ void loop() {
       Serial.print(size);
       Serial.println(" bytes");
 
+#ifndef DONT_SEND_TELEGRAM
       uploadTelegram(telegramReader.getBuffer(), size);
+#endif
 
       telegramReader.reset();
     }
