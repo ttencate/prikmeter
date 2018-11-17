@@ -15,6 +15,8 @@
 
 #define READ_TIMEOUT_MILLIS 5000
 
+#define MIN_TELEGRAM_INTERVAL_MILLIS 9500
+
 #ifndef SERVER_PORT
 #define SERVER_PORT 443
 #endif
@@ -272,23 +274,21 @@ void loop() {
 
   int b = P1_INPUT.read();
   if (b >= 0) {
-    if (telegramReader.isEmpty()) {
-      telegramStartTime = millis();
-      setLed(true);
-    }
+    bool wasEmpty = telegramReader.isEmpty();
 
     telegramReader.addByte((byte) b);
 
+    if (wasEmpty && !telegramReader.isEmpty()) {
+      telegramStartTime = millis();
+    }
+
     if (telegramReader.hasError()) {
-      setLed(false);
       Serial.println("Telegram read error");
       telegramReader.reset();
       flashNumber(TELEGRAM_READ_ERROR);
     }
 
     if (telegramReader.isComplete()) {
-      setLed(false);
-
       byte const *buffer = telegramReader.getBuffer();
       unsigned int size = telegramReader.getSize();
       Serial.print("Received telegram of ");
@@ -303,6 +303,15 @@ void loop() {
 #endif
 
       telegramReader.reset();
+
+      // This works even if the clock wrapped around.
+      unsigned long telegramReadTimeMillis = millis() - telegramStartTime;
+      if (MIN_TELEGRAM_INTERVAL_MILLIS > telegramReadTimeMillis) {
+        // The Arduino Core does continue processing system-level events during
+        // delay():
+        // https://arduino-esp8266.readthedocs.io/en/2.4.0-rc1/reference.html#timing-and-delays
+        delay(MIN_TELEGRAM_INTERVAL_MILLIS - telegramReadTimeMillis);
+      }
     }
   }
 }

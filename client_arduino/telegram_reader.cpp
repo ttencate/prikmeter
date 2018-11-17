@@ -9,9 +9,10 @@ TelegramReader::TelegramReader() {
 void TelegramReader::reset() {
   size = 0;
   error = false;
+  insideTelegram = false;
   atStartOfLine = true;
   seenCr = false;
-  inLastLine = false;
+  inChecksumLine = false;
   complete = false;
 }
 
@@ -23,10 +24,11 @@ bool TelegramReader::addByte(byte b) {
   if (atStartOfLine) {
     if (b == '/') {
       // Start of telegram: truncate buffer.
-      reset();
-    } else if (b == '!') {
+      size = 0;
+      insideTelegram = true;
+    } else if (insideTelegram && b == '!') {
       // Last line (checksum): remember this.
-      inLastLine = true;
+      inChecksumLine = true;
     }
     atStartOfLine = false;
   }
@@ -34,7 +36,7 @@ bool TelegramReader::addByte(byte b) {
   if (seenCr) {
     seenCr = false;
     if (b == '\n') {
-      if (inLastLine) {
+      if (inChecksumLine) {
         complete = true;
       }
       atStartOfLine = true;
@@ -53,7 +55,15 @@ bool TelegramReader::addByte(byte b) {
     return false;
   }
 
+  if (!insideTelegram) {
+    return false;
+  }
+
   buffer[size] = b;
   size++;
   return true;
+}
+
+bool TelegramReader::justStarted() const {
+  return size == 1;
 }

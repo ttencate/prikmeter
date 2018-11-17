@@ -11,6 +11,7 @@ class TelegramReader {
     bool addByte(byte b);
 
     bool isEmpty() const { return !size; }
+    bool justStarted() const;
     bool hasError() const { return error; }
     bool isComplete() const { return complete; }
     byte const *getBuffer() const { return buffer; }
@@ -20,9 +21,10 @@ class TelegramReader {
     byte buffer[MAX_TELEGRAM_SIZE];
     unsigned int size;
     bool error;
+    bool insideTelegram;
     bool atStartOfLine;
     bool seenCr;
-    bool inLastLine;
+    bool inChecksumLine;
     bool complete;
 
 };
