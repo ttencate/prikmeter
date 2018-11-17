@@ -14,16 +14,12 @@ following Board Manager URL:
 Configuration
 -------------
 
-You need to create a file named `config.in` which looks like this:
+You need to copy the file `config.example.h` to a filename of your choice, say
+`config.home.h`, and edit it to fill in the required details (WiFi network name
+and password, server hostname and certificate, and your account's
+authentication token).
 
-    WIFI_SSID = your_network_name
-    WIFI_PASSWORD = your_wifi_password
-    SERVER_HOST = upload.your-prikmeter-server.example.com
-    SERVER_CERTIFICATE_FINGERPRINT = 9C:35:5A:83:7C:8A:5F:13:C8:D0:98:9B:D3:9E:84:27:1B:BD:FA:30
-    AUTH_TOKEN = your_auth_token
-
-This file is parsed as a `Makefile` snippet, so escape your values accordingly
-if needed.
+This file is parsed as C++ code, so escape your values accordingly if needed.
 
 To get your server's certificate fingerprint, a command like this might be
 useful:
@@ -33,6 +29,12 @@ useful:
 
 Building
 --------
+
+To tell the `Makefile` where your configuration file is, set the variable
+`PRIKMETER_CONFIG` to contain the name of the file you just created, for
+example:
+
+    $ export PRIKMETER_CONFIG_H=config.home.h
 
 Then you can just use `make` to drive the build and upload process, using the
 commands from [makeEspArduino](https://github.com/plerup/makeEspArduino); type

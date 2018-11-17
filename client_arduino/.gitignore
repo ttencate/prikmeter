@@ -1,5 +1,5 @@
-config.h
-config*.in
+config.*.h
+!config.example.h
 root.cert
 root_cert.cpp
 build/

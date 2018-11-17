@@ -4,7 +4,7 @@
 #include <time.h>
 #include <WiFiClientSecure.h>
 
-#include "config.h"
+#include PRIKMETER_CONFIG_INCLUDE
 #include "telegram_reader.h"
 
 #define SERIAL_RX_PIN D5
@@ -17,7 +17,7 @@
 #define SERVER_PORT 443
 #endif
 #ifndef USER_AGENT
-#define USER_AGENT "prikmeter"
+#define USER_AGENT "prikmeter" // TODO Add Git hash from buildinfo.h.
 #endif
 
 #define VERSION "1.0.0"
