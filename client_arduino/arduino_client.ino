@@ -37,12 +37,13 @@ enum ErrorCode {
   WIFI_CONNECT_ERROR = 1,
   NTP_ERROR = 2,
   TELEGRAM_READ_ERROR = 3,
-  TELEGRAM_CHECKSUM_ERROR = 4,
-  SERVER_CONNECT_ERROR = 5,
-  SERVER_SSL_ERROR = 6,
-  SERVER_READ_ERROR = 7,
-  SERVER_PROTOCOL_ERROR = 8,
-  SERVER_RESPONSE_ERROR = 9,
+  TELEGRAM_READ_TIMEOUT = 4,
+  TELEGRAM_CHECKSUM_ERROR = 5,
+  SERVER_CONNECT_ERROR = 6,
+  SERVER_SSL_ERROR = 7,
+  SERVER_READ_ERROR = 8,
+  SERVER_PROTOCOL_ERROR = 9,
+  SERVER_RESPONSE_ERROR = 10,
 };
 
 void setLed(bool on) {
@@ -102,6 +103,10 @@ void flashNumber(uint16 number) {
       }
     }
   }
+}
+
+void printTelegram(byte const *buffer, unsigned int size) {
+  Serial.write(buffer, size);
 }
 
 /**
@@ -271,20 +276,28 @@ void loop() {
     }
 
     telegramReader.addByte((byte) b);
-#ifdef PRINT_TELEGRAM
-    Serial.write((byte) b);
-#endif
+
+    if (telegramReader.hasError()) {
+      setLed(false);
+      Serial.println("Telegram read error");
+      telegramReader.reset();
+      flashNumber(TELEGRAM_READ_ERROR);
+    }
 
     if (telegramReader.isComplete()) {
       setLed(false);
 
+      byte const *buffer = telegramReader.getBuffer();
       unsigned int size = telegramReader.getSize();
       Serial.print("Received telegram of ");
       Serial.print(size);
       Serial.println(" bytes");
 
+#ifdef PRINT_TELEGRAM
+      printTelegram(buffer, size);
+#endif
 #ifndef DONT_SEND_TELEGRAM
-      uploadTelegram(telegramReader.getBuffer(), size);
+      uploadTelegram(buffer, size);
 #endif
 
       telegramReader.reset();
