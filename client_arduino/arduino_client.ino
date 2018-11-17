@@ -56,11 +56,24 @@ void blinkLed(int ms) {
 }
 
 /**
- * Flashes out an error in a kind of "decimal morse code", for example:
- * 502 = ..... _ ..
+ * Flashes out a decimal number in Morse code:
+ * 0 -----
+ * 1 .----
+ * 2 ..---
+ * 3 ...--
+ * 4 ....-
+ * 5 .....
+ * 6 -....
+ * 7 --...
+ * 8 ---..
+ * 9 ----.
  */
 void flashNumber(uint16 number) {
-  byte digits[5]; // Maximum 65535.
+  unsigned int const DOT_DURATION = 100;
+  unsigned int const DASH_DURATION = 3 * DOT_DURATION;
+  unsigned int const INTERVAL_DURATION = DOT_DURATION;
+  unsigned int const CHARACTER_SEPARATOR_DURATION = 3 * DOT_DURATION;
+  byte digits[5]; // Maximum is 65535, which is 5 digits long.
   byte numDigits = 0;
   while (number) {
     digits[numDigits] = number % 10;
@@ -74,18 +87,19 @@ void flashNumber(uint16 number) {
   while (numDigits) {
     numDigits--;
     setLed(false);
-    delay(500);
+    delay(CHARACTER_SEPARATOR_DURATION);
 
     byte digit = digits[numDigits];
-    if (digit) {
-      while (digit) {
-        digit--;
-        blinkLed(150);
-        delay(150);
+    for (byte i = 0; i < 5; i++) {
+      // In case of underflow, this wraps and becomes greater than 5.
+      if (static_cast<byte>(digit - 1 - i) < 5) {
+        blinkLed(DOT_DURATION);
+      } else {
+        blinkLed(DASH_DURATION);
       }
-    } else {
-      blinkLed(500);
-      delay(150);
+      if (i < 4) {
+        delay(INTERVAL_DURATION);
+      }
     }
   }
 }
