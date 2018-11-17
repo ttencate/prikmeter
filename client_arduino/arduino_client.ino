@@ -52,7 +52,7 @@ void setLed(bool on) {
   digitalWrite(LED_PIN, on ? LOW : HIGH);
 }
 
-void blinkLed(int ms) {
+void flashLed(int ms) {
   setLed(true);
   delay(ms);
   setLed(false);
@@ -72,7 +72,7 @@ void blinkLed(int ms) {
  * 9 ----.
  */
 void flashNumber(uint16 number) {
-  unsigned int const DOT_DURATION = 100;
+  unsigned int const DOT_DURATION = 150;
   unsigned int const DASH_DURATION = 3 * DOT_DURATION;
   unsigned int const INTERVAL_DURATION = DOT_DURATION;
   unsigned int const CHARACTER_SEPARATOR_DURATION = 3 * DOT_DURATION;
@@ -96,9 +96,9 @@ void flashNumber(uint16 number) {
     for (byte i = 0; i < 5; i++) {
       // In case of underflow, this wraps and becomes greater than 5.
       if (static_cast<byte>(digit - 1 - i) < 5) {
-        blinkLed(DOT_DURATION);
+        flashLed(DOT_DURATION);
       } else {
-        blinkLed(DASH_DURATION);
+        flashLed(DASH_DURATION);
       }
       if (i < 4) {
         delay(INTERVAL_DURATION);
@@ -115,20 +115,18 @@ void printTelegram(byte const *buffer, unsigned int size) {
  * Uploads the telegram in the given `buffer` of `size` bytes to the server.
  * Returns `true` on success.
  */
-bool uploadTelegram(byte const *buffer, uint16 size) {
+ErrorCode uploadTelegram(byte const *buffer, uint16 size) {
   if (!httpsClient.connect(SERVER_HOST, SERVER_PORT)) {
     Serial.print("Failed to connect to " SERVER_HOST ":");
     Serial.print(SERVER_PORT);
     Serial.println();
-    flashNumber(SERVER_CONNECT_ERROR);
-    return false;
+    return SERVER_CONNECT_ERROR;
   }
 
   if (!httpsClient.verify(SERVER_CERTIFICATE_FINGERPRINT, SERVER_HOST)) {
     Serial.println("Certificate verification failed");
     httpsClient.stop();
-    flashNumber(SERVER_SSL_ERROR);
-    return false;
+    return SERVER_SSL_ERROR;
   }
 
   httpsClient.print(
@@ -151,8 +149,7 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
     byte b = httpsClient.read();
     if (b < 0) {
       httpsClient.stop();
-      flashNumber(SERVER_READ_ERROR);
-      return false;
+      return SERVER_READ_ERROR;
     }
     if (b == ' ') {
       break;
@@ -164,8 +161,7 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
     byte b = httpsClient.read();
     if (b < 0) {
       httpsClient.stop();
-      flashNumber(SERVER_READ_ERROR);
-      return false;
+      return SERVER_READ_ERROR;
     }
     if (!isDigit(b)) {
       break;
@@ -173,8 +169,7 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
     statusCode = (statusCode * 10) + (b - '0');
     if (statusCode > 999) {
       httpsClient.stop();
-      flashNumber(SERVER_PROTOCOL_ERROR);
-      return false;
+      return SERVER_PROTOCOL_ERROR;
     }
   }
   if (statusCode != 200) {
@@ -186,8 +181,7 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
       int b = httpsClient.read();
       if (b < 0) {
         httpsClient.stop();
-        flashNumber(SERVER_READ_ERROR);
-        return false;
+        return SERVER_READ_ERROR;
       }
       if (b == '\r') {
         break;
@@ -197,22 +191,16 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
     Serial.println();
     httpsClient.stop();
     if (statusCode == 400) {
-      flashNumber(TELEGRAM_CHECKSUM_ERROR);
-      return false;
+      return TELEGRAM_CHECKSUM_ERROR;
     } else {
-      flashNumber(SERVER_RESPONSE_ERROR);
-      delay(500);
-      flashNumber(statusCode);
-      return false;
+      return SERVER_RESPONSE_ERROR;
     }
   }
 
   Serial.print("Uploaded telegram of ");
   Serial.print(size);
   Serial.println(" bytes");
-  flashNumber(NO_ERROR);
-
-  return true;
+  return NO_ERROR;
 }
 
 void setup() {
@@ -269,7 +257,7 @@ void loop() {
     Serial.print(READ_TIMEOUT_MILLIS);
     Serial.println(" ms");
     telegramReader.reset();
-    flashNumber(TELEGRAM_READ_ERROR);
+    flashNumber(TELEGRAM_READ_TIMEOUT);
   }
 
   int b = P1_INPUT.read();
@@ -299,7 +287,12 @@ void loop() {
       printTelegram(buffer, size);
 #endif
 #ifndef DONT_SEND_TELEGRAM
-      uploadTelegram(buffer, size);
+      ErrorCode uploadError = uploadTelegram(buffer, size);
+      if (uploadError) {
+        flashNumber(static_cast<uint16>(uploadError));
+      } else {
+        flashLed(50);
+      }
 #endif
 
       telegramReader.reset();
