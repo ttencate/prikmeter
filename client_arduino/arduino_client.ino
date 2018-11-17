@@ -5,6 +5,8 @@
 #include <WiFiClientSecure.h>
 
 #include PRIKMETER_CONFIG_INCLUDE
+#include "buildinfo.h"
+
 #include "telegram_reader.h"
 
 #define SERIAL_RX_PIN D5
@@ -17,10 +19,8 @@
 #define SERVER_PORT 443
 #endif
 #ifndef USER_AGENT
-#define USER_AGENT "prikmeter" // TODO Add Git hash from buildinfo.h.
+#define USER_AGENT "prikmeter"
 #endif
-
-#define VERSION "1.0.0"
 
 #ifdef READ_FROM_SERIAL
 #  define P1_INPUT Serial // Debugging aid.
@@ -132,7 +132,9 @@ bool uploadTelegram(byte const *buffer, uint16 size) {
   httpsClient.print(
       "POST /telegrams HTTP/1.1\r\n"
       "Host: " SERVER_HOST "\r\n"
-      "User-Agent: " USER_AGENT " " VERSION "\r\n"
+      "User-Agent: " USER_AGENT " ");
+  httpsClient.print(_BuildInfo.src_version);
+  httpsClient.print("\r\n"
       "Content-Type: text/plain\r\n"
       "Content-Length: ");
   httpsClient.print(size);
