@@ -19,7 +19,7 @@ async function createFromBody (req, res) {
   }
 
   const token = req.headers[AUTH_TOKEN_HEADER] || ''
-  const data = req.body.toString('ascii') // TODO see what happens if we shove it to the database as a Buffer directly
+  const data = req.body.toString('ascii') // TODO see what happens if we shove it to the database as a Buffer directly -- at least backslashes are currently breaking it!
 
   const user = await authTokens.getOwnerUser({ token })
   if (!user) {
