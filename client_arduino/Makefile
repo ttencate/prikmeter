@@ -19,3 +19,26 @@ BUILD_EXTRA_FLAGS := \
 include makeEspArduino.mk
 
 $(USER_OBJ): $(PRIKMETER_CONFIG_H)
+
+# TESTING
+
+TEST_ROOT := test
+TEST_BUILD_ROOT := $(BUILD_ROOT)/test
+TEST_EXECUTABLE := $(TEST_BUILD_ROOT)/main
+IMPL_CPPS := \
+  telegram_reader.cpp
+TEST_CPPS := \
+  test/main.cpp \
+  test/telegram_reader_test.cpp
+
+.PHONY: test
+test: $(TEST_EXECUTABLE)
+	"$(TEST_EXECUTABLE)"
+
+$(TEST_BUILD_ROOT)/%.o: %.cpp $(TEST_ROOT)/catch2/catch.hpp
+	mkdir -p $(dir $@)
+	g++ -c -I. -o$@ $<
+
+$(TEST_EXECUTABLE): $(patsubst %.cpp, $(TEST_BUILD_ROOT)/%.o, $(IMPL_CPPS) $(TEST_CPPS))
+	mkdir -p $(dir $@)
+	g++ -I. -o$@ $^

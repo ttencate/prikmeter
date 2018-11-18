@@ -8,17 +8,17 @@ class TelegramReader {
     TelegramReader();
 
     void reset();
-    bool addByte(byte b);
+    bool addByte(unsigned char b);
 
     bool isEmpty() const { return !size; }
     bool justStarted() const;
     bool hasError() const { return error; }
     bool isComplete() const { return complete; }
-    byte const *getBuffer() const { return buffer; }
+    unsigned char const *getBuffer() const { return buffer; }
     unsigned int getSize() const { return size; }
 
   private:
-    byte buffer[MAX_TELEGRAM_SIZE];
+    unsigned char buffer[MAX_TELEGRAM_SIZE];
     unsigned int size;
     bool error;
     bool insideTelegram;

@@ -1,5 +1,3 @@
-#include <Arduino.h>
-
 #include "telegram_reader.h"
 
 TelegramReader::TelegramReader() {
@@ -16,7 +14,7 @@ void TelegramReader::reset() {
   complete = false;
 }
 
-bool TelegramReader::addByte(byte b) {
+bool TelegramReader::addByte(unsigned char b) {
   if (complete || error) {
     return false;
   }
@@ -48,9 +46,9 @@ bool TelegramReader::addByte(byte b) {
   }
 
   if (size >= MAX_TELEGRAM_SIZE) {
-    Serial.print("Telegram buffer overflow after ");
-    Serial.print(MAX_TELEGRAM_SIZE);
-    Serial.println(" bytes");
+    // Serial.print("Telegram buffer overflow after ");
+    // Serial.print(MAX_TELEGRAM_SIZE);
+    // Serial.println(" bytes");
     error = true;
     return false;
   }
