@@ -72,6 +72,12 @@ function defaultChartOptions (meterType, vAxisMin, vAxisMax) {
     },
     legend: {
       position: 'none'
+    },
+    focusTarget: 'category',
+    aggregationTarget: 'category',
+    tooltip: {
+      isHtml: true,
+      ignoreBounds: true
     }
   }
 }
@@ -324,6 +330,7 @@ Vue.component('ComboChart', googleChartsComponent({
     // Data column(s) for axis #0 cannot be of type string
     const dataTable = google.visualization.arrayToDataTable(this.data)
     const dataView = new google.visualization.DataView(dataTable)
+
     function getColumnIndex (label) {
       const n = dataView.getNumberOfColumns()
       for (let i = 0; i < n; i++) {
@@ -335,9 +342,40 @@ Vue.component('ComboChart', googleChartsComponent({
     }
     const xColumnIndex = getColumnIndex(this.xColumn)
     const consumptionColumnIndex = getColumnIndex(this.consumptionColumn)
-    const columns = [xColumnIndex, consumptionColumnIndex]
+    const productionColumnIndex = this.productionColumn ? getColumnIndex(this.productionColumn) : null
+
+    const columns = []
+
+    columns.push(xColumnIndex)
+
+    // Add tooltip. By putting this right after the xColumnIndex, it applies to
+    // the entire "category" = row.
+    columns.push({
+      calc: (dataTable, rowIndex) => {
+        let parts = []
+        parts.push(`<strong>${dataTable.getValue(rowIndex, xColumnIndex).toLocaleString('nl-NL')}</strong><br>`)
+        parts.push('<dl>')
+        const consumption = dataTable.getValue(rowIndex, consumptionColumnIndex)
+        parts.push('<dt>Verbruik:</dt>')
+        parts.push(`<dd>${dataTable.getValue(rowIndex, consumptionColumnIndex)}</dd>`)
+        if (this.productionColumn) {
+          const production = dataTable.getValue(rowIndex, productionColumnIndex)
+          parts.push('<dt>Opwek:</dt>')
+          parts.push(`<dd>${typeof production === 'number' ? production : 'onbekend'}</dd>`)
+          const netConsumption = typeof consumption === 'number' && typeof production === 'number' ? consumption - production : consumption;
+          parts.push('<dt>Netto verbruik (verbruik − opwek):</dt>')
+          parts.push(`<dd>${typeof netConsumption === 'number' ? netConsumption : 'onbekend'}</dd>`)
+        }
+        parts.push('</dl>')
+        return parts.join('')
+      },
+      type: 'string',
+      role: 'tooltip',
+      properties: { html: true }
+    })
+
+    columns.push(consumptionColumnIndex)
     if (this.productionColumn) {
-      const productionColumnIndex = getColumnIndex(this.productionColumn)
       columns.push({
         calc: (dataTable, rowIndex) => {
           const production = dataTable.getValue(rowIndex, productionColumnIndex)
@@ -346,6 +384,7 @@ Vue.component('ComboChart', googleChartsComponent({
         type: 'number',
         label: this.productionColumn + 'Negated',
       })
+
       columns.push({
         calc: (dataTable, rowIndex) => {
           const consumption = dataTable.getValue(rowIndex, consumptionColumnIndex)
@@ -356,6 +395,7 @@ Vue.component('ComboChart', googleChartsComponent({
         label: this.productionColumn + 'Net',
       })
     }
+
     dataView.setColumns(columns)
 
     const chart = new google.visualization.ComboChart(this.$el)
