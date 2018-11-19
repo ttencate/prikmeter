@@ -2,9 +2,36 @@
 <html>
   <head>
     <title>Prikmeter</title>
-    <meta name="viewport" content="width=545, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .container {
+        margin: 0 15px;
+      }
+      .row {
+        margin: 0 -15px;
+      }
+      .meter-column {
+        float: left;
+        width: calc(100% - 30px);
+        margin: 0 15px;
+      }
+      @media (min-width: 992px) {
+        .meter-column {
+          max-width: 473px;
+        }
+      }
+      .overflow-wrap-break-word {
+        overflow-wrap: break-word;
+      }
+      .p-relative {
+        position: relative;
+      }
+    </style>
   </head>
-  <body style="margin: 15px; overflow-x: hidden">
+  <body class="container">
     {% if errors %}
       <h3>Foutmeldingen</h3>
       <ul>
@@ -21,9 +48,9 @@
         </form>
       </h3>
       <div id="main">
-        <div style="margin: 0 -15px">
+        <div class="row p-relative">
         {% for meter in meters %}
-          <div style="float: left; width: 500px; margin: 0 15px">
+          <div class="meter-column">
             <h3>
               {% if meter.type == 'electricity' %}Elektriciteit{% endif %}
               {% if meter.type == 'gas' %}Gas{% endif %}
@@ -38,7 +65,7 @@
         <h3>Authenticatie-tokens</h3>
         <ul>
           {% for authToken in authTokens %}
-            <li><small><code>{{ authToken.token }}</code></small></li>
+            <li class="overflow-wrap-break-word"><small><code>{{ authToken.token }}</code></small></li>
           {% endfor %}
         </ul>
       </div>

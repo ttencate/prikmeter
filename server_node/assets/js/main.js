@@ -32,7 +32,7 @@ function defaultChartOptions (meterType, vAxisMin, vAxisMax) {
     }
   }
   return {
-    width: 500,
+    width: '100%',
     height: 200,
     title: '',
     series: {
@@ -65,10 +65,10 @@ function defaultChartOptions (meterType, vAxisMin, vAxisMax) {
       1: vAxis
     },
     chartArea: {
-      left: 50,
-      width: 450,
-      top: 25,
-      height: 150,
+      left: '10%',
+      width: '90%',
+      top: '12.5%',
+      height: '75%',
     },
     legend: {
       position: 'none'
