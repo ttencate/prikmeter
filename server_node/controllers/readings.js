@@ -1,9 +1,7 @@
-const moment = require('moment')
-
 const meters = require('../services/meters')
 const readings = require('../services/readings')
 
-function timestampStringToDate(timestampStringMillis) {
+function timestampStringToDate (timestampStringMillis) {
   const timestampMillis = parseInt(timestampStringMillis)
   if (isNaN(timestampMillis)) {
     return null

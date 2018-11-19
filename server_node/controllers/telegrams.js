@@ -47,8 +47,8 @@ async function createFromBody (req, res) {
   log.debug(`Parsed telegram: ${JSON.stringify(telegramReadings)}`)
 
   // TODO parallelize
-  for (reading of telegramReadings) {
-    const meter = await meters.createOrUpdate({ id: reading.meterId, type: reading.type, ownerUserId: user.id })
+  for (const reading of telegramReadings) {
+    await meters.createOrUpdate({ id: reading.meterId, type: reading.type, ownerUserId: user.id })
     await readings.create(reading)
   }
 

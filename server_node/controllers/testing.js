@@ -1,4 +1,3 @@
-const express = require('express')
 const nodeMocksHttp = require('node-mocks-http')
 
 async function simulateRequest (controller, reqObj) {

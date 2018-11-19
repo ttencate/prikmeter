@@ -1,5 +1,3 @@
-const moment = require('moment')
-
 const db = require('./db')
 const testdata = require('../seeds/testdata')
 
@@ -13,7 +11,7 @@ function datesToTimestamps (input) {
     return input.getTime()
   } else if (typeof input === 'object') {
     const clone = {}
-    for (key in input) {
+    for (const key in input) {
       clone[key] = datesToTimestamps(input[key])
     }
     return clone

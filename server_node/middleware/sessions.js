@@ -16,7 +16,7 @@ async function getCookieSecret () {
   return secret
 }
 
-function createStore() {
+function createStore () {
   const KnexSessionStore = knexSessionStore(expressSession)
   return new KnexSessionStore({
     tablename: 'sessions',
@@ -37,6 +37,6 @@ module.exports.install = async function install (app) {
     secret: cookieSecret,
     saveUninitialized: false,
     store: createStore(),
-    resave: false,
+    resave: false
   }))
 }

@@ -1,7 +1,6 @@
 /* eslint-env mocha, chai */
 
 const { expect } = require('../core/chai')
-const moment = require('moment')
 
 const telegramParser = require('./telegramParser')
 const { data } = require('../seeds/testdata')

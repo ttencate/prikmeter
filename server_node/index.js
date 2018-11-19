@@ -13,7 +13,7 @@ async function main () {
 
   const app = express()
   if (app.get('env') === 'production') {
-    app.set('trust proxy', 1); // Needed for https-only cookies
+    app.set('trust proxy', 1) // Needed for https-only cookies
   }
 
   await require('./middleware').install(app)

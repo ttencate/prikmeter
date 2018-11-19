@@ -2,7 +2,7 @@ module.exports = {
   testing: {
     client: 'postgresql',
     connection: {
-      database: 'prikmeter_test',
+      database: 'prikmeter_test'
     },
     pool: {
       min: 2,
@@ -16,7 +16,7 @@ module.exports = {
   development: {
     client: 'postgresql',
     connection: {
-      database: 'prikmeter',
+      database: 'prikmeter'
     },
     pool: {
       min: 2,

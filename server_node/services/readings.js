@@ -12,20 +12,19 @@ const TABLES = {
 
 async function createOrIgnore (table, keys, reading) {
   const object = {}
-  for (key of keys) {
+  for (const key of keys) {
     object[key] = reading[key] !== undefined ? reading[key] : null
   }
   try {
     await db(table).insert(object)
   } catch (ex) {
-    if (ex.code === 'SQLITE_CONSTRAINT' /* SQLite */
-      || (ex.constraint || '').endsWith('_pkey') /* PostgreSQL */) {
+    if (ex.code === 'SQLITE_CONSTRAINT' /* SQLite */ ||
+        (ex.constraint || '').endsWith('_pkey') /* PostgreSQL */) {
       return
     }
     throw ex
   }
 }
-
 
 /**
  * resolution: one of https://www.postgresql.org/docs/9.1/static/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC

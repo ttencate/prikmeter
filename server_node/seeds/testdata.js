@@ -1,7 +1,5 @@
 const moment = require('moment')
 
-const dbConfig = require('../core/dbConfig')
-
 const data = {
   user: {
     id: undefined,
@@ -80,7 +78,7 @@ module.exports = {
   data: data,
 
   seed: async function (db) {
-    await db('users').delete();
+    await db('users').delete()
     const [ userId ] = await db('users').insert({ email: data.user.email, passwordHash: data.user.passwordHash }).returning('id')
     data.user.id = userId
     data.authToken.ownerUserId = userId

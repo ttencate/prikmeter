@@ -22,5 +22,5 @@ module.exports = webpackMerge(webpackCommon, {
     }),
     // https://webpack.js.org/guides/production/#module-concatenation
     new webpack.optimize.ModuleConcatenationPlugin()
-  ],
+  ]
 })

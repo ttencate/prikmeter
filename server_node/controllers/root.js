@@ -1,8 +1,5 @@
-const moment = require('moment')
-
 const authTokens = require('../services/authTokens')
 const meters = require('../services/meters')
-const readings = require('../services/readings')
 
 module.exports.root = [
   async function (req, res) {
@@ -12,7 +9,7 @@ module.exports.root = [
       // TODO use a different template for this case
       // TODO put return_url into all template contexts through middleware
       res.render('index', {
-        return_url: req.url,
+        return_url: req.url
       })
       return
     }

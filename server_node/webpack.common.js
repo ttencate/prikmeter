@@ -25,7 +25,7 @@ const babelOptions = {
 
 module.exports = {
   entry: {
-    main: './assets/js/main.js',
+    main: './assets/js/main.js'
     // polyfill: './assets/js/polyfill.js'
   },
   output: {
@@ -47,7 +47,7 @@ module.exports = {
     // https://webpack.js.org/guides/output-management/#cleaning-up-the-dist-folder
     new CleanWebpackPlugin([distPath], {
       verbose: false
-    }),
+    })
   ],
   context: __dirname,
   target: 'web',

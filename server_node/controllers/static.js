@@ -1,7 +1,7 @@
 const express = require('express')
 const path = require('path')
 const webpack = require('webpack')
-const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackDevMiddleware = require('webpack-dev-middleware')
 
 const log = require('../core/log')
 
