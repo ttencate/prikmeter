@@ -71,6 +71,22 @@ const data = {
     meterId: 'G0002340134445914',
     timestamp: moment('2017-10-11T15:00:00+00:00').toDate(),
     totalConsumptionM3: 3964.814
+  },
+
+  electricityReadingDsmr50: {
+    meterId: 'E0047000021955818',
+    timestamp: moment('2018-11-18T19:07:28+01:00').toDate(),
+    totalConsumptionKwhLow: 439.905,
+    totalConsumptionKwhHigh: 393.772,
+    totalProductionKwhLow: 174.566,
+    totalProductionKwhHigh: 407.609,
+    currentConsumptionKw: 0.841,
+    currentProductionKw: 0.0
+  },
+  gasReadingDsmr50: {
+    meterId: 'G0053003693435118',
+    timestamp: moment('2018-11-18T19:05:00+01:00').toDate(),
+    totalConsumptionM3: 256.644
   }
 }
 
