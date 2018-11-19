@@ -215,7 +215,10 @@ void setup() {
   Serial.print("Connecting to wifi [");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
+    setLed(true);
+    delay(250);
+    setLed(false);
+    delay(250);
     Serial.print(".");
   }
   Serial.println("]");
@@ -226,7 +229,10 @@ void setup() {
   configTime(0, 0, "pool.ntp.org", "time.nist.gov");
   time_t now = time(nullptr);
   while (now < 1000) {
-    delay(500);
+    setLed(true);
+    delay(125);
+    setLed(false);
+    delay(125);
     Serial.print(".");
     now = time(nullptr);
   }
@@ -277,6 +283,10 @@ void loop() {
     }
 
     if (telegramReader.isComplete()) {
+      // Stop receiving data that we'll throw away anyway. The SoftwareSerial
+      // implementation does busy-waiting, so this might save some power too.
+      P1_INPUT.enableRx(false);
+
       byte const *buffer = telegramReader.getBuffer();
       unsigned int size = telegramReader.getSize();
       Serial.print("Received telegram of ");
@@ -305,6 +315,9 @@ void loop() {
         // https://arduino-esp8266.readthedocs.io/en/2.4.0-rc1/reference.html#timing-and-delays
         delay(MIN_TELEGRAM_INTERVAL_MILLIS - telegramReadTimeMillis);
       }
+
+      P1_INPUT.flush();
+      P1_INPUT.enableRx(true);
     }
   }
 }
