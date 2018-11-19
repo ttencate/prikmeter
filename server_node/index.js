@@ -1,6 +1,7 @@
 const express = require('express')
 require('make-promises-safe')
 
+const janitor = require('./services/janitor')
 const log = require('./core/log')
 
 async function main () {
@@ -23,6 +24,8 @@ async function main () {
   const LISTEN_PORT = parseInt(process.env.LISTEN_PORT) || 3000
   app.listen(LISTEN_PORT, LISTEN_HOST)
   log.info(`Listening on http://${LISTEN_HOST}:${LISTEN_PORT}/`)
+
+  janitor.start()
 }
 
 main()

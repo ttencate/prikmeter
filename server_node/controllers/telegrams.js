@@ -28,6 +28,9 @@ async function createFromBody (req, res) {
     return
   }
 
+  // TODO add columns "crcValid" and "parsed" to telegrams, clean up parsed
+  // telegrams more aggressively
+
   await telegrams.create({ ownerUserId: user.id, telegram: dataBuffer })
   log.info(`Stored ${dataBuffer.length} byte telegram for user ${user.id}`)
 

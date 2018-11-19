@@ -29,11 +29,15 @@ module.exports.up = async function (knex) {
     table.integer('ownerUserId')
     table.foreign('ownerUserId').references('users.id').onDelete('set null')
     table.binary('telegram')
+    // "true" means *don't* store a timezone with the date/time and got here by
+    // accident.
     table.timestamp('uploadTimestamp', true).defaultTo(knex.fn.now())
   })
 
   await knex.schema.createTable('electricityReadings', function (table) {
     table.string('meterId')
+    // "true" means *don't* store a timezone with the date/time and got here by
+    // accident.
     table.timestamp('timestamp', true)
     table.double('totalConsumptionKwhLow')
     table.double('totalConsumptionKwhHigh')
@@ -46,6 +50,8 @@ module.exports.up = async function (knex) {
 
   await knex.schema.createTable('gasReadings', function (table) {
     table.string('meterId')
+    // "true" means *don't* store a timezone with the date/time and got here by
+    // accident.
     table.timestamp('timestamp', true)
     table.double('totalConsumptionM3')
     table.primary(['meterId', 'timestamp'])
