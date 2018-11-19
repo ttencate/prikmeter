@@ -1,5 +1,5 @@
 # https://github.com/plerup/makeEspArduino
-SKETCH := arduino_client.ino
+SKETCH := prikmeter.ino
 CHIP := esp8266
 BOARD := nodemcuv2
 UPLOAD_SPEED := 115200
