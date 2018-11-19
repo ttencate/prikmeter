@@ -76,8 +76,7 @@ function defaultChartOptions (meterType, vAxisMin, vAxisMax) {
     focusTarget: 'category',
     aggregationTarget: 'category',
     tooltip: {
-      isHtml: true,
-      ignoreBounds: true
+      isHtml: true
     }
   }
 }

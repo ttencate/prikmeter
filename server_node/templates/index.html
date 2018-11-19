@@ -2,8 +2,9 @@
 <html>
   <head>
     <title>Prikmeter</title>
+    <meta name="viewport" content="width=545, initial-scale=1.0, user-scalable=no">
   </head>
-  <body>
+  <body style="margin: 15px; overflow-x: hidden">
     {% if errors %}
       <h3>Foutmeldingen</h3>
       <ul>
@@ -13,10 +14,12 @@
       </ul>
     {% endif %}
     {% if user %}
-      <h3>Aangemeld als {{ user.email }}</h3>
-      <form action="/logout" method="POST">
-        <input value="Afmelden" type="submit">
-      </form>
+      <h3>
+        Aangemeld als {{ user.email }}
+        <form action="/logout" method="POST" style="display: inline">
+          <input value="Afmelden" type="submit">
+        </form>
+      </h3>
       <div id="main">
         <div style="margin: 0 -15px">
         {% for meter in meters %}
@@ -35,7 +38,7 @@
         <h3>Authenticatie-tokens</h3>
         <ul>
           {% for authToken in authTokens %}
-            <li><code>{{ authToken.token }}</code></li>
+            <li><small><code>{{ authToken.token }}</code></small></li>
           {% endfor %}
         </ul>
       </div>
