@@ -7,30 +7,62 @@ const Vue = require('../../node_modules/vue/dist/vue.common.js')
 // https://developers.google.com/chart/interactive/docs/release_notes#official-releases
 google.charts.load('45.2', {'packages': ['corechart']})
 
-function defaultChartOptions (meterType, vAxisMax) {
-  const barColors = {
-    electricity: '#FF851B',
-    gas: '#0074D9'
+function defaultChartOptions (meterType, vAxisMin, vAxisMax) {
+  let consumptionColor
+  let vAxisTitle
+  // http://paletton.com/#uid=70c0X0krKw0hhHhmv-HvKrezxln
+  switch (meterType) {
+    case 'electricity':
+      consumptionColor = '#FF5722'
+      vAxisTitle = 'Elektriciteit (W)'
+      break
+    case 'gas':
+      consumptionColor = '#2D36B1'
+      vAxisTitle = 'Gas (m³/h)'
+      break
   }
-  const vAxisTitles = {
-    electricity: 'Electricity consumption (W)',
-    gas: 'Gas consumption (m³/h)'
+  const vAxis = {
+    title: vAxisTitle,
+    titleTextStyle: {
+      italic: false
+    },
+    viewWindow: {
+      min: vAxisMin,
+      max: vAxisMax
+    }
   }
   return {
     width: 500,
     height: 200,
     title: '',
+    series: {
+      // Consumption
+      0: {
+        type: 'bars',
+        color: consumptionColor,
+        targetAxisIndex: 0,
+      },
+      // Production
+      1: {
+        type: 'bars',
+        color: '#18B364',
+        targetAxisIndex: 1,
+      },
+      // Net consumption
+      2: {
+        type: 'line',
+        color: '#FFC422',
+        targetAxisIndex: 0,
+      },
+    },
     bar: {
       groupWidth: '90%'
     },
-    colors: [barColors[meterType]],
+    isStacked: true,
     hAxis: {},
-    vAxis: {
-      title: vAxisTitles[meterType],
-      viewWindow: {
-        min: 0,
-        max: vAxisMax
-      }
+    vAxes: {
+      0: vAxis,
+      1: vAxis
     },
     chartArea: {
       left: 50,
@@ -94,16 +126,28 @@ Vue.component('MeterReadings', {
     for (let i = 0; i < 7; i++) {
       days.push(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i))
     }
-    const yColumn = {
-      electricity: 'currentConsumptionW',
-      gas: 'currentConsumptionM3PerH'
-    }[this.$props.meterType]
+    let consumptionColumn
+    let productionColumn
+    let netConsumptionColumn
+    switch (this.$props.meterType) {
+      case 'electricity':
+        consumptionColumn = 'currentConsumptionW'
+        productionColumn = 'currentProductionW'
+        netConsumptionColumn = 'currentNetConsumptionW'
+        break
+      case 'gas':
+        consumptionColumn = 'currentConsumptionM3PerH'
+        break
+    }
     return {
       now: now,
       days: days,
-      yColumn: yColumn,
+      consumptionColumn: consumptionColumn,
+      productionColumn: productionColumn,
+      netConsumptionColumn: netConsumptionColumn,
       readingsByHour: null,
       readingsByMinute: null,
+      vAxisMin: 0,
       vAxisMax: 0,
       error: null,
     }
@@ -139,6 +183,7 @@ Vue.component('MeterReadings', {
       switch (this.meterType) {
         case 'electricity':
           addDeltaColumn(readings, ['totalConsumptionKwhLow', 'totalConsumptionKwhHigh'], 'currentConsumptionW', intervalMillis, timeUnitMillis * 1000 /* kW -> W */)
+          addDeltaColumn(readings, ['totalProductionKwhLow', 'totalProductionKwhHigh'], 'currentProductionW', intervalMillis, timeUnitMillis * 1000 /* kW -> W */)
           break
         case 'gas':
           addDeltaColumn(readings, ['totalConsumptionM3'], 'currentConsumptionM3PerH', intervalMillis, timeUnitMillis)
@@ -157,9 +202,9 @@ Vue.component('MeterReadings', {
       await fetchReadings({ startTime: oneWeekAgoMillis, endTime: nowMillis, resolution: 'hour' })
     ])
 
-    const maxValue = (readings) => {
+    const maxValue = (readings, columnName) => {
       let max = 0
-      let columnIndex = readings[0].indexOf(this.$data.yColumn)
+      let columnIndex = readings[0].indexOf(columnName)
       for (let i = 1; i < readings.length; i++) {
         const reading = readings[i][columnIndex]
         if (!isNaN(reading)) {
@@ -171,7 +216,12 @@ Vue.component('MeterReadings', {
 
     this.$data.readingsByHour = readingsByHour;
     this.$data.readingsByMinute = readingsByMinute;
-    this.$data.vAxisMax = roundUpToNiceNumber(Math.max(maxValue(readingsByMinute), maxValue(readingsByHour)))
+    this.$data.vAxisMin = -roundUpToNiceNumber(Math.max(
+        maxValue(readingsByMinute, this.$data.productionColumn),
+        maxValue(readingsByHour, this.$data.productionColumn)))
+    this.$data.vAxisMax = roundUpToNiceNumber(Math.max(
+        maxValue(readingsByMinute, this.$data.consumptionColumn),
+        maxValue(readingsByHour, this.$data.consumptionColumn)))
   },
   template: `
     <div v-if="readingsByHour">
@@ -179,8 +229,11 @@ Vue.component('MeterReadings', {
         <MeterReadingsChart
             :meterType="meterType"
             :data="readingsByMinute"
-            :title="'Past hour'"
-            :yColumn="yColumn"
+            :title="'Afgelopen uur'"
+            :consumptionColumn="consumptionColumn"
+            :productionColumn="productionColumn"
+            :netConsumptionColumn="netConsumptionColumn"
+            :vAxisMin="vAxisMin"
             :vAxisMax="vAxisMax"
             :endTime="now"
             :durationMillis="60 * 60 * 1000"
@@ -192,7 +245,10 @@ Vue.component('MeterReadings', {
             :meterType="meterType"
             :data="readingsByHour"
             :title="day.toDateString()"
-            :yColumn="yColumn"
+            :consumptionColumn="consumptionColumn"
+            :productionColumn="productionColumn"
+            :netConsumptionColumn="netConsumptionColumn"
+            :vAxisMin="vAxisMin"
             :vAxisMax="vAxisMax"
             :endTime="new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1)"
             :durationMillis="24 * 60 * 60 * 1000"
@@ -200,8 +256,8 @@ Vue.component('MeterReadings', {
             :minorGridlines="3"/>
       </div>
     </div>
-    <p v-else-if="error">Error fetching meter readings: {{ error }}</p>
-    <p v-else>Loading…</p>
+    <p v-else-if="error">Fout bij ophalen van meterstanden: {{ error }}</p>
+    <p v-else>Bezig met laden…</p>
   `
 })
 
@@ -210,7 +266,10 @@ Vue.component('MeterReadingsChart', {
     meterType: String,
     data: Array,
     title: String,
-    yColumn: String,
+    consumptionColumn: String,
+    productionColumn: String,
+    netConsumptionColumn: String,
+    vAxisMin: Number,
     vAxisMax: Number,
     endTime: Date,
     durationMillis: Number,
@@ -219,7 +278,7 @@ Vue.component('MeterReadingsChart', {
   },
   computed: {
     options: function () {
-      const options = defaultChartOptions(this.$props.meterType, this.$props.vAxisMax)
+      const options = defaultChartOptions(this.$props.meterType, this.$props.vAxisMin, this.$props.vAxisMax)
       options.title = this.$props.title
       options.hAxis = {
         format: 'HH:mm', // For days, use: 'EEE\nd MMM'
@@ -238,20 +297,24 @@ Vue.component('MeterReadingsChart', {
     }
   },
   template: `
-    <ColumnChart
+    <ComboChart
       :data="data"
-      :x-column="'centerTimestamp'"
-      :y-column="yColumn"
+      :xColumn="'centerTimestamp'"
+      :consumptionColumn="consumptionColumn"
+      :productionColumn="productionColumn"
+      :netConsumptionColumn="netConsumptionColumn"
       :options="options"
     />
   `
 })
 
-Vue.component('ColumnChart', googleChartsComponent({
+Vue.component('ComboChart', googleChartsComponent({
   props: {
     data: Array,
     xColumn: String,
-    yColumn: String,
+    consumptionColumn: String,
+    productionColumn: String,
+    netConsumptionColumn: String,
     options: Object
   },
   template: '<div/>',
@@ -270,9 +333,32 @@ Vue.component('ColumnChart', googleChartsComponent({
       }
       return -1
     }
-    dataView.setColumns([this.xColumn, this.yColumn].map(getColumnIndex))
+    const xColumnIndex = getColumnIndex(this.xColumn)
+    const consumptionColumnIndex = getColumnIndex(this.consumptionColumn)
+    const columns = [xColumnIndex, consumptionColumnIndex]
+    if (this.productionColumn) {
+      const productionColumnIndex = getColumnIndex(this.productionColumn)
+      columns.push({
+        calc: (dataTable, rowIndex) => {
+          const production = dataTable.getValue(rowIndex, productionColumnIndex)
+          return typeof production === 'number' ? -production : production
+        },
+        type: 'number',
+        label: this.productionColumn + 'Negated',
+      })
+      columns.push({
+        calc: (dataTable, rowIndex) => {
+          const consumption = dataTable.getValue(rowIndex, consumptionColumnIndex)
+          const production = dataTable.getValue(rowIndex, productionColumnIndex)
+          return typeof consumption === 'number' && typeof production === 'number' ? consumption - production : consumption;
+        },
+        type: 'number',
+        label: this.productionColumn + 'Net',
+      })
+    }
+    dataView.setColumns(columns)
 
-    const chart = new google.visualization.ColumnChart(this.$el)
+    const chart = new google.visualization.ComboChart(this.$el)
     chart.draw(dataView, this.options)
   }
 }))
