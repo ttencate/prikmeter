@@ -23,7 +23,6 @@ describe('services/telegrams', () => {
       const telegram = userTelegrams[0]
       expect(telegram.uploadTimestamp).to.exist
       delete telegram.uploadTimestamp
-      telegram.telegram = telegram.telegram.toString()
       expect(telegram).to.deep.equal(testDb.data.telegram)
     })
   })

@@ -9,6 +9,7 @@ module.exports = {
     const telegrams = await db.from('telegrams')
         .where({ ownerUserId: user.id })
         .select('ownerUserId', 'telegram', 'uploadTimestamp')
+        .orderBy('uploadTimestamp')
     return telegrams
   }
 }

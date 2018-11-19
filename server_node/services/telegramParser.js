@@ -172,7 +172,9 @@ const KNOWN_COSEM_OBJECTS = [
 
 module.exports = {
 
-  isCrcValid: function checkCrc (data) {
+  isCrcValid: function checkCrc (dataBuffer) {
+    const data = dataBuffer.toString('ascii')
+
     // [^], unlike ., matches any character _including_ \r and \n.
     const match = /^([^]*!)([a-fA-F0-9]{4})\s*$/.exec(data)
     if (!match) {
@@ -197,7 +199,9 @@ module.exports = {
     return true
   },
 
-  parse: function parse (data) {
+  parse: function parse (dataBuffer) {
+    const data = dataBuffer.toString('ascii')
+
     const lines = data.split('\r\n').map(line => line.trim()).filter((line) => line.length > 0)
     if (lines.length === 0) {
       throwParseError('No non-blank lines found in telegram')

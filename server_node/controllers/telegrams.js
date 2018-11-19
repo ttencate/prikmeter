@@ -19,7 +19,7 @@ async function createFromBody (req, res) {
   }
 
   const token = req.headers[AUTH_TOKEN_HEADER] || ''
-  const data = req.body.toString('ascii') // TODO see what happens if we shove it to the database as a Buffer directly -- at least backslashes are currently breaking it!
+  const dataBuffer = req.body
 
   const user = await authTokens.getOwnerUser({ token })
   if (!user) {
@@ -28,10 +28,10 @@ async function createFromBody (req, res) {
     return
   }
 
-  const telegram = await telegrams.create({ ownerUserId: user.id, telegram: data })
-  log.info(`Stored ${data.length} byte telegram for user ${user.id}`)
+  await telegrams.create({ ownerUserId: user.id, telegram: dataBuffer })
+  log.info(`Stored ${dataBuffer.length} byte telegram for user ${user.id}`)
 
-  if (!telegramParser.isCrcValid(data)) {
+  if (!telegramParser.isCrcValid(dataBuffer)) {
     res.status(400)
     res.send('CRC mismatch')
     return
@@ -39,7 +39,7 @@ async function createFromBody (req, res) {
 
   let telegramReadings
   try {
-    telegramReadings = telegramParser.parse(data)
+    telegramReadings = telegramParser.parse(dataBuffer)
   } catch (ex) {
     log.warn(`Error parsing telegram: ${ex}`)
     throw ex

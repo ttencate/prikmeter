@@ -42,7 +42,7 @@ describe('controllers/telegrams', () => {
       await expect(await telegramsService.getForUser({ id: testDb.data.user.id })).to.have.length(2)
     })
 
-    describe('when passed valid credentials and a valid telegram', async () => {
+    describe('when passed valid credentials and a valid DSMR 4.0 telegram', async () => {
       let res
 
       beforeEach(async () => {
@@ -57,7 +57,9 @@ describe('controllers/telegrams', () => {
       })
 
       it('creates the telegram', async () => {
-        await expect(await telegramsService.getForUser({ id: testDb.data.user.id })).to.have.length(2)
+        const telegrams = await telegramsService.getForUser({ id: testDb.data.user.id })
+        expect(telegrams).to.have.length(2)
+        expect(telegrams[1].telegram).to.deep.equal(testDb.data.telegram.telegram)
       })
 
       it('creates the meters', async () => {
@@ -81,6 +83,27 @@ describe('controllers/telegrams', () => {
       it('creates the gas reading', async () => {
         const reading = Object.assign({}, testDb.data.gasReading, { type: 'gas' })
         await expect(readings.getForMeter({ id: testDb.data.gasReading.meterId, type: 'gas' })).to.eventually.deep.equal([reading])
+      })
+    })
+
+    describe('when passed valid credentials and a valid DSMR 5.0 telegram', async () => {
+      let res
+
+      beforeEach(async () => {
+        res = await simulateRequest(telegrams.createFromBody, {
+          headers: { 'X-Auth-Token': testDb.data.authToken.token },
+          body: testDb.data.telegramDsmr50.telegram
+        })
+      })
+
+      it('returns a success response', () => {
+        expect(res.statusCode).to.equal(200)
+      })
+
+      it('creates the telegram', async () => {
+        const telegrams = await telegramsService.getForUser({ id: testDb.data.user.id })
+        expect(telegrams).to.have.length(2)
+        expect(telegrams[1].telegram).to.deep.equal(testDb.data.telegramDsmr50.telegram)
       })
     })
   })
