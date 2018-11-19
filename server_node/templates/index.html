@@ -5,7 +5,7 @@
   </head>
   <body>
     {% if errors %}
-      <h3>Errors</h3>
+      <h3>Foutmeldingen</h3>
       <ul>
       {% for error in errors %}
         <li>{{ error }}</li>
@@ -13,21 +13,26 @@
       </ul>
     {% endif %}
     {% if user %}
-      <h3>Logged in as {{ user.email }}</h3>
+      <h3>Aangemeld als {{ user.email }}</h3>
       <form action="/logout" method="POST">
-        <input value="Log out" type="submit">
+        <input value="Afmelden" type="submit">
       </form>
       <div id="main">
         <div style="margin: 0 -15px">
         {% for meter in meters %}
           <div style="float: left; width: 500px; margin: 0 15px">
-            <h3>{{ meter.type | title }}: <code>{{ meter.id }}</code></h3>
+            <h3>
+              {% if meter.type == 'electricity' %}Elektriciteit{% endif %}
+              {% if meter.type == 'gas' %}Gas{% endif %}
+              <br>
+              <small>Meternummer <code>{{ meter.id }}</code></small>
+            </h3>
             <meter-readings meter-type="{{ meter.type }}" meter-id="{{ meter.id }}"></meter-readings>
           </div>
         {% endfor %}
         </div>
         <div style="clear: both"></div>
-        <h3>Auth tokens</h3>
+        <h3>Authenticatie-tokens</h3>
         <ul>
           {% for authToken in authTokens %}
             <li><code>{{ authToken.token }}</code></li>
@@ -35,20 +40,20 @@
         </ul>
       </div>
     {% else %}
-      <h3>Log in</h3>
+      <h3>Aanmelden</h3>
       <form action="/login" method="POST">
-        Email: <input name="email" type="email">
-        Password: <input name="password" type="password">
+        E-mail: <input name="email" type="email">
+        Wachtwoord: <input name="password" type="password">
         <input name="return_url" type="hidden" value="{{ return_url }}">
-        <input value="Log in" type="submit">
+        <input value="Aanmelden" type="submit">
       </form>
       <h3>Create account</h3>
       <form action="/users" method="POST">
-        Email: <input name="email" type="email">
-        Password: <input name="password1" type="password">
-        Password (repeated): <input name="password2" type="password">
+        E-mail: <input name="email" type="email">
+        Wachtwoord: <input name="password1" type="password">
+        Wachtwoord (herhaling): <input name="password2" type="password">
         <input name="return_url" type="hidden" value="{{ return_url }}">
-        <input value="Create account" type="submit">
+        <input value="Account aanmaken" type="submit">
       </form>
     {% endif %}
     <script src="//www.gstatic.com/charts/loader.js"></script>
