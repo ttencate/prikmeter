@@ -1,10 +1,13 @@
+PWD := $(shell pwd)
+
 # https://github.com/plerup/makeEspArduino
 SKETCH := prikmeter.ino
 CHIP := esp8266
 BOARD := nodemcuv2
 UPLOAD_SPEED := 115200
 ESPTOOL_PY := ../esptool/esptool.py
-BUILD_ROOT := ./build
+BUILD_ROOT := $(PWD)/build
+# VERBOSE := 1
 
 .PHONY: check_prikmeter_config_h
 check_prikmeter_config_h:
@@ -19,7 +22,7 @@ BUILD_EXTRA_FLAGS := \
   $(if $(PRINT_TELEGRAM), -DPRINT_TELEGRAM) \
   $(if $(DONT_SEND_TELEGRAM), -DDONT_SEND_TELEGRAM)
 
-include makeEspArduino.mk
+include makeEspArduino/makeEspArduino.mk
 
 $(USER_OBJ): check_prikmeter_config_h $(PRIKMETER_CONFIG_H)
 

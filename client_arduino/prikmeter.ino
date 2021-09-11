@@ -9,9 +9,16 @@
 
 #include "telegram_reader.h"
 
-#define SERIAL_RX_PIN D5
 #define LED_PIN D4
-#define P1_BUFFER_SIZE_BYTES 4096
+
+#define P1_PIN D5
+#define P1_BAUD 115200
+#define P1_CONFIG SWSERIAL_8N1
+#define P1_INVERT true
+// Receive buffer size for P1 port. We'd like to set this higher, but even 1024
+// (which would fit a typical telegram in its entirety) results in OOMs at
+// startup.
+#define P1_BUFFER_SIZE_BYTES 128
 
 #define READ_TIMEOUT_MILLIS 5000
 
@@ -30,8 +37,9 @@
 #  define P1_INPUT p1
 #endif
 
-SoftwareSerial p1(SERIAL_RX_PIN, -1, true, P1_BUFFER_SIZE_BYTES);
+SoftwareSerial p1;
 TelegramReader telegramReader;
+Session tlsSession;
 WiFiClientSecure httpsClient;
 
 enum ErrorCode {
@@ -119,14 +127,17 @@ ErrorCode uploadTelegram(byte const *buffer, uint16 size) {
   if (!httpsClient.connect(SERVER_HOST, SERVER_PORT)) {
     Serial.print("Failed to connect to " SERVER_HOST ":");
     Serial.print(SERVER_PORT);
-    Serial.println();
-    return SERVER_CONNECT_ERROR;
-  }
-
-  if (!httpsClient.verify(SERVER_CERTIFICATE_FINGERPRINT, SERVER_HOST)) {
-    Serial.println("Certificate verification failed");
-    httpsClient.stop();
-    return SERVER_SSL_ERROR;
+    if (httpsClient.getLastSSLError()) {
+      char sslError[256];
+      httpsClient.getLastSSLError(sslError, sizeof(sslError) / sizeof(char));
+      Serial.print(" due to SSL error: ");
+      Serial.print(sslError);
+      Serial.println();
+      return SERVER_SSL_ERROR;
+    } else {
+      Serial.println();
+      return SERVER_CONNECT_ERROR;
+    }
   }
 
   httpsClient.print(
@@ -207,10 +218,13 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   setLed(true);
 
+  httpsClient.setSession(&tlsSession);
+  httpsClient.setFingerprint(SERVER_CERTIFICATE_FINGERPRINT);
+
   Serial.begin(115200);
 
   Serial.println("Opening P1 port");
-  p1.begin(115200);
+  p1.begin(P1_BAUD, P1_CONFIG, P1_PIN, -1, P1_INVERT, P1_BUFFER_SIZE_BYTES);
 
   Serial.print("Connecting to wifi [");
   WiFi.mode(WIFI_STA);
@@ -284,9 +298,10 @@ void loop() {
     }
 
     if (telegramReader.isComplete()) {
-      // Stop receiving data that we'll throw away anyway. The SoftwareSerial
-      // implementation does busy-waiting, so this might save some power too.
+      // Stop receiving data that we'll throw away anyway.
+#ifndef READ_FROM_SERIAL
       P1_INPUT.enableRx(false);
+#endif
 
       byte const *buffer = telegramReader.getBuffer();
       unsigned int size = telegramReader.getSize();
@@ -318,7 +333,9 @@ void loop() {
       }
 
       P1_INPUT.flush();
+#ifndef READ_FROM_SERIAL
       P1_INPUT.enableRx(true);
+#endif
     }
   }
 }

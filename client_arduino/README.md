@@ -5,11 +5,10 @@ Prerequisites
 -------------
 
 Install the Arduino core for ESP8266 by following [the
-instructions](https://github.com/esp8266/Arduino), except you need at least
-version `2.4.0-rc1`, so if `2.3.0` is still the latest stable release, use the
-following Board Manager URL:
+instructions](https://arduino-esp8266.readthedocs.io/en/3.0.2/installing.html).
+The latest version that has been tested is `3.0.2`.
 
-    https://github.com/esp8266/Arduino/releases/download/2.4.0-rc1/package_esp8266com_index.json
+Be sure to check out submodules of this repository as well.
 
 Configuration
 -------------
@@ -40,8 +39,9 @@ Then you can just use `make` to drive the build and upload process, using the
 commands from [makeEspArduino](https://github.com/plerup/makeEspArduino); type
 `make help` to get the full list. The commonly used ones:
 
-    $ make          # build the code
-    $ make flash    # upload the code
+    $ make          # build
+    $ make flash    # build and upload
+    $ make run      # build and upload, then monitor serial output
     $ make clean    # remove build outputs
 
 Debugging
