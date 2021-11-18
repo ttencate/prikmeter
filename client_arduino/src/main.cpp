@@ -4,8 +4,10 @@
 #include <time.h>
 #include <WiFiClientSecure.h>
 
+#ifndef PRIKMETER_CONFIG_INCLUDE
+#  error "You need to set PRIKMETER_CONFIG_INCLUDE to a configuration header that exists in the config/ directory."
+#endif
 #include PRIKMETER_CONFIG_INCLUDE
-#include "buildinfo.h"
 
 #include "telegram_reader.h"
 
@@ -144,7 +146,7 @@ ErrorCode uploadTelegram(byte const *buffer, uint16 size) {
       "POST /telegrams HTTP/1.1\r\n"
       "Host: " SERVER_HOST "\r\n"
       "User-Agent: " USER_AGENT " ");
-  httpsClient.print(_BuildInfo.src_version);
+  httpsClient.print(GIT_VERSION);
   httpsClient.print("\r\n"
       "Content-Type: text/plain\r\n"
       "Content-Length: ");

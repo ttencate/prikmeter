@@ -7,6 +7,3 @@
 [submodule "arduino_client/esptool"]
 	path = esptool
 	url = https://github.com/espressif/esptool.git
-[submodule "client_arduino/makeEspArduino"]
-	path = client_arduino/makeEspArduino
-	url = https://github.com/plerup/makeEspArduino.git

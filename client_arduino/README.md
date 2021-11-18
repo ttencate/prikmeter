@@ -4,19 +4,17 @@ Client
 Prerequisites
 -------------
 
-Install the Arduino core for ESP8266 by following [the
-instructions](https://arduino-esp8266.readthedocs.io/en/3.0.2/installing.html).
-The latest version that has been tested is `3.0.2`.
-
-Be sure to check out submodules of this repository as well.
+Install PlatformIO Core by following [the
+instructions](https://docs.platformio.org/en/latest//core/installation.html).
+This will take care of downloading everything else.
 
 Configuration
 -------------
 
-You need to copy the file `config.example.h` to a filename of your choice, say
-`config.home.h`, and edit it to fill in the required details (WiFi network name
-and password, server hostname and certificate, and your account's
-authentication token).
+You need to copy the file `config/config.example.h` to a filename of your
+choice, say `config/config.home.h`, and edit it to fill in the required details
+(WiFi network name and password, server hostname and certificate, and your
+account's authentication token).
 
 This file is parsed as C++ code, so escape your values accordingly if needed.
 
@@ -29,23 +27,34 @@ useful:
 Building
 --------
 
-To tell the `Makefile` where your configuration file is, set the variable
-`PRIKMETER_CONFIG` to contain the name of the file you just created, for
+To tell the `platformio.ini` where your configuration file is, set the variable
+`PRIKMETER_CONFIG_H` to contain the name of the file you just created, for
 example:
 
     $ export PRIKMETER_CONFIG_H=config.home.h
 
-Then you can just use `make` to drive the build and upload process, using the
-commands from [makeEspArduino](https://github.com/plerup/makeEspArduino); type
-`make help` to get the full list. The commonly used ones:
+Note that this should be relative to the `config/` directory.
 
-    $ make          # build
-    $ make flash    # build and upload
-    $ make run      # build and upload, then monitor serial output
-    $ make clean    # remove build outputs
+Then you can just use `pio` to drive the build and upload process, using the
+commands from
+[PlatformIO](https://docs.platformio.org/en/latest//core/userguide/index.html);
+type `pio -h` to get the full list. The commonly used ones:
+
+    $ pio check           # run cppcheck static analysis
+    $ pio run             # build
+    $ pio run -t upload   # build and upload
+    $ pio device monitor  # monitor serial output
+    $ pio run -t clean    # remove build outputs
+
+Testing
+-------
+
+// TODO figure out how to make this work with `pio test`
 
 Debugging
 ---------
+
+// TODO update this to use `pio device monitor`
 
 After connecting the ESP8266 via USB to your computer, find out its device name
 (Linux) like so:
@@ -59,11 +68,11 @@ this:
 
     $ minicom -b 115200 -D /dev/ttyUSB0
 
-If this doesn't work, it might help to run `make flash` first. Presumably this
-sets up the serial port in the right state.
+If this doesn't work, it might help to run `pio run -t upload` first.
+Presumably this sets up the serial port in the right state.
 
 For debugging and testing without an actual smart meter connected, the
-following arguments can be added to the `make` command line:
+following arguments can be added to the `pio` command line:
 
 * `READ_FROM_SERIAL=1` reads the telegram input from the serial port, instead
   of the P1 port.
