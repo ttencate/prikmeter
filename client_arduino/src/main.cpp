@@ -4,9 +4,6 @@
 #include <time.h>
 #include <WiFiClientSecure.h>
 
-#ifndef PRIKMETER_CONFIG_INCLUDE
-#  error "You need to set PRIKMETER_CONFIG_INCLUDE to a configuration header that exists in the config/ directory."
-#endif
 #include PRIKMETER_CONFIG_INCLUDE
 
 #include "telegram_reader.h"
