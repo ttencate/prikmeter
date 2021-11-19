@@ -1,3 +1,4 @@
 root.cert
 root_cert.cpp
 .pio/
+data/

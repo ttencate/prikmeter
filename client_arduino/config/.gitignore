@@ -1,2 +1,2 @@
-config.*.h
-!config.example.h
+*
+!prikmeter.example.json

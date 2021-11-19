@@ -1,14 +1,13 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <LittleFS.h>
 #include <SoftwareSerial.h>
 #include <time.h>
 #include <WiFiClientSecure.h>
 
-#include PRIKMETER_CONFIG_INCLUDE
-
+#include "Config.h"
+#include "errors.h"
 #include "telegram_reader.h"
-
-#define LED_PIN D4
 
 #define P1_PIN D5
 #define P1_BAUD 115200
@@ -23,12 +22,7 @@
 
 #define MIN_TELEGRAM_INTERVAL_MILLIS 9500
 
-#ifndef SERVER_PORT
-#define SERVER_PORT 443
-#endif
-#ifndef USER_AGENT
 #define USER_AGENT "prikmeter"
-#endif
 
 #ifdef READ_FROM_SERIAL
 #  define P1_INPUT Serial // Debugging aid.
@@ -36,83 +30,12 @@
 #  define P1_INPUT p1
 #endif
 
+Led led;
 SoftwareSerial p1;
+Config config;
 TelegramReader telegramReader;
 Session tlsSession;
 WiFiClientSecure httpsClient;
-
-enum ErrorCode {
-  NO_ERROR = 0,
-  WIFI_CONNECT_ERROR = 1,
-  NTP_ERROR = 2,
-  TELEGRAM_READ_ERROR = 3,
-  TELEGRAM_READ_TIMEOUT = 4,
-  TELEGRAM_CHECKSUM_ERROR = 5,
-  SERVER_CONNECT_ERROR = 6,
-  SERVER_SSL_ERROR = 7,
-  SERVER_READ_ERROR = 8,
-  SERVER_PROTOCOL_ERROR = 9,
-  SERVER_RESPONSE_ERROR = 10,
-};
-
-void setLed(bool on) {
-  digitalWrite(LED_PIN, on ? LOW : HIGH);
-}
-
-void flashLed(int ms) {
-  setLed(true);
-  delay(ms);
-  setLed(false);
-}
-
-/**
- * Flashes out a decimal number in Morse code:
- * 0 -----
- * 1 .----
- * 2 ..---
- * 3 ...--
- * 4 ....-
- * 5 .....
- * 6 -....
- * 7 --...
- * 8 ---..
- * 9 ----.
- */
-void flashNumber(uint16 number) {
-  unsigned int const DOT_DURATION = 150;
-  unsigned int const DASH_DURATION = 3 * DOT_DURATION;
-  unsigned int const INTERVAL_DURATION = DOT_DURATION;
-  unsigned int const CHARACTER_SEPARATOR_DURATION = 3 * DOT_DURATION;
-  byte digits[5]; // Maximum is 65535, which is 5 digits long.
-  byte numDigits = 0;
-  while (number) {
-    digits[numDigits] = number % 10;
-    numDigits++;
-    number /= 10;
-  }
-  if (numDigits == 0) {
-    digits[0] = 0;
-    numDigits = 1;
-  }
-  while (numDigits) {
-    numDigits--;
-    setLed(false);
-    delay(CHARACTER_SEPARATOR_DURATION);
-
-    byte digit = digits[numDigits];
-    for (byte i = 0; i < 5; i++) {
-      // In case of underflow, this wraps and becomes greater than 5.
-      if (static_cast<byte>(digit - 1 - i) < 5) {
-        flashLed(DOT_DURATION);
-      } else {
-        flashLed(DASH_DURATION);
-      }
-      if (i < 4) {
-        delay(INTERVAL_DURATION);
-      }
-    }
-  }
-}
 
 void printTelegram(byte const *buffer, unsigned int size) {
   Serial.write(buffer, size);
@@ -123,9 +46,11 @@ void printTelegram(byte const *buffer, unsigned int size) {
  * Returns `true` on success.
  */
 ErrorCode uploadTelegram(byte const *buffer, uint16 size) {
-  if (!httpsClient.connect(SERVER_HOST, SERVER_PORT)) {
-    Serial.print("Failed to connect to " SERVER_HOST ":");
-    Serial.print(SERVER_PORT);
+  if (!httpsClient.connect(config.serverHost(), config.serverPort())) {
+    Serial.print("Failed to connect to ");
+    Serial.print(config.serverHost());
+    Serial.print(":");
+    Serial.print(config.serverPort());
     if (httpsClient.getLastSSLError()) {
       char sslError[256];
       httpsClient.getLastSSLError(sslError, sizeof(sslError) / sizeof(char));
@@ -141,7 +66,9 @@ ErrorCode uploadTelegram(byte const *buffer, uint16 size) {
 
   httpsClient.print(
       "POST /telegrams HTTP/1.1\r\n"
-      "Host: " SERVER_HOST "\r\n"
+      "Host: ");
+  httpsClient.print(config.serverHost());
+  httpsClient.print("\r\n"
       "User-Agent: " USER_AGENT " ");
   httpsClient.print(GIT_VERSION);
   httpsClient.print("\r\n"
@@ -149,7 +76,9 @@ ErrorCode uploadTelegram(byte const *buffer, uint16 size) {
       "Content-Length: ");
   httpsClient.print(size);
   httpsClient.print("\r\n"
-      "X-Auth-Token: " AUTH_TOKEN "\r\n"
+      "X-Auth-Token: ");
+  httpsClient.print(config.authToken());
+  httpsClient.print("\r\n"
       "Connection: close\r\n"
       "\r\n");
   httpsClient.write(buffer, size);
@@ -214,24 +143,37 @@ ErrorCode uploadTelegram(byte const *buffer, uint16 size) {
 }
 
 void setup() {
-  pinMode(LED_PIN, OUTPUT);
-  setLed(true);
-
-  httpsClient.setSession(&tlsSession);
-  httpsClient.setFingerprint(SERVER_CERTIFICATE_FINGERPRINT);
+  led.begin();
+  led.set(true);
 
   Serial.begin(115200);
+
+  Serial.println("Mounting file system");
+  LittleFSConfig fsConfig;
+  fsConfig.setAutoFormat(false); // TODO set to true once we have a configuration UI
+  LittleFS.setConfig(fsConfig);
+  LittleFS.begin();
+
+  Serial.println("Reading configuration");
+  ErrorCode error = config.begin();
+  if (error) {
+    led.flashNumber(error);
+    return;
+  }
+
+  httpsClient.setSession(&tlsSession);
+  httpsClient.setFingerprint(config.serverCertificateFingerprint());
 
   Serial.println("Opening P1 port");
   p1.begin(P1_BAUD, P1_CONFIG, P1_PIN, -1, P1_INVERT, P1_BUFFER_SIZE_BYTES);
 
-  Serial.print("Connecting to wifi [");
+  Serial.print("Connecting to wifi access point \"");
+  Serial.print(config.wifiSsid());
+  Serial.print("\" [");
   WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(config.wifiSsid(), config.wifiPassword());
   while (WiFi.status() != WL_CONNECTED) {
-    setLed(true);
-    delay(250);
-    setLed(false);
+    led.flash(250);
     delay(250);
     Serial.print(".");
   }
@@ -243,9 +185,7 @@ void setup() {
   configTime(0, 0, "pool.ntp.org", "time.nist.gov");
   time_t now = time(nullptr);
   while (now < 1000) {
-    setLed(true);
-    delay(125);
-    setLed(false);
+    led.flash(125);
     delay(125);
     Serial.print(".");
     now = time(nullptr);
@@ -254,7 +194,6 @@ void setup() {
   now = time(nullptr);
   Serial.print("Current time: ");
   Serial.print(ctime(&now));
-  Serial.println();
 
   Serial.println("Enabling auto sleep");
   WiFi.setSleepMode(WIFI_MODEM_SLEEP);
@@ -265,7 +204,7 @@ void setup() {
   // char const *testTelegram = "/hello\r\n!world\r\n";
   // uploadTelegram((byte const *) testTelegram, strlen(testTelegram));
 
-  setLed(false);
+  led.set(false);
 }
 
 void loop() {
@@ -277,7 +216,7 @@ void loop() {
     Serial.print(READ_TIMEOUT_MILLIS);
     Serial.println(" ms");
     telegramReader.reset();
-    flashNumber(TELEGRAM_READ_TIMEOUT);
+    led.flashNumber(TELEGRAM_READ_TIMEOUT);
   }
 
   int b = P1_INPUT.read();
@@ -293,7 +232,7 @@ void loop() {
     if (telegramReader.hasError()) {
       Serial.println("Telegram read error");
       telegramReader.reset();
-      flashNumber(TELEGRAM_READ_ERROR);
+      led.flashNumber(TELEGRAM_READ_ERROR);
     }
 
     if (telegramReader.isComplete()) {
@@ -314,9 +253,9 @@ void loop() {
 #ifndef DONT_SEND_TELEGRAM
       ErrorCode uploadError = uploadTelegram(buffer, size);
       if (uploadError) {
-        flashNumber(static_cast<uint16>(uploadError));
+        led.flashNumber(static_cast<uint16>(uploadError));
       } else {
-        flashLed(50);
+        led.flash(50);
       }
 #endif
 
