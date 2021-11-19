@@ -1,4 +1,4 @@
-#include "telegram_reader.h"
+#include "TelegramReader.h"
 
 TelegramReader::TelegramReader() {
   reset();

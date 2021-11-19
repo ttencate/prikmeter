@@ -15,11 +15,3 @@ enum ErrorCode {
   CONFIG_OPEN_ERROR = 11,
   CONFIG_PARSE_ERROR = 12,
 };
-
-class Led {
-  public:
-    void begin();
-    void set(bool on);
-    void flash(int ms);
-    void flashNumber(uint16 number);
-};

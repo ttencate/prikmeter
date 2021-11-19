@@ -42,7 +42,9 @@ type `pio -h` to get the full list. The commonly used ones:
 Unit testing
 ------------
 
-// TODO figure out how to make this work with `pio test`
+To run unit tests on the local machine (needs GCC):
+
+    $ pio test -t native
 
 Debugging
 ---------
