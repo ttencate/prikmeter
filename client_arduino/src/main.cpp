@@ -1,12 +1,15 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <InverterReader.h>
 #include <LittleFS.h>
+#include <SMAReader.h>
 #include <SoftwareSerial.h>
 #include <time.h>
 #include <WiFiClientSecure.h>
 
 #include "Config.h"
 #include "errors.h"
+#include "InverterReader.h"
 #include "Led.h"
 #include "TelegramReader.h"
 
@@ -35,6 +38,7 @@ Led led;
 SoftwareSerial p1;
 Config config;
 TelegramReader telegramReader;
+InverterReader inverterReader;
 Session tlsSession;
 WiFiClientSecure httpsClient;
 
@@ -196,16 +200,25 @@ void setup() {
   Serial.print("Current time: ");
   Serial.print(ctime(&now));
 
+  Serial.println("Setting up inverter reader");
+  inverterReader.begin(config);
+
   Serial.println("Enabling auto sleep");
   WiFi.setSleepMode(WIFI_MODEM_SLEEP);
 
   Serial.println("Up and running");
 
+  led.set(false);
+
   // Serial.println("Sending test telegram");
   // char const *testTelegram = "/hello\r\n!world\r\n";
   // uploadTelegram((byte const *) testTelegram, strlen(testTelegram));
 
-  led.set(false);
+  inverterReader.update();
+  Serial.print("Current power (W): ");
+  Serial.println(inverterReader.powerWatts());
+  Serial.print("Total energy (kWh): ");
+  Serial.println(inverterReader.totalEnergyWattHours() / 1000.0);
 }
 
 void loop() {

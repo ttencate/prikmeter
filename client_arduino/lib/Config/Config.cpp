@@ -21,10 +21,16 @@ ErrorCode Config::begin() {
 
   wifiSsid_ = doc_["wifiSsid"] | "";
   wifiPassword_ = doc_["wifiPassword"] | "";
+
   serverHost_ = doc_["serverHost"] | "";
   serverPort_ = doc_["serverPort"] | 443;
   serverCertificateFingerprint_ = doc_["serverCertificateFingerprint"] | "";
   authToken_ = doc_["authToken"] | "";
+
+  inverterType_ = doc_["inverterType"] | "";
+  inverterHost_ = doc_["inverterHost"] | "";
+  smaAccountType_ = doc_["smaAccountType"] | "";
+  inverterPassword_ = doc_["inverterPassword"] | "";
 
   return NO_ERROR;
 }

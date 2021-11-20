@@ -7,3 +7,6 @@
 [submodule "arduino_client/esptool"]
 	path = esptool
 	url = https://github.com/espressif/esptool.git
+[submodule "client_arduino/lib/SMA-SunnyBoy-Reader"]
+	path = client_arduino/lib/SMA-SunnyBoy-Reader
+	url = git@github.com:ttencate/SMA-SunnyBoy-Reader.git
