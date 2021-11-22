@@ -27,10 +27,9 @@ ErrorCode Config::begin() {
   serverCertificateFingerprint_ = doc_["serverCertificateFingerprint"] | "";
   authToken_ = doc_["authToken"] | "";
 
-  inverterType_ = doc_["inverterType"] | "";
+  inverterProtocol_ = doc_["inverterProtocol"] | "";
   inverterHost_ = doc_["inverterHost"] | "";
-  smaAccountType_ = doc_["smaAccountType"] | "";
-  inverterPassword_ = doc_["inverterPassword"] | "";
+  inverterPort_ = doc_["inverterPort"] | 502;
 
   return NO_ERROR;
 }

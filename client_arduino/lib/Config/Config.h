@@ -21,10 +21,9 @@ class Config {
     char const *serverCertificateFingerprint() const { return serverCertificateFingerprint_; }
     char const *authToken() const { return authToken_; }
 
-    char const *inverterType() const { return inverterType_; }
+    char const *inverterProtocol() const { return inverterProtocol_; }
     char const *inverterHost() const { return inverterHost_; }
-    char const *smaAccountType() const { return smaAccountType_; }
-    char const *inverterPassword() const { return inverterPassword_; }
+    uint16 inverterPort() const { return inverterPort_; }
 
   private:
     StaticJsonDocument<1024> doc_;
@@ -38,8 +37,7 @@ class Config {
     char const *serverCertificateFingerprint_ = 0;
     char const *authToken_ = 0;
 
-    char const *inverterType_ = 0;
+    char const *inverterProtocol_ = 0;
     char const *inverterHost_ = 0;
-    char const *smaAccountType_ = 0; // "usr" or "istl"
-    char const *inverterPassword_ = 0;
+    uint16 inverterPort_ = 0;
 };

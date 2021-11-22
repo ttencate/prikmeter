@@ -1,21 +1,21 @@
 #include <cstring>
 
 #include "InverterReader.h"
-#include "SmaInverterReader.h"
+#include "SunspecInverterReader.h"
 
 ErrorCode NullInverterReader::update() {
   return NO_ERROR;
 }
 
 ErrorCode InverterReader::begin(Config const &config) {
-  char const *const inverterType = config.inverterType();
-  if (!strcmp(inverterType, "sma")) {
-    impl_.reset(new SmaInverterReader(config));
-  } else if (!strcmp(inverterType, "")) {
+  char const *const inverterProtocol = config.inverterProtocol();
+  if (!strcmp(inverterProtocol, "sunspec")) {
+    impl_.reset(new SunspecInverterReader(config.inverterHost(), config.inverterPort()));
+  } else if (!strcmp(inverterProtocol, "")) {
     impl_.reset(new NullInverterReader());
   } else {
-    Serial.print("Unknown inverter type: ");
-    Serial.println(inverterType);
+    Serial.print("Unknown inverter protocol: ");
+    Serial.println(inverterProtocol);
     impl_.reset(new NullInverterReader());
     return CONFIG_VALUE_ERROR;
   }
