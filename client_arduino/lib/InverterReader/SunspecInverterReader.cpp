@@ -51,12 +51,8 @@ ErrorCode SunspecInverterReader::update() {
       if (!sunSpec.parseCurrentModel(&model)) {
         continue;
       }
-      Serial.println(model.watts());
-      Serial.println(model.W_SF());
-      Serial.println(model.wattHours());
-      Serial.println(model.WH_SF());
-      powerWatts_ = model.watts() * model.W_SF();
-      totalEnergyWattHours_ = model.wattHours() * model.WH_SF();
+      powerWatts_ = model.watts();
+      totalEnergyWattHours_ = model.wattHours();
     }
     // TODO add split-phase and three-phase inverters as well as all their FLOAT counterparts
 

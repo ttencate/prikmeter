@@ -636,141 +636,117 @@ class InverterSinglePhase : public SunSpecModel<101, 50> {
     /**
      * AC Current [A]
      */
-    inline uint16_t amps() const { return parse_uint16(0); }
+    inline float amps() const { return parse_uint16_sunssf(0, 4); }
 
     /**
      * Phase A Current [A]
      */
-    inline uint16_t ampsPhaseA() const { return parse_uint16(1); }
+    inline float ampsPhaseA() const { return parse_uint16_sunssf(1, 4); }
 
     /**
      * Phase B Current [A]
      */
-    inline uint16_t ampsPhaseB() const { return parse_uint16(2); }
+    inline float ampsPhaseB() const { return parse_uint16_sunssf(2, 4); }
 
     /**
      * Phase C Current [A]
      */
-    inline uint16_t ampsPhaseC() const { return parse_uint16(3); }
-
-    inline int16_t A_SF() const { return parse_sunssf(4); }
+    inline float ampsPhaseC() const { return parse_uint16_sunssf(3, 4); }
 
     /**
      * Phase Voltage AB [V]
      */
-    inline uint16_t phaseVoltageAB() const { return parse_uint16(5); }
+    inline float phaseVoltageAB() const { return parse_uint16_sunssf(5, 11); }
 
     /**
      * Phase Voltage BC [V]
      */
-    inline uint16_t phaseVoltageBC() const { return parse_uint16(6); }
+    inline float phaseVoltageBC() const { return parse_uint16_sunssf(6, 11); }
 
     /**
      * Phase Voltage CA [V]
      */
-    inline uint16_t phaseVoltageCA() const { return parse_uint16(7); }
+    inline float phaseVoltageCA() const { return parse_uint16_sunssf(7, 11); }
 
     /**
      * Phase Voltage AN [V]
      */
-    inline uint16_t phaseVoltageAN() const { return parse_uint16(8); }
+    inline float phaseVoltageAN() const { return parse_uint16_sunssf(8, 11); }
 
     /**
      * Phase Voltage BN [V]
      */
-    inline uint16_t phaseVoltageBN() const { return parse_uint16(9); }
+    inline float phaseVoltageBN() const { return parse_uint16_sunssf(9, 11); }
 
     /**
      * Phase Voltage CN [V]
      */
-    inline uint16_t phaseVoltageCN() const { return parse_uint16(10); }
-
-    inline int16_t V_SF() const { return parse_sunssf(11); }
+    inline float phaseVoltageCN() const { return parse_uint16_sunssf(10, 11); }
 
     /**
      * AC Power [W]
      */
-    inline int16_t watts() const { return parse_int16(12); }
-
-    inline int16_t W_SF() const { return parse_sunssf(13); }
+    inline float watts() const { return parse_int16_sunssf(12, 13); }
 
     /**
      * Line Frequency [Hz]
      */
-    inline uint16_t hz() const { return parse_uint16(14); }
-
-    inline int16_t hz_SF() const { return parse_sunssf(15); }
+    inline float hz() const { return parse_uint16_sunssf(14, 15); }
 
     /**
      * AC Apparent Power [VA]
      */
-    inline int16_t VA() const { return parse_int16(16); }
-
-    inline int16_t VA_SF() const { return parse_sunssf(17); }
+    inline float VA() const { return parse_int16_sunssf(16, 17); }
 
     /**
      * AC Reactive Power [var]
      */
-    inline int16_t vAr() const { return parse_int16(18); }
-
-    inline int16_t vAr_SF() const { return parse_sunssf(19); }
+    inline float vAr() const { return parse_int16_sunssf(18, 19); }
 
     /**
      * AC Power Factor [Pct]
      */
-    inline int16_t PF() const { return parse_int16(20); }
-
-    inline int16_t PF_SF() const { return parse_sunssf(21); }
+    inline float PF() const { return parse_int16_sunssf(20, 21); }
 
     /**
      * AC Energy [Wh]
      */
-    inline uint32_t wattHours() const { return parse_acc32(22); }
-
-    inline int16_t WH_SF() const { return parse_sunssf(24); }
+    inline double wattHours() const { return parse_acc32_sunssf(22, 24); }
 
     /**
      * DC Current [A]
      */
-    inline uint16_t DCAmps() const { return parse_uint16(25); }
-
-    inline int16_t DCA_SF() const { return parse_sunssf(26); }
+    inline float DCAmps() const { return parse_uint16_sunssf(25, 26); }
 
     /**
      * DC Voltage [V]
      */
-    inline uint16_t DCVoltage() const { return parse_uint16(27); }
-
-    inline int16_t DCV_SF() const { return parse_sunssf(28); }
+    inline float DCVoltage() const { return parse_uint16_sunssf(27, 28); }
 
     /**
      * DC Power [W]
      */
-    inline int16_t DCWatts() const { return parse_int16(29); }
-
-    inline int16_t DCW_SF() const { return parse_sunssf(30); }
+    inline float DCWatts() const { return parse_int16_sunssf(29, 30); }
 
     /**
      * Cabinet Temperature [C]
      */
-    inline int16_t cabinetTemperature() const { return parse_int16(31); }
+    inline float cabinetTemperature() const { return parse_int16_sunssf(31, 35); }
 
     /**
      * Heat Sink Temperature [C]
      */
-    inline int16_t heatSinkTemperature() const { return parse_int16(32); }
+    inline float heatSinkTemperature() const { return parse_int16_sunssf(32, 35); }
 
     /**
      * Transformer Temperature [C]
      */
-    inline int16_t transformerTemperature() const { return parse_int16(33); }
+    inline float transformerTemperature() const { return parse_int16_sunssf(33, 35); }
 
     /**
      * Other Temperature [C]
      */
-    inline int16_t otherTemperature() const { return parse_int16(34); }
-
-    inline int16_t tmp_SF() const { return parse_sunssf(35); }
+    inline float otherTemperature() const { return parse_int16_sunssf(34, 35); }
 
     /**
      * Enumerated value.  Operating state
@@ -822,141 +798,117 @@ class InverterSplitPhase : public SunSpecModel<102, 50> {
     /**
      * AC Current [A]
      */
-    inline uint16_t amps() const { return parse_uint16(0); }
+    inline float amps() const { return parse_uint16_sunssf(0, 4); }
 
     /**
      * Phase A Current [A]
      */
-    inline uint16_t ampsPhaseA() const { return parse_uint16(1); }
+    inline float ampsPhaseA() const { return parse_uint16_sunssf(1, 4); }
 
     /**
      * Phase B Current [A]
      */
-    inline uint16_t ampsPhaseB() const { return parse_uint16(2); }
+    inline float ampsPhaseB() const { return parse_uint16_sunssf(2, 4); }
 
     /**
      * Phase C Current [A]
      */
-    inline uint16_t ampsPhaseC() const { return parse_uint16(3); }
-
-    inline int16_t A_SF() const { return parse_sunssf(4); }
+    inline float ampsPhaseC() const { return parse_uint16_sunssf(3, 4); }
 
     /**
      * Phase Voltage AB [V]
      */
-    inline uint16_t phaseVoltageAB() const { return parse_uint16(5); }
+    inline float phaseVoltageAB() const { return parse_uint16_sunssf(5, 11); }
 
     /**
      * Phase Voltage BC [V]
      */
-    inline uint16_t phaseVoltageBC() const { return parse_uint16(6); }
+    inline float phaseVoltageBC() const { return parse_uint16_sunssf(6, 11); }
 
     /**
      * Phase Voltage CA [V]
      */
-    inline uint16_t phaseVoltageCA() const { return parse_uint16(7); }
+    inline float phaseVoltageCA() const { return parse_uint16_sunssf(7, 11); }
 
     /**
      * Phase Voltage AN [V]
      */
-    inline uint16_t phaseVoltageAN() const { return parse_uint16(8); }
+    inline float phaseVoltageAN() const { return parse_uint16_sunssf(8, 11); }
 
     /**
      * Phase Voltage BN [V]
      */
-    inline uint16_t phaseVoltageBN() const { return parse_uint16(9); }
+    inline float phaseVoltageBN() const { return parse_uint16_sunssf(9, 11); }
 
     /**
      * Phase Voltage CN [V]
      */
-    inline uint16_t phaseVoltageCN() const { return parse_uint16(10); }
-
-    inline int16_t V_SF() const { return parse_sunssf(11); }
+    inline float phaseVoltageCN() const { return parse_uint16_sunssf(10, 11); }
 
     /**
      * AC Power [W]
      */
-    inline int16_t watts() const { return parse_int16(12); }
-
-    inline int16_t W_SF() const { return parse_sunssf(13); }
+    inline float watts() const { return parse_int16_sunssf(12, 13); }
 
     /**
      * Line Frequency [Hz]
      */
-    inline uint16_t hz() const { return parse_uint16(14); }
-
-    inline int16_t hz_SF() const { return parse_sunssf(15); }
+    inline float hz() const { return parse_uint16_sunssf(14, 15); }
 
     /**
      * AC Apparent Power [VA]
      */
-    inline int16_t VA() const { return parse_int16(16); }
-
-    inline int16_t VA_SF() const { return parse_sunssf(17); }
+    inline float VA() const { return parse_int16_sunssf(16, 17); }
 
     /**
      * AC Reactive Power [var]
      */
-    inline int16_t vAr() const { return parse_int16(18); }
-
-    inline int16_t vAr_SF() const { return parse_sunssf(19); }
+    inline float vAr() const { return parse_int16_sunssf(18, 19); }
 
     /**
      * AC Power Factor [Pct]
      */
-    inline int16_t PF() const { return parse_int16(20); }
-
-    inline int16_t PF_SF() const { return parse_sunssf(21); }
+    inline float PF() const { return parse_int16_sunssf(20, 21); }
 
     /**
      * AC Energy [Wh]
      */
-    inline uint32_t wattHours() const { return parse_acc32(22); }
-
-    inline int16_t WH_SF() const { return parse_sunssf(24); }
+    inline double wattHours() const { return parse_acc32_sunssf(22, 24); }
 
     /**
      * DC Current [A]
      */
-    inline uint16_t DCAmps() const { return parse_uint16(25); }
-
-    inline int16_t DCA_SF() const { return parse_sunssf(26); }
+    inline float DCAmps() const { return parse_uint16_sunssf(25, 26); }
 
     /**
      * DC Voltage [V]
      */
-    inline uint16_t DCVoltage() const { return parse_uint16(27); }
-
-    inline int16_t DCV_SF() const { return parse_sunssf(28); }
+    inline float DCVoltage() const { return parse_uint16_sunssf(27, 28); }
 
     /**
      * DC Power [W]
      */
-    inline int16_t DCWatts() const { return parse_int16(29); }
-
-    inline int16_t DCW_SF() const { return parse_sunssf(30); }
+    inline float DCWatts() const { return parse_int16_sunssf(29, 30); }
 
     /**
      * Cabinet Temperature [C]
      */
-    inline int16_t cabinetTemperature() const { return parse_int16(31); }
+    inline float cabinetTemperature() const { return parse_int16_sunssf(31, 35); }
 
     /**
      * Heat Sink Temperature [C]
      */
-    inline int16_t heatSinkTemperature() const { return parse_int16(32); }
+    inline float heatSinkTemperature() const { return parse_int16_sunssf(32, 35); }
 
     /**
      * Transformer Temperature [C]
      */
-    inline int16_t transformerTemperature() const { return parse_int16(33); }
+    inline float transformerTemperature() const { return parse_int16_sunssf(33, 35); }
 
     /**
      * Other Temperature [C]
      */
-    inline int16_t otherTemperature() const { return parse_int16(34); }
-
-    inline int16_t tmp_SF() const { return parse_sunssf(35); }
+    inline float otherTemperature() const { return parse_int16_sunssf(34, 35); }
 
     /**
      * Enumerated value.  Operating state
@@ -1008,141 +960,117 @@ class InverterThreePhase : public SunSpecModel<103, 50> {
     /**
      * AC Current [A]
      */
-    inline uint16_t amps() const { return parse_uint16(0); }
+    inline float amps() const { return parse_uint16_sunssf(0, 4); }
 
     /**
      * Phase A Current [A]
      */
-    inline uint16_t ampsPhaseA() const { return parse_uint16(1); }
+    inline float ampsPhaseA() const { return parse_uint16_sunssf(1, 4); }
 
     /**
      * Phase B Current [A]
      */
-    inline uint16_t ampsPhaseB() const { return parse_uint16(2); }
+    inline float ampsPhaseB() const { return parse_uint16_sunssf(2, 4); }
 
     /**
      * Phase C Current [A]
      */
-    inline uint16_t ampsPhaseC() const { return parse_uint16(3); }
-
-    inline int16_t A_SF() const { return parse_sunssf(4); }
+    inline float ampsPhaseC() const { return parse_uint16_sunssf(3, 4); }
 
     /**
      * Phase Voltage AB [V]
      */
-    inline uint16_t phaseVoltageAB() const { return parse_uint16(5); }
+    inline float phaseVoltageAB() const { return parse_uint16_sunssf(5, 11); }
 
     /**
      * Phase Voltage BC [V]
      */
-    inline uint16_t phaseVoltageBC() const { return parse_uint16(6); }
+    inline float phaseVoltageBC() const { return parse_uint16_sunssf(6, 11); }
 
     /**
      * Phase Voltage CA [V]
      */
-    inline uint16_t phaseVoltageCA() const { return parse_uint16(7); }
+    inline float phaseVoltageCA() const { return parse_uint16_sunssf(7, 11); }
 
     /**
      * Phase Voltage AN [V]
      */
-    inline uint16_t phaseVoltageAN() const { return parse_uint16(8); }
+    inline float phaseVoltageAN() const { return parse_uint16_sunssf(8, 11); }
 
     /**
      * Phase Voltage BN [V]
      */
-    inline uint16_t phaseVoltageBN() const { return parse_uint16(9); }
+    inline float phaseVoltageBN() const { return parse_uint16_sunssf(9, 11); }
 
     /**
      * Phase Voltage CN [V]
      */
-    inline uint16_t phaseVoltageCN() const { return parse_uint16(10); }
-
-    inline int16_t V_SF() const { return parse_sunssf(11); }
+    inline float phaseVoltageCN() const { return parse_uint16_sunssf(10, 11); }
 
     /**
      * AC Power [W]
      */
-    inline int16_t watts() const { return parse_int16(12); }
-
-    inline int16_t W_SF() const { return parse_sunssf(13); }
+    inline float watts() const { return parse_int16_sunssf(12, 13); }
 
     /**
      * Line Frequency [Hz]
      */
-    inline uint16_t hz() const { return parse_uint16(14); }
-
-    inline int16_t hz_SF() const { return parse_sunssf(15); }
+    inline float hz() const { return parse_uint16_sunssf(14, 15); }
 
     /**
      * AC Apparent Power [VA]
      */
-    inline int16_t VA() const { return parse_int16(16); }
-
-    inline int16_t VA_SF() const { return parse_sunssf(17); }
+    inline float VA() const { return parse_int16_sunssf(16, 17); }
 
     /**
      * AC Reactive Power [var]
      */
-    inline int16_t vAr() const { return parse_int16(18); }
-
-    inline int16_t vAr_SF() const { return parse_sunssf(19); }
+    inline float vAr() const { return parse_int16_sunssf(18, 19); }
 
     /**
      * AC Power Factor [Pct]
      */
-    inline int16_t PF() const { return parse_int16(20); }
-
-    inline int16_t PF_SF() const { return parse_sunssf(21); }
+    inline float PF() const { return parse_int16_sunssf(20, 21); }
 
     /**
      * AC Energy [Wh]
      */
-    inline uint32_t wattHours() const { return parse_acc32(22); }
-
-    inline int16_t WH_SF() const { return parse_sunssf(24); }
+    inline double wattHours() const { return parse_acc32_sunssf(22, 24); }
 
     /**
      * DC Current [A]
      */
-    inline uint16_t DCAmps() const { return parse_uint16(25); }
-
-    inline int16_t DCA_SF() const { return parse_sunssf(26); }
+    inline float DCAmps() const { return parse_uint16_sunssf(25, 26); }
 
     /**
      * DC Voltage [V]
      */
-    inline uint16_t DCVoltage() const { return parse_uint16(27); }
-
-    inline int16_t DCV_SF() const { return parse_sunssf(28); }
+    inline float DCVoltage() const { return parse_uint16_sunssf(27, 28); }
 
     /**
      * DC Power [W]
      */
-    inline int16_t DCWatts() const { return parse_int16(29); }
-
-    inline int16_t DCW_SF() const { return parse_sunssf(30); }
+    inline float DCWatts() const { return parse_int16_sunssf(29, 30); }
 
     /**
      * Cabinet Temperature [C]
      */
-    inline int16_t cabinetTemperature() const { return parse_int16(31); }
+    inline float cabinetTemperature() const { return parse_int16_sunssf(31, 35); }
 
     /**
      * Heat Sink Temperature [C]
      */
-    inline int16_t heatSinkTemperature() const { return parse_int16(32); }
+    inline float heatSinkTemperature() const { return parse_int16_sunssf(32, 35); }
 
     /**
      * Transformer Temperature [C]
      */
-    inline int16_t transformerTemperature() const { return parse_int16(33); }
+    inline float transformerTemperature() const { return parse_int16_sunssf(33, 35); }
 
     /**
      * Other Temperature [C]
      */
-    inline int16_t otherTemperature() const { return parse_int16(34); }
-
-    inline int16_t tmp_SF() const { return parse_sunssf(35); }
+    inline float otherTemperature() const { return parse_int16_sunssf(34, 35); }
 
     /**
      * Enumerated value.  Operating state
@@ -1685,122 +1613,77 @@ class Nameplate : public SunSpecModel<120, 26> {
     /**
      * Continuous power output capability of the inverter. [W]
      */
-    inline uint16_t wRtg() const { return parse_uint16(1); }
-
-    /**
-     * Scale factor
-     */
-    inline int16_t wRtg_SF() const { return parse_sunssf(2); }
+    inline float wRtg() const { return parse_uint16_sunssf(1, 2); }
 
     /**
      * Continuous Volt-Ampere capability of the inverter. [VA]
      */
-    inline uint16_t vARtg() const { return parse_uint16(3); }
-
-    /**
-     * Scale factor
-     */
-    inline int16_t vARtg_SF() const { return parse_sunssf(4); }
+    inline float vARtg() const { return parse_uint16_sunssf(3, 4); }
 
     /**
      * Continuous VAR capability of the inverter in quadrant 1. [var]
      */
-    inline int16_t vArRtgQ1() const { return parse_int16(5); }
+    inline float vArRtgQ1() const { return parse_int16_sunssf(5, 9); }
 
     /**
      * Continuous VAR capability of the inverter in quadrant 2. [var]
      */
-    inline int16_t vArRtgQ2() const { return parse_int16(6); }
+    inline float vArRtgQ2() const { return parse_int16_sunssf(6, 9); }
 
     /**
      * Continuous VAR capability of the inverter in quadrant 3. [var]
      */
-    inline int16_t vArRtgQ3() const { return parse_int16(7); }
+    inline float vArRtgQ3() const { return parse_int16_sunssf(7, 9); }
 
     /**
      * Continuous VAR capability of the inverter in quadrant 4. [var]
      */
-    inline int16_t vArRtgQ4() const { return parse_int16(8); }
-
-    /**
-     * Scale factor
-     */
-    inline int16_t vArRtg_SF() const { return parse_sunssf(9); }
+    inline float vArRtgQ4() const { return parse_int16_sunssf(8, 9); }
 
     /**
      * Maximum RMS AC current level capability of the inverter. [A]
      */
-    inline uint16_t aRtg() const { return parse_uint16(10); }
-
-    /**
-     * Scale factor
-     */
-    inline int16_t aRtg_SF() const { return parse_sunssf(11); }
+    inline float aRtg() const { return parse_uint16_sunssf(10, 11); }
 
     /**
      * Minimum power factor capability of the inverter in quadrant 1. [cos()]
      */
-    inline int16_t pFRtgQ1() const { return parse_int16(12); }
+    inline float pFRtgQ1() const { return parse_int16_sunssf(12, 16); }
 
     /**
      * Minimum power factor capability of the inverter in quadrant 2. [cos()]
      */
-    inline int16_t pFRtgQ2() const { return parse_int16(13); }
+    inline float pFRtgQ2() const { return parse_int16_sunssf(13, 16); }
 
     /**
      * Minimum power factor capability of the inverter in quadrant 3. [cos()]
      */
-    inline int16_t pFRtgQ3() const { return parse_int16(14); }
+    inline float pFRtgQ3() const { return parse_int16_sunssf(14, 16); }
 
     /**
      * Minimum power factor capability of the inverter in quadrant 4. [cos()]
      */
-    inline int16_t pFRtgQ4() const { return parse_int16(15); }
-
-    /**
-     * Scale factor
-     */
-    inline int16_t pFRtg_SF() const { return parse_sunssf(16); }
+    inline float pFRtgQ4() const { return parse_int16_sunssf(15, 16); }
 
     /**
      * Nominal energy rating of storage device. [Wh]
      */
-    inline uint16_t wHRtg() const { return parse_uint16(17); }
-
-    /**
-     * Scale factor
-     */
-    inline int16_t wHRtg_SF() const { return parse_sunssf(18); }
+    inline float wHRtg() const { return parse_uint16_sunssf(17, 18); }
 
     /**
      * The usable capacity of the battery.  Maximum charge minus minimum charge from a technology capability perspective (Amp-hour capacity rating). [AH]
      */
-    inline uint16_t ahrRtg() const { return parse_uint16(19); }
-
-    /**
-     * Scale factor for amp-hour rating.
-     */
-    inline int16_t ahrRtg_SF() const { return parse_sunssf(20); }
+    inline float ahrRtg() const { return parse_uint16_sunssf(19, 20); }
 
     /**
      * Maximum rate of energy transfer into the storage device. [W]
      */
-    inline uint16_t maxChaRte() const { return parse_uint16(21); }
-
-    /**
-     * Scale factor
-     */
-    inline int16_t maxChaRte_SF() const { return parse_sunssf(22); }
+    inline float maxChaRte() const { return parse_uint16_sunssf(21, 22); }
 
     /**
      * Maximum rate of energy transfer out of the storage device. [W]
      */
-    inline uint16_t maxDisChaRte() const { return parse_uint16(23); }
-
-    /**
-     * Scale factor
-     */
-    inline int16_t maxDisChaRte_SF() const { return parse_sunssf(24); }
+    inline float maxDisChaRte() const { return parse_uint16_sunssf(23, 24); }
 
 };
 
@@ -1812,77 +1695,77 @@ class BasicSettings : public SunSpecModel<121, 30> {
     /**
      * Setting for maximum power output. Default to WRtg. [W]
      */
-    inline uint16_t wMax() const { return parse_uint16(0); }
+    inline float wMax() const { return parse_uint16_sunssf(0, 20); }
 
     /**
      * Voltage at the PCC. [V]
      */
-    inline uint16_t vRef() const { return parse_uint16(1); }
+    inline float vRef() const { return parse_uint16_sunssf(1, 21); }
 
     /**
      * Offset  from PCC to inverter. [V]
      */
-    inline int16_t vRefOfs() const { return parse_int16(2); }
+    inline float vRefOfs() const { return parse_int16_sunssf(2, 22); }
 
     /**
      * Setpoint for maximum voltage. [V]
      */
-    inline uint16_t vMax() const { return parse_uint16(3); }
+    inline float vMax() const { return parse_uint16_sunssf(3, 23); }
 
     /**
      * Setpoint for minimum voltage. [V]
      */
-    inline uint16_t vMin() const { return parse_uint16(4); }
+    inline float vMin() const { return parse_uint16_sunssf(4, 23); }
 
     /**
      * Setpoint for maximum apparent power. Default to VARtg. [VA]
      */
-    inline uint16_t vAMax() const { return parse_uint16(5); }
+    inline float vAMax() const { return parse_uint16_sunssf(5, 24); }
 
     /**
      * Setting for maximum reactive power in quadrant 1. Default to VArRtgQ1. [var]
      */
-    inline int16_t vArMaxQ1() const { return parse_int16(6); }
+    inline float vArMaxQ1() const { return parse_int16_sunssf(6, 25); }
 
     /**
      * Setting for maximum reactive power in quadrant 2. Default to VArRtgQ2. [var]
      */
-    inline int16_t vArMaxQ2() const { return parse_int16(7); }
+    inline float vArMaxQ2() const { return parse_int16_sunssf(7, 25); }
 
     /**
      * Setting for maximum reactive power in quadrant 3. Default to VArRtgQ3. [var]
      */
-    inline int16_t vArMaxQ3() const { return parse_int16(8); }
+    inline float vArMaxQ3() const { return parse_int16_sunssf(8, 25); }
 
     /**
      * Setting for maximum reactive power in quadrant 4. Default to VArRtgQ4. [var]
      */
-    inline int16_t vArMaxQ4() const { return parse_int16(9); }
+    inline float vArMaxQ4() const { return parse_int16_sunssf(9, 25); }
 
     /**
      * Default ramp rate of change of active power due to command or internal action. [% WMax/sec]
      */
-    inline uint16_t wGra() const { return parse_uint16(10); }
+    inline float wGra() const { return parse_uint16_sunssf(10, 26); }
 
     /**
      * Setpoint for minimum power factor value in quadrant 1. Default to PFRtgQ1. [cos()]
      */
-    inline int16_t pFMinQ1() const { return parse_int16(11); }
+    inline float pFMinQ1() const { return parse_int16_sunssf(11, 27); }
 
     /**
      * Setpoint for minimum power factor value in quadrant 2. Default to PFRtgQ2. [cos()]
      */
-    inline int16_t pFMinQ2() const { return parse_int16(12); }
+    inline float pFMinQ2() const { return parse_int16_sunssf(12, 27); }
 
     /**
      * Setpoint for minimum power factor value in quadrant 3. Default to PFRtgQ3. [cos()]
      */
-    inline int16_t pFMinQ3() const { return parse_int16(13); }
+    inline float pFMinQ3() const { return parse_int16_sunssf(13, 27); }
 
     /**
      * Setpoint for minimum power factor value in quadrant 4. Default to PFRtgQ4. [cos()]
      */
-    inline int16_t pFMinQ4() const { return parse_int16(14); }
+    inline float pFMinQ4() const { return parse_int16_sunssf(14, 27); }
 
     /**
      * VAR action on change between charging and discharging: 1=switch 2=maintain VAR characterization.
@@ -1897,67 +1780,17 @@ class BasicSettings : public SunSpecModel<121, 30> {
     /**
      * Setpoint for maximum ramp rate as percentage of nominal maximum ramp rate. This setting will limit the rate that watts delivery to the grid can increase or decrease in response to intermittent PV generation. [% WGra]
      */
-    inline uint16_t maxRmpRte() const { return parse_uint16(17); }
+    inline float maxRmpRte() const { return parse_uint16_sunssf(17, 28); }
 
     /**
      * Setpoint for nominal frequency at the ECP. [Hz]
      */
-    inline uint16_t eCPNomHz() const { return parse_uint16(18); }
+    inline float eCPNomHz() const { return parse_uint16_sunssf(18, 29); }
 
     /**
      * Identity of connected phase for single phase inverters. A=1 B=2 C=3.
      */
     inline uint16_t connPh() const { return parse_enum16(19); }
-
-    /**
-     * Scale factor for real power.
-     */
-    inline int16_t wMax_SF() const { return parse_sunssf(20); }
-
-    /**
-     * Scale factor for voltage at the PCC.
-     */
-    inline int16_t vRef_SF() const { return parse_sunssf(21); }
-
-    /**
-     * Scale factor for offset voltage.
-     */
-    inline int16_t vRefOfs_SF() const { return parse_sunssf(22); }
-
-    /**
-     * Scale factor for min/max voltages.
-     */
-    inline int16_t vMinMax_SF() const { return parse_sunssf(23); }
-
-    /**
-     * Scale factor for apparent power.
-     */
-    inline int16_t vAMax_SF() const { return parse_sunssf(24); }
-
-    /**
-     * Scale factor for reactive power.
-     */
-    inline int16_t vArMax_SF() const { return parse_sunssf(25); }
-
-    /**
-     * Scale factor for default ramp rate.
-     */
-    inline int16_t wGra_SF() const { return parse_sunssf(26); }
-
-    /**
-     * Scale factor for minimum power factor.
-     */
-    inline int16_t pFMin_SF() const { return parse_sunssf(27); }
-
-    /**
-     * Scale factor for maximum ramp percentage.
-     */
-    inline int16_t maxRmpRte_SF() const { return parse_sunssf(28); }
-
-    /**
-     * Scale factor for nominal frequency.
-     */
-    inline int16_t eCPNomHz_SF() const { return parse_sunssf(29); }
 
 };
 
@@ -2014,22 +1847,12 @@ class Measurements_Status : public SunSpecModel<122, 44> {
     /**
      * Amount of VARs available without impacting watts output. [var]
      */
-    inline int16_t vArAval() const { return parse_int16(27); }
-
-    /**
-     * Scale factor for available VARs.
-     */
-    inline int16_t vArAval_SF() const { return parse_sunssf(28); }
+    inline float vArAval() const { return parse_int16_sunssf(27, 28); }
 
     /**
      * Amount of Watts available. [var]
      */
-    inline uint16_t wAval() const { return parse_uint16(29); }
-
-    /**
-     * Scale factor for available Watts.
-     */
-    inline int16_t wAval_SF() const { return parse_sunssf(30); }
+    inline float wAval() const { return parse_uint16_sunssf(29, 30); }
 
     /**
      * Bit Mask indicating setpoint limit(s) reached.
@@ -2059,12 +1882,7 @@ class Measurements_Status : public SunSpecModel<122, 44> {
     /**
      * Isolation resistance. [ohms]
      */
-    inline uint16_t ris() const { return parse_uint16(42); }
-
-    /**
-     * Scale factor for isolation resistance.
-     */
-    inline int16_t ris_SF() const { return parse_sunssf(43); }
+    inline float ris() const { return parse_uint16_sunssf(42, 43); }
 
 };
 
@@ -2091,7 +1909,7 @@ class ImmediateControls : public SunSpecModel<123, 24> {
     /**
      * Set power output to specified level. [% WMax]
      */
-    inline uint16_t wMaxLimPct() const { return parse_uint16(3); }
+    inline float wMaxLimPct() const { return parse_uint16_sunssf(3, 21); }
 
     /**
      * Time window for power limit change. [Secs]
@@ -2116,7 +1934,7 @@ class ImmediateControls : public SunSpecModel<123, 24> {
     /**
      * Set power factor to specific value - cosine of angle. [cos()]
      */
-    inline int16_t outPFSet() const { return parse_int16(8); }
+    inline float outPFSet() const { return parse_int16_sunssf(8, 22); }
 
     /**
      * Time window for power factor change. [Secs]
@@ -2141,17 +1959,17 @@ class ImmediateControls : public SunSpecModel<123, 24> {
     /**
      * Reactive power in percent of WMax. [% WMax]
      */
-    inline int16_t vArWMaxPct() const { return parse_int16(13); }
+    inline float vArWMaxPct() const { return parse_int16_sunssf(13, 23); }
 
     /**
      * Reactive power in percent of VArMax. [% VArMax]
      */
-    inline int16_t vArMaxPct() const { return parse_int16(14); }
+    inline float vArMaxPct() const { return parse_int16_sunssf(14, 23); }
 
     /**
      * Reactive power in percent of VArAval. [% VArAval]
      */
-    inline int16_t vArAvalPct() const { return parse_int16(15); }
+    inline float vArAvalPct() const { return parse_int16_sunssf(15, 23); }
 
     /**
      * Time window for VAR limit change. [Secs]
@@ -2178,21 +1996,6 @@ class ImmediateControls : public SunSpecModel<123, 24> {
      */
     inline uint16_t vArPct_Ena() const { return parse_enum16(20); }
 
-    /**
-     * Scale factor for power output percent.
-     */
-    inline int16_t wMaxLimPct_SF() const { return parse_sunssf(21); }
-
-    /**
-     * Scale factor for power factor.
-     */
-    inline int16_t outPFSet_SF() const { return parse_sunssf(22); }
-
-    /**
-     * Scale factor for reactive power percent.
-     */
-    inline int16_t vArPct_SF() const { return parse_sunssf(23); }
-
 };
 
 /**
@@ -2203,17 +2006,17 @@ class Storage : public SunSpecModel<124, 24> {
     /**
      * Setpoint for maximum charge. [W]
      */
-    inline uint16_t wChaMax() const { return parse_uint16(0); }
+    inline float wChaMax() const { return parse_uint16_sunssf(0, 16); }
 
     /**
      * Setpoint for maximum charging rate. Default is MaxChaRte. [% WChaMax/sec]
      */
-    inline uint16_t wChaGra() const { return parse_uint16(1); }
+    inline float wChaGra() const { return parse_uint16_sunssf(1, 17); }
 
     /**
      * Setpoint for maximum discharge rate. Default is MaxDisChaRte. [% WChaMax/sec]
      */
-    inline uint16_t wDisChaGra() const { return parse_uint16(2); }
+    inline float wDisChaGra() const { return parse_uint16_sunssf(2, 17); }
 
     /**
      * Activate hold/discharge/charge storage control mode. Bitfield value.
@@ -2223,27 +2026,27 @@ class Storage : public SunSpecModel<124, 24> {
     /**
      * Setpoint for maximum charging VA. [VA]
      */
-    inline uint16_t vAChaMax() const { return parse_uint16(4); }
+    inline float vAChaMax() const { return parse_uint16_sunssf(4, 18); }
 
     /**
      * Setpoint for minimum reserve for storage as a percentage of the nominal maximum storage. [% WChaMax]
      */
-    inline uint16_t minRsvPct() const { return parse_uint16(5); }
+    inline float minRsvPct() const { return parse_uint16_sunssf(5, 19); }
 
     /**
      * Currently available energy as a percent of the capacity rating. [% AhrRtg]
      */
-    inline uint16_t chaState() const { return parse_uint16(6); }
+    inline float chaState() const { return parse_uint16_sunssf(6, 20); }
 
     /**
      * State of charge (ChaState) minus storage reserve (MinRsvPct) times capacity rating (AhrRtg). [AH]
      */
-    inline uint16_t storAval() const { return parse_uint16(7); }
+    inline float storAval() const { return parse_uint16_sunssf(7, 21); }
 
     /**
      * Internal battery voltage. [V]
      */
-    inline uint16_t inBatV() const { return parse_uint16(8); }
+    inline float inBatV() const { return parse_uint16_sunssf(8, 22); }
 
     /**
      * Charge status of storage device. Enumerated value.
@@ -2253,12 +2056,12 @@ class Storage : public SunSpecModel<124, 24> {
     /**
      * Percent of max discharge rate. [% WDisChaMax]
      */
-    inline int16_t outWRte() const { return parse_int16(10); }
+    inline float outWRte() const { return parse_int16_sunssf(10, 23); }
 
     /**
      * Percent of max charging rate. [ % WChaMax]
      */
-    inline int16_t inWRte() const { return parse_int16(11); }
+    inline float inWRte() const { return parse_int16_sunssf(11, 23); }
 
     /**
      * Time window for charge/discharge rate change. [Secs]
@@ -2276,46 +2079,6 @@ class Storage : public SunSpecModel<124, 24> {
     inline uint16_t inOutWRte_RmpTms() const { return parse_uint16(14); }
 
     inline uint16_t chaGriSet() const { return parse_enum16(15); }
-
-    /**
-     * Scale factor for maximum charge.
-     */
-    inline int16_t wChaMax_SF() const { return parse_sunssf(16); }
-
-    /**
-     * Scale factor for maximum charge and discharge rate.
-     */
-    inline int16_t wChaDisChaGra_SF() const { return parse_sunssf(17); }
-
-    /**
-     * Scale factor for maximum charging VA.
-     */
-    inline int16_t vAChaMax_SF() const { return parse_sunssf(18); }
-
-    /**
-     * Scale factor for minimum reserve percentage.
-     */
-    inline int16_t minRsvPct_SF() const { return parse_sunssf(19); }
-
-    /**
-     * Scale factor for available energy percent.
-     */
-    inline int16_t chaState_SF() const { return parse_sunssf(20); }
-
-    /**
-     * Scale factor for state of charge.
-     */
-    inline int16_t storAval_SF() const { return parse_sunssf(21); }
-
-    /**
-     * Scale factor for battery voltage.
-     */
-    inline int16_t inBatV_SF() const { return parse_sunssf(22); }
-
-    /**
-     * Scale factor for percent charge/discharge rate.
-     */
-    inline int16_t inOutWRte_SF() const { return parse_sunssf(23); }
 
 };
 
@@ -2337,7 +2100,7 @@ class Pricing : public SunSpecModel<125, 8> {
     /**
      * Utility/ESP specific pricing signal. Content depends on pricing signal type. When H/M/L type is specified. Low=0; Med=1; High=2.
      */
-    inline int16_t sig() const { return parse_int16(2); }
+    inline float sig() const { return parse_int16_sunssf(2, 6); }
 
     /**
      * Time window for charge/discharge pricing change. [Secs]
@@ -2354,11 +2117,6 @@ class Pricing : public SunSpecModel<125, 8> {
      */
     inline uint16_t rmpTms() const { return parse_uint16(5); }
 
-    /**
-     * Pricing signal scale factor.
-     */
-    inline int16_t sig_SF() const { return parse_sunssf(6); }
-
 };
 
 /**
@@ -2369,17 +2127,17 @@ class FreqWattParam : public SunSpecModel<127, 10> {
     /**
      * The slope of the reduction in the maximum allowed watts output as a function of frequency. [% PM/Hz]
      */
-    inline uint16_t wGra() const { return parse_uint16(0); }
+    inline float wGra() const { return parse_uint16_sunssf(0, 6); }
 
     /**
      * The frequency deviation from nominal frequency (ECPNomHz) at which a snapshot of the instantaneous power output is taken to act as the CAPPED power level (PM) and above which reduction in power output occurs. [Hz]
      */
-    inline int16_t hzStr() const { return parse_int16(1); }
+    inline float hzStr() const { return parse_int16_sunssf(1, 7); }
 
     /**
      * The frequency deviation from nominal frequency (ECPNomHz) at which curtailed power output may return to normal and the cap on the power level value is removed. [Hz]
      */
-    inline int16_t hzStop() const { return parse_int16(2); }
+    inline float hzStop() const { return parse_int16_sunssf(2, 7); }
 
     /**
      * Enable hysteresis
@@ -2394,22 +2152,7 @@ class FreqWattParam : public SunSpecModel<127, 10> {
     /**
      * The maximum time-based rate of change at which power output returns to normal after having been capped by an over frequency event. [% WMax/min]
      */
-    inline uint16_t hzStopWGra() const { return parse_uint16(5); }
-
-    /**
-     * Scale factor for output gradient.
-     */
-    inline int16_t wGra_SF() const { return parse_sunssf(6); }
-
-    /**
-     * Scale factor for frequency deviations.
-     */
-    inline int16_t hzStrStop_SF() const { return parse_sunssf(7); }
-
-    /**
-     * Scale factor for increment and decrement ramps.
-     */
-    inline int16_t rmpIncDec_SF() const { return parse_sunssf(8); }
+    inline float hzStopWGra() const { return parse_uint16_sunssf(5, 8); }
 
 };
 
@@ -2426,12 +2169,12 @@ class DynamicReactiveCurrent : public SunSpecModel<128, 14> {
     /**
      * The gradient used to increase capacitive dynamic current. A value of 0 indicates no additional reactive current support. [%ARtg/%dV]
      */
-    inline uint16_t arGraSag() const { return parse_uint16(1); }
+    inline float arGraSag() const { return parse_uint16_sunssf(1, 11); }
 
     /**
      * The gradient used to increase inductive dynamic current.  A value of 0 indicates no additional reactive current support. [%ARtg/%dV]
      */
-    inline uint16_t arGraSwell() const { return parse_uint16(2); }
+    inline float arGraSwell() const { return parse_uint16_sunssf(2, 11); }
 
     /**
      * Activate dynamic reactive current model
@@ -2446,22 +2189,22 @@ class DynamicReactiveCurrent : public SunSpecModel<128, 14> {
     /**
      * The lower delta voltage limit for which negative voltage deviations less than this value no dynamic vars are produced. [% VRef]
      */
-    inline uint16_t dbVMin() const { return parse_uint16(5); }
+    inline float dbVMin() const { return parse_uint16_sunssf(5, 12); }
 
     /**
      * The upper delta voltage limit for which positive voltage deviations less than this value no dynamic current produced. [% VRef]
      */
-    inline uint16_t dbVMax() const { return parse_uint16(6); }
+    inline float dbVMax() const { return parse_uint16_sunssf(6, 12); }
 
     /**
      * Block zone voltage which defines a lower voltage boundary below which no dynamic current is produced. [% VRef]
      */
-    inline uint16_t blkZnV() const { return parse_uint16(7); }
+    inline float blkZnV() const { return parse_uint16_sunssf(7, 12); }
 
     /**
      * Hysteresis voltage used with BlkZnV. [% VRef]
      */
-    inline uint16_t hysBlkZnV() const { return parse_uint16(8); }
+    inline float hysBlkZnV() const { return parse_uint16_sunssf(8, 12); }
 
     /**
      * Block zone time the time before which reactive current support remains active regardless of how low the voltage drops. [mSecs]
@@ -2473,16 +2216,6 @@ class DynamicReactiveCurrent : public SunSpecModel<128, 14> {
      */
     inline uint16_t holdTmms() const { return parse_uint16(10); }
 
-    /**
-     * Scale factor for the gradients.
-     */
-    inline int16_t arGra_SF() const { return parse_sunssf(11); }
-
-    /**
-     * Scale factor for the voltage zone and limit settings.
-     */
-    inline int16_t vRefPct_SF() const { return parse_sunssf(12); }
-
 };
 
 /**
@@ -2493,42 +2226,37 @@ class ExtendedSettings : public SunSpecModel<145, 8> {
     /**
      * Ramp up rate as a percentage of max current. [Pct]
      */
-    inline uint16_t rampUpRate() const { return parse_uint16(0); }
+    inline float rampUpRate() const { return parse_uint16_sunssf(0, 7); }
 
     /**
      * Ramp down rate as a percentage of max current. [Pct]
      */
-    inline uint16_t nomRmpDnRte() const { return parse_uint16(1); }
+    inline float nomRmpDnRte() const { return parse_uint16_sunssf(1, 7); }
 
     /**
      * Emergency ramp up rate as a percentage of max current. [Pct]
      */
-    inline uint16_t emergencyRampUpRate() const { return parse_uint16(2); }
+    inline float emergencyRampUpRate() const { return parse_uint16_sunssf(2, 7); }
 
     /**
      * Emergency ramp down rate as a percentage of max current. [Pct]
      */
-    inline uint16_t emergencyRampDownRate() const { return parse_uint16(3); }
+    inline float emergencyRampDownRate() const { return parse_uint16_sunssf(3, 7); }
 
     /**
      * Connect ramp up rate as a percentage of max current. [Pct]
      */
-    inline uint16_t connectRampUpRate() const { return parse_uint16(4); }
+    inline float connectRampUpRate() const { return parse_uint16_sunssf(4, 7); }
 
     /**
      * Connect ramp down rate as a percentage of max current. [Pct]
      */
-    inline uint16_t connectRampDownRate() const { return parse_uint16(5); }
+    inline float connectRampDownRate() const { return parse_uint16_sunssf(5, 7); }
 
     /**
      * Ramp rate specified in percent of max current. [Pct]
      */
-    inline uint16_t defaultRampRate() const { return parse_uint16(6); }
-
-    /**
-     * Ramp Rate Scale Factor
-     */
-    inline int16_t rampRateScaleFactor() const { return parse_sunssf(7); }
+    inline float defaultRampRate() const { return parse_uint16_sunssf(6, 7); }
 
 };
 
@@ -2540,357 +2268,307 @@ class MeterSinglePhaseSinglePhaseANOrABMeter : public SunSpecModel<201, 105> {
     /**
      * Total AC Current [A]
      */
-    inline int16_t amps() const { return parse_int16(0); }
+    inline float amps() const { return parse_int16_sunssf(0, 4); }
 
     /**
      * Phase A Current [A]
      */
-    inline int16_t ampsPhaseA() const { return parse_int16(1); }
+    inline float ampsPhaseA() const { return parse_int16_sunssf(1, 4); }
 
     /**
      * Phase B Current [A]
      */
-    inline int16_t ampsPhaseB() const { return parse_int16(2); }
+    inline float ampsPhaseB() const { return parse_int16_sunssf(2, 4); }
 
     /**
      * Phase C Current [A]
      */
-    inline int16_t ampsPhaseC() const { return parse_int16(3); }
-
-    /**
-     * Current scale factor
-     */
-    inline int16_t A_SF() const { return parse_sunssf(4); }
+    inline float ampsPhaseC() const { return parse_int16_sunssf(3, 4); }
 
     /**
      * Line to Neutral AC Voltage (average of active phases) [V]
      */
-    inline int16_t voltageLN() const { return parse_int16(5); }
+    inline float voltageLN() const { return parse_int16_sunssf(5, 13); }
 
     /**
      * Phase Voltage AN [V]
      */
-    inline int16_t phaseVoltageAN() const { return parse_int16(6); }
+    inline float phaseVoltageAN() const { return parse_int16_sunssf(6, 13); }
 
     /**
      * Phase Voltage BN [V]
      */
-    inline int16_t phaseVoltageBN() const { return parse_int16(7); }
+    inline float phaseVoltageBN() const { return parse_int16_sunssf(7, 13); }
 
     /**
      * Phase Voltage CN [V]
      */
-    inline int16_t phaseVoltageCN() const { return parse_int16(8); }
+    inline float phaseVoltageCN() const { return parse_int16_sunssf(8, 13); }
 
     /**
      * Line to Line AC Voltage (average of active phases) [V]
      */
-    inline int16_t voltageLL() const { return parse_int16(9); }
+    inline float voltageLL() const { return parse_int16_sunssf(9, 13); }
 
     /**
      * Phase Voltage AB [V]
      */
-    inline int16_t phaseVoltageAB() const { return parse_int16(10); }
+    inline float phaseVoltageAB() const { return parse_int16_sunssf(10, 13); }
 
     /**
      * Phase Voltage BC [V]
      */
-    inline int16_t phaseVoltageBC() const { return parse_int16(11); }
+    inline float phaseVoltageBC() const { return parse_int16_sunssf(11, 13); }
 
     /**
      * Phase Voltage CA [V]
      */
-    inline int16_t phaseVoltageCA() const { return parse_int16(12); }
-
-    /**
-     * Voltage scale factor
-     */
-    inline int16_t V_SF() const { return parse_sunssf(13); }
+    inline float phaseVoltageCA() const { return parse_int16_sunssf(12, 13); }
 
     /**
      * Frequency [Hz]
      */
-    inline int16_t hz() const { return parse_int16(14); }
-
-    /**
-     * Frequency scale factor
-     */
-    inline int16_t hz_SF() const { return parse_sunssf(15); }
+    inline float hz() const { return parse_int16_sunssf(14, 15); }
 
     /**
      * Total Real Power [W]
      */
-    inline int16_t watts() const { return parse_int16(16); }
+    inline float watts() const { return parse_int16_sunssf(16, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseA() const { return parse_int16(17); }
+    inline float wattsPhaseA() const { return parse_int16_sunssf(17, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseB() const { return parse_int16(18); }
+    inline float wattsPhaseB() const { return parse_int16_sunssf(18, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseC() const { return parse_int16(19); }
-
-    /**
-     * Real Power scale factor
-     */
-    inline int16_t W_SF() const { return parse_sunssf(20); }
+    inline float wattsPhaseC() const { return parse_int16_sunssf(19, 20); }
 
     /**
      * AC Apparent Power [VA]
      */
-    inline int16_t VA() const { return parse_int16(21); }
+    inline float VA() const { return parse_int16_sunssf(21, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseA() const { return parse_int16(22); }
+    inline float VAPhaseA() const { return parse_int16_sunssf(22, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseB() const { return parse_int16(23); }
+    inline float VAPhaseB() const { return parse_int16_sunssf(23, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseC() const { return parse_int16(24); }
-
-    /**
-     * Apparent Power scale factor
-     */
-    inline int16_t VA_SF() const { return parse_sunssf(25); }
+    inline float VAPhaseC() const { return parse_int16_sunssf(24, 25); }
 
     /**
      * Reactive Power [var]
      */
-    inline int16_t VAR() const { return parse_int16(26); }
+    inline float VAR() const { return parse_int16_sunssf(26, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseA() const { return parse_int16(27); }
+    inline float VARPhaseA() const { return parse_int16_sunssf(27, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseB() const { return parse_int16(28); }
+    inline float VARPhaseB() const { return parse_int16_sunssf(28, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseC() const { return parse_int16(29); }
-
-    /**
-     * Reactive Power scale factor
-     */
-    inline int16_t VAR_SF() const { return parse_sunssf(30); }
+    inline float VARPhaseC() const { return parse_int16_sunssf(29, 30); }
 
     /**
      * Power Factor [Pct]
      */
-    inline int16_t PF() const { return parse_int16(31); }
+    inline float PF() const { return parse_int16_sunssf(31, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseA() const { return parse_int16(32); }
+    inline float PFPhaseA() const { return parse_int16_sunssf(32, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseB() const { return parse_int16(33); }
+    inline float PFPhaseB() const { return parse_int16_sunssf(33, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseC() const { return parse_int16(34); }
-
-    /**
-     * Power Factor scale factor
-     */
-    inline int16_t PF_SF() const { return parse_sunssf(35); }
+    inline float PFPhaseC() const { return parse_int16_sunssf(34, 35); }
 
     /**
      * Total Real Energy Exported [Wh]
      */
-    inline uint32_t totalWattHoursExported() const { return parse_acc32(36); }
+    inline double totalWattHoursExported() const { return parse_acc32_sunssf(36, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseA() const { return parse_acc32(38); }
+    inline double totalWattHoursExportedPhaseA() const { return parse_acc32_sunssf(38, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseB() const { return parse_acc32(40); }
+    inline double totalWattHoursExportedPhaseB() const { return parse_acc32_sunssf(40, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseC() const { return parse_acc32(42); }
+    inline double totalWattHoursExportedPhaseC() const { return parse_acc32_sunssf(42, 52); }
 
     /**
      * Total Real Energy Imported [Wh]
      */
-    inline uint32_t totalWattHoursImported() const { return parse_acc32(44); }
+    inline double totalWattHoursImported() const { return parse_acc32_sunssf(44, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseA() const { return parse_acc32(46); }
+    inline double totalWattHoursImportedPhaseA() const { return parse_acc32_sunssf(46, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseB() const { return parse_acc32(48); }
+    inline double totalWattHoursImportedPhaseB() const { return parse_acc32_sunssf(48, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseC() const { return parse_acc32(50); }
-
-    /**
-     * Real Energy scale factor
-     */
-    inline int16_t totWh_SF() const { return parse_sunssf(52); }
+    inline double totalWattHoursImportedPhaseC() const { return parse_acc32_sunssf(50, 52); }
 
     /**
      * Total Apparent Energy Exported [VAh]
      */
-    inline uint32_t totalVAHoursExported() const { return parse_acc32(53); }
+    inline double totalVAHoursExported() const { return parse_acc32_sunssf(53, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseA() const { return parse_acc32(55); }
+    inline double totalVAHoursExportedPhaseA() const { return parse_acc32_sunssf(55, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseB() const { return parse_acc32(57); }
+    inline double totalVAHoursExportedPhaseB() const { return parse_acc32_sunssf(57, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseC() const { return parse_acc32(59); }
+    inline double totalVAHoursExportedPhaseC() const { return parse_acc32_sunssf(59, 69); }
 
     /**
      * Total Apparent Energy Imported [VAh]
      */
-    inline uint32_t totalVAHoursImported() const { return parse_acc32(61); }
+    inline double totalVAHoursImported() const { return parse_acc32_sunssf(61, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseA() const { return parse_acc32(63); }
+    inline double totalVAHoursImportedPhaseA() const { return parse_acc32_sunssf(63, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseB() const { return parse_acc32(65); }
+    inline double totalVAHoursImportedPhaseB() const { return parse_acc32_sunssf(65, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseC() const { return parse_acc32(67); }
-
-    /**
-     * Apparent Energy scale factor
-     */
-    inline int16_t totVAh_SF() const { return parse_sunssf(69); }
+    inline double totalVAHoursImportedPhaseC() const { return parse_acc32_sunssf(67, 69); }
 
     /**
      * Total Reactive Energy Imported Quadrant 1 [varh]
      */
-    inline uint32_t totalVARHoursImportedQ1() const { return parse_acc32(70); }
+    inline double totalVARHoursImportedQ1() const { return parse_acc32_sunssf(70, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseA() const { return parse_acc32(72); }
+    inline double totalVArHoursImportedQ1PhaseA() const { return parse_acc32_sunssf(72, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseB() const { return parse_acc32(74); }
+    inline double totalVArHoursImportedQ1PhaseB() const { return parse_acc32_sunssf(74, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseC() const { return parse_acc32(76); }
+    inline double totalVArHoursImportedQ1PhaseC() const { return parse_acc32_sunssf(76, 102); }
 
     /**
      * Total Reactive Power Imported Quadrant 2 [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2() const { return parse_acc32(78); }
+    inline double totalVArHoursImportedQ2() const { return parse_acc32_sunssf(78, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseA() const { return parse_acc32(80); }
+    inline double totalVArHoursImportedQ2PhaseA() const { return parse_acc32_sunssf(80, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseB() const { return parse_acc32(82); }
+    inline double totalVArHoursImportedQ2PhaseB() const { return parse_acc32_sunssf(82, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseC() const { return parse_acc32(84); }
+    inline double totalVArHoursImportedQ2PhaseC() const { return parse_acc32_sunssf(84, 102); }
 
     /**
      * Total Reactive Power Exported Quadrant 3 [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3() const { return parse_acc32(86); }
+    inline double totalVArHoursExportedQ3() const { return parse_acc32_sunssf(86, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseA() const { return parse_acc32(88); }
+    inline double totalVArHoursExportedQ3PhaseA() const { return parse_acc32_sunssf(88, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseB() const { return parse_acc32(90); }
+    inline double totalVArHoursExportedQ3PhaseB() const { return parse_acc32_sunssf(90, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseC() const { return parse_acc32(92); }
+    inline double totalVArHoursExportedQ3PhaseC() const { return parse_acc32_sunssf(92, 102); }
 
     /**
      * Total Reactive Power Exported Quadrant 4 [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4() const { return parse_acc32(94); }
+    inline double totalVArHoursExportedQ4() const { return parse_acc32_sunssf(94, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseA() const { return parse_acc32(96); }
+    inline double totalVArHoursExportedQ4ImportedPhaseA() const { return parse_acc32_sunssf(96, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseB() const { return parse_acc32(98); }
+    inline double totalVArHoursExportedQ4ImportedPhaseB() const { return parse_acc32_sunssf(98, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseC() const { return parse_acc32(100); }
-
-    /**
-     * Reactive Energy scale factor
-     */
-    inline int16_t totVArh_SF() const { return parse_sunssf(102); }
+    inline double totalVArHoursExportedQ4ImportedPhaseC() const { return parse_acc32_sunssf(100, 102); }
 
     /**
      * Meter Event Flags
@@ -2904,357 +2582,307 @@ class SplitSinglePhaseABNMeter_202 : public SunSpecModel<202, 105> {
     /**
      * Total AC Current [A]
      */
-    inline int16_t amps() const { return parse_int16(0); }
+    inline float amps() const { return parse_int16_sunssf(0, 4); }
 
     /**
      * Phase A Current [A]
      */
-    inline int16_t ampsPhaseA() const { return parse_int16(1); }
+    inline float ampsPhaseA() const { return parse_int16_sunssf(1, 4); }
 
     /**
      * Phase B Current [A]
      */
-    inline int16_t ampsPhaseB() const { return parse_int16(2); }
+    inline float ampsPhaseB() const { return parse_int16_sunssf(2, 4); }
 
     /**
      * Phase C Current [A]
      */
-    inline int16_t ampsPhaseC() const { return parse_int16(3); }
-
-    /**
-     * Current scale factor
-     */
-    inline int16_t A_SF() const { return parse_sunssf(4); }
+    inline float ampsPhaseC() const { return parse_int16_sunssf(3, 4); }
 
     /**
      * Line to Neutral AC Voltage (average of active phases) [V]
      */
-    inline int16_t voltageLN() const { return parse_int16(5); }
+    inline float voltageLN() const { return parse_int16_sunssf(5, 13); }
 
     /**
      * Phase Voltage AN [V]
      */
-    inline int16_t phaseVoltageAN() const { return parse_int16(6); }
+    inline float phaseVoltageAN() const { return parse_int16_sunssf(6, 13); }
 
     /**
      * Phase Voltage BN [V]
      */
-    inline int16_t phaseVoltageBN() const { return parse_int16(7); }
+    inline float phaseVoltageBN() const { return parse_int16_sunssf(7, 13); }
 
     /**
      * Phase Voltage CN [V]
      */
-    inline int16_t phaseVoltageCN() const { return parse_int16(8); }
+    inline float phaseVoltageCN() const { return parse_int16_sunssf(8, 13); }
 
     /**
      * Line to Line AC Voltage (average of active phases) [V]
      */
-    inline int16_t voltageLL() const { return parse_int16(9); }
+    inline float voltageLL() const { return parse_int16_sunssf(9, 13); }
 
     /**
      * Phase Voltage AB [V]
      */
-    inline int16_t phaseVoltageAB() const { return parse_int16(10); }
+    inline float phaseVoltageAB() const { return parse_int16_sunssf(10, 13); }
 
     /**
      * Phase Voltage BC [V]
      */
-    inline int16_t phaseVoltageBC() const { return parse_int16(11); }
+    inline float phaseVoltageBC() const { return parse_int16_sunssf(11, 13); }
 
     /**
      * Phase Voltage CA [V]
      */
-    inline int16_t phaseVoltageCA() const { return parse_int16(12); }
-
-    /**
-     * Voltage scale factor
-     */
-    inline int16_t V_SF() const { return parse_sunssf(13); }
+    inline float phaseVoltageCA() const { return parse_int16_sunssf(12, 13); }
 
     /**
      * Frequency [Hz]
      */
-    inline int16_t hz() const { return parse_int16(14); }
-
-    /**
-     * Frequency scale factor
-     */
-    inline int16_t hz_SF() const { return parse_sunssf(15); }
+    inline float hz() const { return parse_int16_sunssf(14, 15); }
 
     /**
      * Total Real Power [W]
      */
-    inline int16_t watts() const { return parse_int16(16); }
+    inline float watts() const { return parse_int16_sunssf(16, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseA() const { return parse_int16(17); }
+    inline float wattsPhaseA() const { return parse_int16_sunssf(17, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseB() const { return parse_int16(18); }
+    inline float wattsPhaseB() const { return parse_int16_sunssf(18, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseC() const { return parse_int16(19); }
-
-    /**
-     * Real Power scale factor
-     */
-    inline int16_t W_SF() const { return parse_sunssf(20); }
+    inline float wattsPhaseC() const { return parse_int16_sunssf(19, 20); }
 
     /**
      * AC Apparent Power [VA]
      */
-    inline int16_t VA() const { return parse_int16(21); }
+    inline float VA() const { return parse_int16_sunssf(21, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseA() const { return parse_int16(22); }
+    inline float VAPhaseA() const { return parse_int16_sunssf(22, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseB() const { return parse_int16(23); }
+    inline float VAPhaseB() const { return parse_int16_sunssf(23, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseC() const { return parse_int16(24); }
-
-    /**
-     * Apparent Power scale factor
-     */
-    inline int16_t VA_SF() const { return parse_sunssf(25); }
+    inline float VAPhaseC() const { return parse_int16_sunssf(24, 25); }
 
     /**
      * Reactive Power [var]
      */
-    inline int16_t VAR() const { return parse_int16(26); }
+    inline float VAR() const { return parse_int16_sunssf(26, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseA() const { return parse_int16(27); }
+    inline float VARPhaseA() const { return parse_int16_sunssf(27, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseB() const { return parse_int16(28); }
+    inline float VARPhaseB() const { return parse_int16_sunssf(28, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseC() const { return parse_int16(29); }
-
-    /**
-     * Reactive Power scale factor
-     */
-    inline int16_t VAR_SF() const { return parse_sunssf(30); }
+    inline float VARPhaseC() const { return parse_int16_sunssf(29, 30); }
 
     /**
      * Power Factor [Pct]
      */
-    inline int16_t PF() const { return parse_int16(31); }
+    inline float PF() const { return parse_int16_sunssf(31, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseA() const { return parse_int16(32); }
+    inline float PFPhaseA() const { return parse_int16_sunssf(32, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseB() const { return parse_int16(33); }
+    inline float PFPhaseB() const { return parse_int16_sunssf(33, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseC() const { return parse_int16(34); }
-
-    /**
-     * Power Factor scale factor
-     */
-    inline int16_t PF_SF() const { return parse_sunssf(35); }
+    inline float PFPhaseC() const { return parse_int16_sunssf(34, 35); }
 
     /**
      * Total Real Energy Exported [Wh]
      */
-    inline uint32_t totalWattHoursExported() const { return parse_acc32(36); }
+    inline double totalWattHoursExported() const { return parse_acc32_sunssf(36, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseA() const { return parse_acc32(38); }
+    inline double totalWattHoursExportedPhaseA() const { return parse_acc32_sunssf(38, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseB() const { return parse_acc32(40); }
+    inline double totalWattHoursExportedPhaseB() const { return parse_acc32_sunssf(40, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseC() const { return parse_acc32(42); }
+    inline double totalWattHoursExportedPhaseC() const { return parse_acc32_sunssf(42, 52); }
 
     /**
      * Total Real Energy Imported [Wh]
      */
-    inline uint32_t totalWattHoursImported() const { return parse_acc32(44); }
+    inline double totalWattHoursImported() const { return parse_acc32_sunssf(44, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseA() const { return parse_acc32(46); }
+    inline double totalWattHoursImportedPhaseA() const { return parse_acc32_sunssf(46, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseB() const { return parse_acc32(48); }
+    inline double totalWattHoursImportedPhaseB() const { return parse_acc32_sunssf(48, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseC() const { return parse_acc32(50); }
-
-    /**
-     * Real Energy scale factor
-     */
-    inline int16_t totWh_SF() const { return parse_sunssf(52); }
+    inline double totalWattHoursImportedPhaseC() const { return parse_acc32_sunssf(50, 52); }
 
     /**
      * Total Apparent Energy Exported [VAh]
      */
-    inline uint32_t totalVAHoursExported() const { return parse_acc32(53); }
+    inline double totalVAHoursExported() const { return parse_acc32_sunssf(53, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseA() const { return parse_acc32(55); }
+    inline double totalVAHoursExportedPhaseA() const { return parse_acc32_sunssf(55, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseB() const { return parse_acc32(57); }
+    inline double totalVAHoursExportedPhaseB() const { return parse_acc32_sunssf(57, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseC() const { return parse_acc32(59); }
+    inline double totalVAHoursExportedPhaseC() const { return parse_acc32_sunssf(59, 69); }
 
     /**
      * Total Apparent Energy Imported [VAh]
      */
-    inline uint32_t totalVAHoursImported() const { return parse_acc32(61); }
+    inline double totalVAHoursImported() const { return parse_acc32_sunssf(61, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseA() const { return parse_acc32(63); }
+    inline double totalVAHoursImportedPhaseA() const { return parse_acc32_sunssf(63, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseB() const { return parse_acc32(65); }
+    inline double totalVAHoursImportedPhaseB() const { return parse_acc32_sunssf(65, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseC() const { return parse_acc32(67); }
-
-    /**
-     * Apparent Energy scale factor
-     */
-    inline int16_t totVAh_SF() const { return parse_sunssf(69); }
+    inline double totalVAHoursImportedPhaseC() const { return parse_acc32_sunssf(67, 69); }
 
     /**
      * Total Reactive Energy Imported Quadrant 1 [varh]
      */
-    inline uint32_t totalVARHoursImportedQ1() const { return parse_acc32(70); }
+    inline double totalVARHoursImportedQ1() const { return parse_acc32_sunssf(70, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseA() const { return parse_acc32(72); }
+    inline double totalVArHoursImportedQ1PhaseA() const { return parse_acc32_sunssf(72, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseB() const { return parse_acc32(74); }
+    inline double totalVArHoursImportedQ1PhaseB() const { return parse_acc32_sunssf(74, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseC() const { return parse_acc32(76); }
+    inline double totalVArHoursImportedQ1PhaseC() const { return parse_acc32_sunssf(76, 102); }
 
     /**
      * Total Reactive Power Imported Quadrant 2 [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2() const { return parse_acc32(78); }
+    inline double totalVArHoursImportedQ2() const { return parse_acc32_sunssf(78, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseA() const { return parse_acc32(80); }
+    inline double totalVArHoursImportedQ2PhaseA() const { return parse_acc32_sunssf(80, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseB() const { return parse_acc32(82); }
+    inline double totalVArHoursImportedQ2PhaseB() const { return parse_acc32_sunssf(82, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseC() const { return parse_acc32(84); }
+    inline double totalVArHoursImportedQ2PhaseC() const { return parse_acc32_sunssf(84, 102); }
 
     /**
      * Total Reactive Power Exported Quadrant 3 [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3() const { return parse_acc32(86); }
+    inline double totalVArHoursExportedQ3() const { return parse_acc32_sunssf(86, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseA() const { return parse_acc32(88); }
+    inline double totalVArHoursExportedQ3PhaseA() const { return parse_acc32_sunssf(88, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseB() const { return parse_acc32(90); }
+    inline double totalVArHoursExportedQ3PhaseB() const { return parse_acc32_sunssf(90, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseC() const { return parse_acc32(92); }
+    inline double totalVArHoursExportedQ3PhaseC() const { return parse_acc32_sunssf(92, 102); }
 
     /**
      * Total Reactive Power Exported Quadrant 4 [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4() const { return parse_acc32(94); }
+    inline double totalVArHoursExportedQ4() const { return parse_acc32_sunssf(94, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseA() const { return parse_acc32(96); }
+    inline double totalVArHoursExportedQ4ImportedPhaseA() const { return parse_acc32_sunssf(96, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseB() const { return parse_acc32(98); }
+    inline double totalVArHoursExportedQ4ImportedPhaseB() const { return parse_acc32_sunssf(98, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseC() const { return parse_acc32(100); }
-
-    /**
-     * Reactive Energy scale factor
-     */
-    inline int16_t totVArh_SF() const { return parse_sunssf(102); }
+    inline double totalVArHoursExportedQ4ImportedPhaseC() const { return parse_acc32_sunssf(100, 102); }
 
     /**
      * Meter Event Flags
@@ -3268,357 +2896,307 @@ class WyeConnectThreePhaseAbcnMeter_203 : public SunSpecModel<203, 105> {
     /**
      * Total AC Current [A]
      */
-    inline int16_t amps() const { return parse_int16(0); }
+    inline float amps() const { return parse_int16_sunssf(0, 4); }
 
     /**
      * Phase A Current [A]
      */
-    inline int16_t ampsPhaseA() const { return parse_int16(1); }
+    inline float ampsPhaseA() const { return parse_int16_sunssf(1, 4); }
 
     /**
      * Phase B Current [A]
      */
-    inline int16_t ampsPhaseB() const { return parse_int16(2); }
+    inline float ampsPhaseB() const { return parse_int16_sunssf(2, 4); }
 
     /**
      * Phase C Current [A]
      */
-    inline int16_t ampsPhaseC() const { return parse_int16(3); }
-
-    /**
-     * Current scale factor
-     */
-    inline int16_t A_SF() const { return parse_sunssf(4); }
+    inline float ampsPhaseC() const { return parse_int16_sunssf(3, 4); }
 
     /**
      * Line to Neutral AC Voltage (average of active phases) [V]
      */
-    inline int16_t voltageLN() const { return parse_int16(5); }
+    inline float voltageLN() const { return parse_int16_sunssf(5, 13); }
 
     /**
      * Phase Voltage AN [V]
      */
-    inline int16_t phaseVoltageAN() const { return parse_int16(6); }
+    inline float phaseVoltageAN() const { return parse_int16_sunssf(6, 13); }
 
     /**
      * Phase Voltage BN [V]
      */
-    inline int16_t phaseVoltageBN() const { return parse_int16(7); }
+    inline float phaseVoltageBN() const { return parse_int16_sunssf(7, 13); }
 
     /**
      * Phase Voltage CN [V]
      */
-    inline int16_t phaseVoltageCN() const { return parse_int16(8); }
+    inline float phaseVoltageCN() const { return parse_int16_sunssf(8, 13); }
 
     /**
      * Line to Line AC Voltage (average of active phases) [V]
      */
-    inline int16_t voltageLL() const { return parse_int16(9); }
+    inline float voltageLL() const { return parse_int16_sunssf(9, 13); }
 
     /**
      * Phase Voltage AB [V]
      */
-    inline int16_t phaseVoltageAB() const { return parse_int16(10); }
+    inline float phaseVoltageAB() const { return parse_int16_sunssf(10, 13); }
 
     /**
      * Phase Voltage BC [V]
      */
-    inline int16_t phaseVoltageBC() const { return parse_int16(11); }
+    inline float phaseVoltageBC() const { return parse_int16_sunssf(11, 13); }
 
     /**
      * Phase Voltage CA [V]
      */
-    inline int16_t phaseVoltageCA() const { return parse_int16(12); }
-
-    /**
-     * Voltage scale factor
-     */
-    inline int16_t V_SF() const { return parse_sunssf(13); }
+    inline float phaseVoltageCA() const { return parse_int16_sunssf(12, 13); }
 
     /**
      * Frequency [Hz]
      */
-    inline int16_t hz() const { return parse_int16(14); }
-
-    /**
-     * Frequency scale factor
-     */
-    inline int16_t hz_SF() const { return parse_sunssf(15); }
+    inline float hz() const { return parse_int16_sunssf(14, 15); }
 
     /**
      * Total Real Power [W]
      */
-    inline int16_t watts() const { return parse_int16(16); }
+    inline float watts() const { return parse_int16_sunssf(16, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseA() const { return parse_int16(17); }
+    inline float wattsPhaseA() const { return parse_int16_sunssf(17, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseB() const { return parse_int16(18); }
+    inline float wattsPhaseB() const { return parse_int16_sunssf(18, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseC() const { return parse_int16(19); }
-
-    /**
-     * Real Power scale factor
-     */
-    inline int16_t W_SF() const { return parse_sunssf(20); }
+    inline float wattsPhaseC() const { return parse_int16_sunssf(19, 20); }
 
     /**
      * AC Apparent Power [VA]
      */
-    inline int16_t VA() const { return parse_int16(21); }
+    inline float VA() const { return parse_int16_sunssf(21, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseA() const { return parse_int16(22); }
+    inline float VAPhaseA() const { return parse_int16_sunssf(22, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseB() const { return parse_int16(23); }
+    inline float VAPhaseB() const { return parse_int16_sunssf(23, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseC() const { return parse_int16(24); }
-
-    /**
-     * Apparent Power scale factor
-     */
-    inline int16_t VA_SF() const { return parse_sunssf(25); }
+    inline float VAPhaseC() const { return parse_int16_sunssf(24, 25); }
 
     /**
      * Reactive Power [var]
      */
-    inline int16_t VAR() const { return parse_int16(26); }
+    inline float VAR() const { return parse_int16_sunssf(26, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseA() const { return parse_int16(27); }
+    inline float VARPhaseA() const { return parse_int16_sunssf(27, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseB() const { return parse_int16(28); }
+    inline float VARPhaseB() const { return parse_int16_sunssf(28, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseC() const { return parse_int16(29); }
-
-    /**
-     * Reactive Power scale factor
-     */
-    inline int16_t VAR_SF() const { return parse_sunssf(30); }
+    inline float VARPhaseC() const { return parse_int16_sunssf(29, 30); }
 
     /**
      * Power Factor [Pct]
      */
-    inline int16_t PF() const { return parse_int16(31); }
+    inline float PF() const { return parse_int16_sunssf(31, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseA() const { return parse_int16(32); }
+    inline float PFPhaseA() const { return parse_int16_sunssf(32, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseB() const { return parse_int16(33); }
+    inline float PFPhaseB() const { return parse_int16_sunssf(33, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseC() const { return parse_int16(34); }
-
-    /**
-     * Power Factor scale factor
-     */
-    inline int16_t PF_SF() const { return parse_sunssf(35); }
+    inline float PFPhaseC() const { return parse_int16_sunssf(34, 35); }
 
     /**
      * Total Real Energy Exported [Wh]
      */
-    inline uint32_t totalWattHoursExported() const { return parse_acc32(36); }
+    inline double totalWattHoursExported() const { return parse_acc32_sunssf(36, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseA() const { return parse_acc32(38); }
+    inline double totalWattHoursExportedPhaseA() const { return parse_acc32_sunssf(38, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseB() const { return parse_acc32(40); }
+    inline double totalWattHoursExportedPhaseB() const { return parse_acc32_sunssf(40, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseC() const { return parse_acc32(42); }
+    inline double totalWattHoursExportedPhaseC() const { return parse_acc32_sunssf(42, 52); }
 
     /**
      * Total Real Energy Imported [Wh]
      */
-    inline uint32_t totalWattHoursImported() const { return parse_acc32(44); }
+    inline double totalWattHoursImported() const { return parse_acc32_sunssf(44, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseA() const { return parse_acc32(46); }
+    inline double totalWattHoursImportedPhaseA() const { return parse_acc32_sunssf(46, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseB() const { return parse_acc32(48); }
+    inline double totalWattHoursImportedPhaseB() const { return parse_acc32_sunssf(48, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseC() const { return parse_acc32(50); }
-
-    /**
-     * Real Energy scale factor
-     */
-    inline int16_t totWh_SF() const { return parse_sunssf(52); }
+    inline double totalWattHoursImportedPhaseC() const { return parse_acc32_sunssf(50, 52); }
 
     /**
      * Total Apparent Energy Exported [VAh]
      */
-    inline uint32_t totalVAHoursExported() const { return parse_acc32(53); }
+    inline double totalVAHoursExported() const { return parse_acc32_sunssf(53, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseA() const { return parse_acc32(55); }
+    inline double totalVAHoursExportedPhaseA() const { return parse_acc32_sunssf(55, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseB() const { return parse_acc32(57); }
+    inline double totalVAHoursExportedPhaseB() const { return parse_acc32_sunssf(57, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseC() const { return parse_acc32(59); }
+    inline double totalVAHoursExportedPhaseC() const { return parse_acc32_sunssf(59, 69); }
 
     /**
      * Total Apparent Energy Imported [VAh]
      */
-    inline uint32_t totalVAHoursImported() const { return parse_acc32(61); }
+    inline double totalVAHoursImported() const { return parse_acc32_sunssf(61, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseA() const { return parse_acc32(63); }
+    inline double totalVAHoursImportedPhaseA() const { return parse_acc32_sunssf(63, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseB() const { return parse_acc32(65); }
+    inline double totalVAHoursImportedPhaseB() const { return parse_acc32_sunssf(65, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseC() const { return parse_acc32(67); }
-
-    /**
-     * Apparent Energy scale factor
-     */
-    inline int16_t totVAh_SF() const { return parse_sunssf(69); }
+    inline double totalVAHoursImportedPhaseC() const { return parse_acc32_sunssf(67, 69); }
 
     /**
      * Total Reactive Energy Imported Quadrant 1 [varh]
      */
-    inline uint32_t totalVARHoursImportedQ1() const { return parse_acc32(70); }
+    inline double totalVARHoursImportedQ1() const { return parse_acc32_sunssf(70, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseA() const { return parse_acc32(72); }
+    inline double totalVArHoursImportedQ1PhaseA() const { return parse_acc32_sunssf(72, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseB() const { return parse_acc32(74); }
+    inline double totalVArHoursImportedQ1PhaseB() const { return parse_acc32_sunssf(74, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseC() const { return parse_acc32(76); }
+    inline double totalVArHoursImportedQ1PhaseC() const { return parse_acc32_sunssf(76, 102); }
 
     /**
      * Total Reactive Power Imported Quadrant 2 [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2() const { return parse_acc32(78); }
+    inline double totalVArHoursImportedQ2() const { return parse_acc32_sunssf(78, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseA() const { return parse_acc32(80); }
+    inline double totalVArHoursImportedQ2PhaseA() const { return parse_acc32_sunssf(80, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseB() const { return parse_acc32(82); }
+    inline double totalVArHoursImportedQ2PhaseB() const { return parse_acc32_sunssf(82, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseC() const { return parse_acc32(84); }
+    inline double totalVArHoursImportedQ2PhaseC() const { return parse_acc32_sunssf(84, 102); }
 
     /**
      * Total Reactive Power Exported Quadrant 3 [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3() const { return parse_acc32(86); }
+    inline double totalVArHoursExportedQ3() const { return parse_acc32_sunssf(86, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseA() const { return parse_acc32(88); }
+    inline double totalVArHoursExportedQ3PhaseA() const { return parse_acc32_sunssf(88, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseB() const { return parse_acc32(90); }
+    inline double totalVArHoursExportedQ3PhaseB() const { return parse_acc32_sunssf(90, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseC() const { return parse_acc32(92); }
+    inline double totalVArHoursExportedQ3PhaseC() const { return parse_acc32_sunssf(92, 102); }
 
     /**
      * Total Reactive Power Exported Quadrant 4 [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4() const { return parse_acc32(94); }
+    inline double totalVArHoursExportedQ4() const { return parse_acc32_sunssf(94, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseA() const { return parse_acc32(96); }
+    inline double totalVArHoursExportedQ4ImportedPhaseA() const { return parse_acc32_sunssf(96, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseB() const { return parse_acc32(98); }
+    inline double totalVArHoursExportedQ4ImportedPhaseB() const { return parse_acc32_sunssf(98, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseC() const { return parse_acc32(100); }
-
-    /**
-     * Reactive Energy scale factor
-     */
-    inline int16_t totVArh_SF() const { return parse_sunssf(102); }
+    inline double totalVArHoursExportedQ4ImportedPhaseC() const { return parse_acc32_sunssf(100, 102); }
 
     /**
      * Meter Event Flags
@@ -3632,357 +3210,307 @@ class DeltaConnectThreePhaseAbcMeter_204 : public SunSpecModel<204, 105> {
     /**
      * Total AC Current [A]
      */
-    inline int16_t amps() const { return parse_int16(0); }
+    inline float amps() const { return parse_int16_sunssf(0, 4); }
 
     /**
      * Phase A Current [A]
      */
-    inline int16_t ampsPhaseA() const { return parse_int16(1); }
+    inline float ampsPhaseA() const { return parse_int16_sunssf(1, 4); }
 
     /**
      * Phase B Current [A]
      */
-    inline int16_t ampsPhaseB() const { return parse_int16(2); }
+    inline float ampsPhaseB() const { return parse_int16_sunssf(2, 4); }
 
     /**
      * Phase C Current [A]
      */
-    inline int16_t ampsPhaseC() const { return parse_int16(3); }
-
-    /**
-     * Current scale factor
-     */
-    inline int16_t A_SF() const { return parse_sunssf(4); }
+    inline float ampsPhaseC() const { return parse_int16_sunssf(3, 4); }
 
     /**
      * Line to Neutral AC Voltage (average of active phases) [V]
      */
-    inline int16_t voltageLN() const { return parse_int16(5); }
+    inline float voltageLN() const { return parse_int16_sunssf(5, 13); }
 
     /**
      * Phase Voltage AN [V]
      */
-    inline int16_t phaseVoltageAN() const { return parse_int16(6); }
+    inline float phaseVoltageAN() const { return parse_int16_sunssf(6, 13); }
 
     /**
      * Phase Voltage BN [V]
      */
-    inline int16_t phaseVoltageBN() const { return parse_int16(7); }
+    inline float phaseVoltageBN() const { return parse_int16_sunssf(7, 13); }
 
     /**
      * Phase Voltage CN [V]
      */
-    inline int16_t phaseVoltageCN() const { return parse_int16(8); }
+    inline float phaseVoltageCN() const { return parse_int16_sunssf(8, 13); }
 
     /**
      * Line to Line AC Voltage (average of active phases) [V]
      */
-    inline int16_t voltageLL() const { return parse_int16(9); }
+    inline float voltageLL() const { return parse_int16_sunssf(9, 13); }
 
     /**
      * Phase Voltage AB [V]
      */
-    inline int16_t phaseVoltageAB() const { return parse_int16(10); }
+    inline float phaseVoltageAB() const { return parse_int16_sunssf(10, 13); }
 
     /**
      * Phase Voltage BC [V]
      */
-    inline int16_t phaseVoltageBC() const { return parse_int16(11); }
+    inline float phaseVoltageBC() const { return parse_int16_sunssf(11, 13); }
 
     /**
      * Phase Voltage CA [V]
      */
-    inline int16_t phaseVoltageCA() const { return parse_int16(12); }
-
-    /**
-     * Voltage scale factor
-     */
-    inline int16_t V_SF() const { return parse_sunssf(13); }
+    inline float phaseVoltageCA() const { return parse_int16_sunssf(12, 13); }
 
     /**
      * Frequency [Hz]
      */
-    inline int16_t hz() const { return parse_int16(14); }
-
-    /**
-     * Frequency scale factor
-     */
-    inline int16_t hz_SF() const { return parse_sunssf(15); }
+    inline float hz() const { return parse_int16_sunssf(14, 15); }
 
     /**
      * Total Real Power [W]
      */
-    inline int16_t watts() const { return parse_int16(16); }
+    inline float watts() const { return parse_int16_sunssf(16, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseA() const { return parse_int16(17); }
+    inline float wattsPhaseA() const { return parse_int16_sunssf(17, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseB() const { return parse_int16(18); }
+    inline float wattsPhaseB() const { return parse_int16_sunssf(18, 20); }
 
     /**
      * [W]
      */
-    inline int16_t wattsPhaseC() const { return parse_int16(19); }
-
-    /**
-     * Real Power scale factor
-     */
-    inline int16_t W_SF() const { return parse_sunssf(20); }
+    inline float wattsPhaseC() const { return parse_int16_sunssf(19, 20); }
 
     /**
      * AC Apparent Power [VA]
      */
-    inline int16_t VA() const { return parse_int16(21); }
+    inline float VA() const { return parse_int16_sunssf(21, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseA() const { return parse_int16(22); }
+    inline float VAPhaseA() const { return parse_int16_sunssf(22, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseB() const { return parse_int16(23); }
+    inline float VAPhaseB() const { return parse_int16_sunssf(23, 25); }
 
     /**
      * [VA]
      */
-    inline int16_t VAPhaseC() const { return parse_int16(24); }
-
-    /**
-     * Apparent Power scale factor
-     */
-    inline int16_t VA_SF() const { return parse_sunssf(25); }
+    inline float VAPhaseC() const { return parse_int16_sunssf(24, 25); }
 
     /**
      * Reactive Power [var]
      */
-    inline int16_t VAR() const { return parse_int16(26); }
+    inline float VAR() const { return parse_int16_sunssf(26, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseA() const { return parse_int16(27); }
+    inline float VARPhaseA() const { return parse_int16_sunssf(27, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseB() const { return parse_int16(28); }
+    inline float VARPhaseB() const { return parse_int16_sunssf(28, 30); }
 
     /**
      * [var]
      */
-    inline int16_t VARPhaseC() const { return parse_int16(29); }
-
-    /**
-     * Reactive Power scale factor
-     */
-    inline int16_t VAR_SF() const { return parse_sunssf(30); }
+    inline float VARPhaseC() const { return parse_int16_sunssf(29, 30); }
 
     /**
      * Power Factor [Pct]
      */
-    inline int16_t PF() const { return parse_int16(31); }
+    inline float PF() const { return parse_int16_sunssf(31, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseA() const { return parse_int16(32); }
+    inline float PFPhaseA() const { return parse_int16_sunssf(32, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseB() const { return parse_int16(33); }
+    inline float PFPhaseB() const { return parse_int16_sunssf(33, 35); }
 
     /**
      * [Pct]
      */
-    inline int16_t PFPhaseC() const { return parse_int16(34); }
-
-    /**
-     * Power Factor scale factor
-     */
-    inline int16_t PF_SF() const { return parse_sunssf(35); }
+    inline float PFPhaseC() const { return parse_int16_sunssf(34, 35); }
 
     /**
      * Total Real Energy Exported [Wh]
      */
-    inline uint32_t totalWattHoursExported() const { return parse_acc32(36); }
+    inline double totalWattHoursExported() const { return parse_acc32_sunssf(36, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseA() const { return parse_acc32(38); }
+    inline double totalWattHoursExportedPhaseA() const { return parse_acc32_sunssf(38, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseB() const { return parse_acc32(40); }
+    inline double totalWattHoursExportedPhaseB() const { return parse_acc32_sunssf(40, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursExportedPhaseC() const { return parse_acc32(42); }
+    inline double totalWattHoursExportedPhaseC() const { return parse_acc32_sunssf(42, 52); }
 
     /**
      * Total Real Energy Imported [Wh]
      */
-    inline uint32_t totalWattHoursImported() const { return parse_acc32(44); }
+    inline double totalWattHoursImported() const { return parse_acc32_sunssf(44, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseA() const { return parse_acc32(46); }
+    inline double totalWattHoursImportedPhaseA() const { return parse_acc32_sunssf(46, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseB() const { return parse_acc32(48); }
+    inline double totalWattHoursImportedPhaseB() const { return parse_acc32_sunssf(48, 52); }
 
     /**
      * [Wh]
      */
-    inline uint32_t totalWattHoursImportedPhaseC() const { return parse_acc32(50); }
-
-    /**
-     * Real Energy scale factor
-     */
-    inline int16_t totWh_SF() const { return parse_sunssf(52); }
+    inline double totalWattHoursImportedPhaseC() const { return parse_acc32_sunssf(50, 52); }
 
     /**
      * Total Apparent Energy Exported [VAh]
      */
-    inline uint32_t totalVAHoursExported() const { return parse_acc32(53); }
+    inline double totalVAHoursExported() const { return parse_acc32_sunssf(53, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseA() const { return parse_acc32(55); }
+    inline double totalVAHoursExportedPhaseA() const { return parse_acc32_sunssf(55, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseB() const { return parse_acc32(57); }
+    inline double totalVAHoursExportedPhaseB() const { return parse_acc32_sunssf(57, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursExportedPhaseC() const { return parse_acc32(59); }
+    inline double totalVAHoursExportedPhaseC() const { return parse_acc32_sunssf(59, 69); }
 
     /**
      * Total Apparent Energy Imported [VAh]
      */
-    inline uint32_t totalVAHoursImported() const { return parse_acc32(61); }
+    inline double totalVAHoursImported() const { return parse_acc32_sunssf(61, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseA() const { return parse_acc32(63); }
+    inline double totalVAHoursImportedPhaseA() const { return parse_acc32_sunssf(63, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseB() const { return parse_acc32(65); }
+    inline double totalVAHoursImportedPhaseB() const { return parse_acc32_sunssf(65, 69); }
 
     /**
      * [VAh]
      */
-    inline uint32_t totalVAHoursImportedPhaseC() const { return parse_acc32(67); }
-
-    /**
-     * Apparent Energy scale factor
-     */
-    inline int16_t totVAh_SF() const { return parse_sunssf(69); }
+    inline double totalVAHoursImportedPhaseC() const { return parse_acc32_sunssf(67, 69); }
 
     /**
      * Total Reactive Energy Imported Quadrant 1 [varh]
      */
-    inline uint32_t totalVARHoursImportedQ1() const { return parse_acc32(70); }
+    inline double totalVARHoursImportedQ1() const { return parse_acc32_sunssf(70, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseA() const { return parse_acc32(72); }
+    inline double totalVArHoursImportedQ1PhaseA() const { return parse_acc32_sunssf(72, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseB() const { return parse_acc32(74); }
+    inline double totalVArHoursImportedQ1PhaseB() const { return parse_acc32_sunssf(74, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ1PhaseC() const { return parse_acc32(76); }
+    inline double totalVArHoursImportedQ1PhaseC() const { return parse_acc32_sunssf(76, 102); }
 
     /**
      * Total Reactive Power Imported Quadrant 2 [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2() const { return parse_acc32(78); }
+    inline double totalVArHoursImportedQ2() const { return parse_acc32_sunssf(78, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseA() const { return parse_acc32(80); }
+    inline double totalVArHoursImportedQ2PhaseA() const { return parse_acc32_sunssf(80, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseB() const { return parse_acc32(82); }
+    inline double totalVArHoursImportedQ2PhaseB() const { return parse_acc32_sunssf(82, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursImportedQ2PhaseC() const { return parse_acc32(84); }
+    inline double totalVArHoursImportedQ2PhaseC() const { return parse_acc32_sunssf(84, 102); }
 
     /**
      * Total Reactive Power Exported Quadrant 3 [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3() const { return parse_acc32(86); }
+    inline double totalVArHoursExportedQ3() const { return parse_acc32_sunssf(86, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseA() const { return parse_acc32(88); }
+    inline double totalVArHoursExportedQ3PhaseA() const { return parse_acc32_sunssf(88, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseB() const { return parse_acc32(90); }
+    inline double totalVArHoursExportedQ3PhaseB() const { return parse_acc32_sunssf(90, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ3PhaseC() const { return parse_acc32(92); }
+    inline double totalVArHoursExportedQ3PhaseC() const { return parse_acc32_sunssf(92, 102); }
 
     /**
      * Total Reactive Power Exported Quadrant 4 [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4() const { return parse_acc32(94); }
+    inline double totalVArHoursExportedQ4() const { return parse_acc32_sunssf(94, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseA() const { return parse_acc32(96); }
+    inline double totalVArHoursExportedQ4ImportedPhaseA() const { return parse_acc32_sunssf(96, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseB() const { return parse_acc32(98); }
+    inline double totalVArHoursExportedQ4ImportedPhaseB() const { return parse_acc32_sunssf(98, 102); }
 
     /**
      * [varh]
      */
-    inline uint32_t totalVArHoursExportedQ4ImportedPhaseC() const { return parse_acc32(100); }
-
-    /**
-     * Reactive Energy scale factor
-     */
-    inline int16_t totVArh_SF() const { return parse_sunssf(102); }
+    inline double totalVArHoursExportedQ4ImportedPhaseC() const { return parse_acc32_sunssf(100, 102); }
 
     /**
      * Meter Event Flags
@@ -5498,26 +5026,6 @@ class SolarModule_501 : public SunSpecModel<501, 31> {
 class SolarModule_502 : public SunSpecModel<502, 28> {
   public:
     /**
-     * Current scale factor
-     */
-    inline int16_t A_SF() const { return parse_sunssf(0); }
-
-    /**
-     * Voltage scale factor
-     */
-    inline int16_t V_SF() const { return parse_sunssf(1); }
-
-    /**
-     * Power scale factor
-     */
-    inline int16_t W_SF() const { return parse_sunssf(2); }
-
-    /**
-     * Energy scale factor
-     */
-    inline int16_t wh_SF() const { return parse_sunssf(3); }
-
-    /**
      * Enumerated value.  Module Status Code
      */
     inline uint16_t status() const { return parse_enum16(4); }
@@ -5560,22 +5068,22 @@ class SolarModule_502 : public SunSpecModel<502, 28> {
     /**
      * Output Current [A]
      */
-    inline int16_t outputCurrent() const { return parse_int16(17); }
+    inline float outputCurrent() const { return parse_int16_sunssf(17, 0); }
 
     /**
      * Output Voltage [V]
      */
-    inline int16_t outputVoltage() const { return parse_int16(18); }
+    inline float outputVoltage() const { return parse_int16_sunssf(18, 1); }
 
     /**
      * Output Energy [Wh]
      */
-    inline uint32_t outputEnergy() const { return parse_acc32(19); }
+    inline double outputEnergy() const { return parse_acc32_sunssf(19, 3); }
 
     /**
      * Output Power [W]
      */
-    inline int16_t outputPower() const { return parse_int16(21); }
+    inline float outputPower() const { return parse_int16_sunssf(21, 2); }
 
     /**
      * Module Temperature [C]
@@ -5585,22 +5093,22 @@ class SolarModule_502 : public SunSpecModel<502, 28> {
     /**
      * Input Current [A]
      */
-    inline int16_t inputCurrent() const { return parse_int16(23); }
+    inline float inputCurrent() const { return parse_int16_sunssf(23, 0); }
 
     /**
      * Input Voltage [V]
      */
-    inline int16_t inputVoltage() const { return parse_int16(24); }
+    inline float inputVoltage() const { return parse_int16_sunssf(24, 1); }
 
     /**
      * Input Energy [Wh]
      */
-    inline uint32_t inputEnergy() const { return parse_acc32(25); }
+    inline double inputEnergy() const { return parse_acc32_sunssf(25, 3); }
 
     /**
      * Input Power [W]
      */
-    inline int16_t inputPower() const { return parse_int16(27); }
+    inline float inputPower() const { return parse_int16_sunssf(27, 2); }
 
 };
 
@@ -5642,257 +5150,257 @@ class DERACMeasurement : public SunSpecModel<701, 153> {
     /**
      * Total active power. Active power is positive for DER generation and negative for absorption. [W]
      */
-    inline int16_t activePower() const { return parse_int16(8); }
+    inline float activePower() const { return parse_int16_sunssf(8, 114); }
 
     /**
      * Total apparent power. [VA]
      */
-    inline int16_t apparentPower() const { return parse_int16(9); }
+    inline float apparentPower() const { return parse_int16_sunssf(9, 116); }
 
     /**
      * Total reactive power. [Var]
      */
-    inline int16_t reactivePower() const { return parse_int16(10); }
+    inline float reactivePower() const { return parse_int16_sunssf(10, 117); }
 
     /**
      * Power factor. The sign of power factor should be the sign of active power.
      */
-    inline int16_t powerFactor() const { return parse_int16(11); }
+    inline float powerFactor() const { return parse_int16_sunssf(11, 115); }
 
     /**
      * Total AC current. [A]
      */
-    inline int16_t totalACCurrent() const { return parse_int16(12); }
+    inline float totalACCurrent() const { return parse_int16_sunssf(12, 111); }
 
     /**
      * Line to line AC voltage as an average of active phases. [V]
      */
-    inline uint16_t voltageLL() const { return parse_uint16(13); }
+    inline float voltageLL() const { return parse_uint16_sunssf(13, 112); }
 
     /**
      * Line to neutral AC voltage as an average of active phases. [V]
      */
-    inline uint16_t voltageLN() const { return parse_uint16(14); }
+    inline float voltageLN() const { return parse_uint16_sunssf(14, 112); }
 
     /**
      * AC frequency. [Hz]
      */
-    inline uint32_t frequency() const { return parse_uint32(15); }
+    inline double frequency() const { return parse_uint32_sunssf(15, 113); }
 
     /**
      * Total active energy injected (Quadrants 1 & 4). [Wh]
      */
-    inline uint64_t totalEnergyInjected() const { return parse_uint64(17); }
+    inline double totalEnergyInjected() const { return parse_uint64_sunssf(17, 118); }
 
     /**
      * Total active energy absorbed (Quadrants 2 & 3). [Wh]
      */
-    inline uint64_t totalEnergyAbsorbed() const { return parse_uint64(21); }
+    inline double totalEnergyAbsorbed() const { return parse_uint64_sunssf(21, 118); }
 
     /**
      * Total reactive energy injected (Quadrants 1 & 2). [Varh]
      */
-    inline uint64_t totalReactiveEnergyInj() const { return parse_uint64(25); }
+    inline double totalReactiveEnergyInj() const { return parse_uint64_sunssf(25, 119); }
 
     /**
      * Total reactive energy absorbed (Quadrants 3 & 4). [Varh]
      */
-    inline uint64_t totalReactiveEnergyAbs() const { return parse_uint64(29); }
+    inline double totalReactiveEnergyAbs() const { return parse_uint64_sunssf(29, 119); }
 
     /**
      * Ambient temperature. [C]
      */
-    inline int16_t ambientTemperature() const { return parse_int16(33); }
+    inline float ambientTemperature() const { return parse_int16_sunssf(33, 120); }
 
     /**
      * Cabinet temperature. [C]
      */
-    inline int16_t cabinetTemperature() const { return parse_int16(34); }
+    inline float cabinetTemperature() const { return parse_int16_sunssf(34, 120); }
 
     /**
      * Heat sink temperature. [C]
      */
-    inline int16_t heatSinkTemperature() const { return parse_int16(35); }
+    inline float heatSinkTemperature() const { return parse_int16_sunssf(35, 120); }
 
     /**
      * Transformer temperature. [C]
      */
-    inline int16_t transformerTemperature() const { return parse_int16(36); }
+    inline float transformerTemperature() const { return parse_int16_sunssf(36, 120); }
 
     /**
      * IGBT/MOSFET temperature. [C]
      */
-    inline int16_t IGBTMOSFETTemperature() const { return parse_int16(37); }
+    inline float IGBTMOSFETTemperature() const { return parse_int16_sunssf(37, 120); }
 
     /**
      * Other temperature. [C]
      */
-    inline int16_t otherTemperature() const { return parse_int16(38); }
+    inline float otherTemperature() const { return parse_int16_sunssf(38, 120); }
 
     /**
      * Active power L1. [W]
      */
-    inline int16_t wattsL1() const { return parse_int16(39); }
+    inline float wattsL1() const { return parse_int16_sunssf(39, 114); }
 
     /**
      * Apparent power L1. [VA]
      */
-    inline int16_t VAL1() const { return parse_int16(40); }
+    inline float VAL1() const { return parse_int16_sunssf(40, 116); }
 
     /**
      * Reactive power L1. [Var]
      */
-    inline int16_t varL1() const { return parse_int16(41); }
+    inline float varL1() const { return parse_int16_sunssf(41, 117); }
 
     /**
      * Power factor phase L1.
      */
-    inline int16_t PFL1() const { return parse_int16(42); }
+    inline float PFL1() const { return parse_int16_sunssf(42, 115); }
 
     /**
      * Current phase L1. [A]
      */
-    inline int16_t ampsL1() const { return parse_int16(43); }
+    inline float ampsL1() const { return parse_int16_sunssf(43, 111); }
 
     /**
      * Phase voltage L1-L2. [V]
      */
-    inline uint16_t phaseVoltageL1L2() const { return parse_uint16(44); }
+    inline float phaseVoltageL1L2() const { return parse_uint16_sunssf(44, 112); }
 
     /**
      * Phase voltage L1-N. [V]
      */
-    inline uint16_t phaseVoltageL1N() const { return parse_uint16(45); }
+    inline float phaseVoltageL1N() const { return parse_uint16_sunssf(45, 112); }
 
     /**
      * Total active energy injected L1. [Wh]
      */
-    inline uint64_t totalWattHoursInjL1() const { return parse_uint64(46); }
+    inline double totalWattHoursInjL1() const { return parse_uint64_sunssf(46, 118); }
 
     /**
      * Total active energy absorbed L1. [Wh]
      */
-    inline uint64_t totalWattHoursAbsL1() const { return parse_uint64(50); }
+    inline double totalWattHoursAbsL1() const { return parse_uint64_sunssf(50, 118); }
 
     /**
      * Total reactive energy injected L1. [Varh]
      */
-    inline uint64_t totalVarHoursInjL1() const { return parse_uint64(54); }
+    inline double totalVarHoursInjL1() const { return parse_uint64_sunssf(54, 119); }
 
     /**
      * Total reactive energy absorbed L1. [Varh]
      */
-    inline uint64_t totalVarHoursAbsL1() const { return parse_uint64(58); }
+    inline double totalVarHoursAbsL1() const { return parse_uint64_sunssf(58, 119); }
 
     /**
      * Active power L2. [W]
      */
-    inline int16_t wattsL2() const { return parse_int16(62); }
+    inline float wattsL2() const { return parse_int16_sunssf(62, 114); }
 
     /**
      * Apparent power L2. [VA]
      */
-    inline int16_t VAL2() const { return parse_int16(63); }
+    inline float VAL2() const { return parse_int16_sunssf(63, 116); }
 
     /**
      * Reactive power L2. [Var]
      */
-    inline int16_t varL2() const { return parse_int16(64); }
+    inline float varL2() const { return parse_int16_sunssf(64, 117); }
 
     /**
      * Power factor L2.
      */
-    inline int16_t PFL2() const { return parse_int16(65); }
+    inline float PFL2() const { return parse_int16_sunssf(65, 115); }
 
     /**
      * Current L2. [A]
      */
-    inline int16_t ampsL2() const { return parse_int16(66); }
+    inline float ampsL2() const { return parse_int16_sunssf(66, 111); }
 
     /**
      * Phase voltage L2-L3. [V]
      */
-    inline uint16_t phaseVoltageL2L3() const { return parse_uint16(67); }
+    inline float phaseVoltageL2L3() const { return parse_uint16_sunssf(67, 112); }
 
     /**
      * Phase voltage L2-N. [V]
      */
-    inline uint16_t phaseVoltageL2N() const { return parse_uint16(68); }
+    inline float phaseVoltageL2N() const { return parse_uint16_sunssf(68, 112); }
 
     /**
      * Total active energy injected L2. [Wh]
      */
-    inline uint64_t totalWattHoursInjL2() const { return parse_uint64(69); }
+    inline double totalWattHoursInjL2() const { return parse_uint64_sunssf(69, 118); }
 
     /**
      * Total active energy absorbed L2. [Wh]
      */
-    inline uint64_t totalWattHoursAbsL2() const { return parse_uint64(73); }
+    inline double totalWattHoursAbsL2() const { return parse_uint64_sunssf(73, 118); }
 
     /**
      * Total reactive energy injected L2. [Varh]
      */
-    inline uint64_t totalVarHoursInjL2() const { return parse_uint64(77); }
+    inline double totalVarHoursInjL2() const { return parse_uint64_sunssf(77, 119); }
 
     /**
      * Total reactive energy absorbed L2. [Varh]
      */
-    inline uint64_t totalVarHoursAbsL2() const { return parse_uint64(81); }
+    inline double totalVarHoursAbsL2() const { return parse_uint64_sunssf(81, 119); }
 
     /**
      * Active power L3. [W]
      */
-    inline int16_t wattsL3() const { return parse_int16(85); }
+    inline float wattsL3() const { return parse_int16_sunssf(85, 114); }
 
     /**
      * Apparent power L3. [VA]
      */
-    inline int16_t VAL3() const { return parse_int16(86); }
+    inline float VAL3() const { return parse_int16_sunssf(86, 116); }
 
     /**
      * Reactive power L3. [Var]
      */
-    inline int16_t varL3() const { return parse_int16(87); }
+    inline float varL3() const { return parse_int16_sunssf(87, 117); }
 
     /**
      * Power factor L3.
      */
-    inline int16_t PFL3() const { return parse_int16(88); }
+    inline float PFL3() const { return parse_int16_sunssf(88, 115); }
 
     /**
      * Current L3. [A]
      */
-    inline int16_t ampsL3() const { return parse_int16(89); }
+    inline float ampsL3() const { return parse_int16_sunssf(89, 111); }
 
     /**
      * Phase voltage L3-L1. [V]
      */
-    inline uint16_t phaseVoltageL3L1() const { return parse_uint16(90); }
+    inline float phaseVoltageL3L1() const { return parse_uint16_sunssf(90, 112); }
 
     /**
      * Phase voltage L3-N. [V]
      */
-    inline uint16_t phaseVoltageL3N() const { return parse_uint16(91); }
+    inline float phaseVoltageL3N() const { return parse_uint16_sunssf(91, 112); }
 
     /**
      * Total active energy injected L3. [Wh]
      */
-    inline uint64_t totalWattHoursInjL3() const { return parse_uint64(92); }
+    inline double totalWattHoursInjL3() const { return parse_uint64_sunssf(92, 118); }
 
     /**
      * Total active energy absorbed L3. [Wh]
      */
-    inline uint64_t totalWattHoursAbsL3() const { return parse_uint64(96); }
+    inline double totalWattHoursAbsL3() const { return parse_uint64_sunssf(96, 118); }
 
     /**
      * Total reactive energy injected L3. [Varh]
      */
-    inline uint64_t totalVarHoursInjL3() const { return parse_uint64(100); }
+    inline double totalVarHoursInjL3() const { return parse_uint64_sunssf(100, 119); }
 
     /**
      * Total reactive energy absorbed L3. [Varh]
      */
-    inline uint64_t totalVarHoursAbsL3() const { return parse_uint64(104); }
+    inline double totalVarHoursAbsL3() const { return parse_uint64_sunssf(104, 119); }
 
     /**
      * Throttling in pct of maximum active power. [Pct]
@@ -5903,56 +5411,6 @@ class DERACMeasurement : public SunSpecModel<701, 153> {
      * Active throttling source.
      */
     inline uint32_t throttleSourceInformation() const { return parse_bitfield32(109); }
-
-    /**
-     * Current scale factor.
-     */
-    inline int16_t currentScaleFactor() const { return parse_sunssf(111); }
-
-    /**
-     * Voltage scale factor.
-     */
-    inline int16_t voltageScaleFactor() const { return parse_sunssf(112); }
-
-    /**
-     * Frequency scale factor.
-     */
-    inline int16_t frequencyScaleFactor() const { return parse_sunssf(113); }
-
-    /**
-     * Active power scale factor.
-     */
-    inline int16_t activePowerScaleFactor() const { return parse_sunssf(114); }
-
-    /**
-     * Power factor scale factor.
-     */
-    inline int16_t powerFactorScaleFactor() const { return parse_sunssf(115); }
-
-    /**
-     * Apparent power scale factor.
-     */
-    inline int16_t apparentPowerScaleFactor() const { return parse_sunssf(116); }
-
-    /**
-     * Reactive power scale factor.
-     */
-    inline int16_t reactivePowerScaleFactor() const { return parse_sunssf(117); }
-
-    /**
-     * Active energy scale factor.
-     */
-    inline int16_t activeEnergyScaleFactor() const { return parse_sunssf(118); }
-
-    /**
-     * Reactive energy scale factor.
-     */
-    inline int16_t reactiveEnergyScaleFactor() const { return parse_sunssf(119); }
-
-    /**
-     * Temperature scale factor.
-     */
-    inline int16_t temperatureScaleFactor() const { return parse_sunssf(120); }
 
     /**
      * Manufacturer alarm information. Valid if MANUFACTURER_ALRM indication is active.
@@ -5969,97 +5427,97 @@ class DERCapacity : public SunSpecModel<702, 50> {
     /**
      * Maximum active power rating at unity power factor in watts. [W]
      */
-    inline uint16_t activePowerMaxRating() const { return parse_uint16(0); }
+    inline float activePowerMaxRating() const { return parse_uint16_sunssf(0, 43); }
 
     /**
      * Active power rating at specified over-excited power factor in watts. [W]
      */
-    inline uint16_t activePowerOverExcitedRating() const { return parse_uint16(1); }
+    inline float activePowerOverExcitedRating() const { return parse_uint16_sunssf(1, 43); }
 
     /**
      * Specified over-excited power factor.
      */
-    inline uint16_t specifiedOverExcitedPF_2() const { return parse_uint16(2); }
+    inline float specifiedOverExcitedPF_2() const { return parse_uint16_sunssf(2, 44); }
 
     /**
      * Active power rating at specified under-excited power factor in watts. [W]
      */
-    inline uint16_t activePowerUnderExcitedRating() const { return parse_uint16(3); }
+    inline float activePowerUnderExcitedRating() const { return parse_uint16_sunssf(3, 43); }
 
     /**
      * Specified under-excited power factor.
      */
-    inline uint16_t specifiedUnderExcitedPF_4() const { return parse_uint16(4); }
+    inline float specifiedUnderExcitedPF_4() const { return parse_uint16_sunssf(4, 44); }
 
     /**
      * Maximum apparent power rating in voltamperes. [VA]
      */
-    inline uint16_t apparentPowerMaxRating() const { return parse_uint16(5); }
+    inline float apparentPowerMaxRating() const { return parse_uint16_sunssf(5, 45); }
 
     /**
      * Maximum injected reactive power rating in vars. [Var]
      */
-    inline uint16_t reactivePowerInjectedRating() const { return parse_uint16(6); }
+    inline float reactivePowerInjectedRating() const { return parse_uint16_sunssf(6, 46); }
 
     /**
      * Maximum absorbed reactive power rating in vars. [Var]
      */
-    inline uint16_t reactivePowerAbsorbedRating() const { return parse_uint16(7); }
+    inline float reactivePowerAbsorbedRating() const { return parse_uint16_sunssf(7, 46); }
 
     /**
      * Maximum active power charge rate in watts. [W]
      */
-    inline uint16_t chargeRateMaxRating() const { return parse_uint16(8); }
+    inline float chargeRateMaxRating() const { return parse_uint16_sunssf(8, 43); }
 
     /**
      * Maximum active power discharge rate in watts. [W]
      */
-    inline uint16_t dischargeRateMaxRating() const { return parse_uint16(9); }
+    inline float dischargeRateMaxRating() const { return parse_uint16_sunssf(9, 43); }
 
     /**
      * Maximum apparent power charge rate in voltamperes. [VA]
      */
-    inline uint16_t chargeRateMaxVARating() const { return parse_uint16(10); }
+    inline float chargeRateMaxVARating() const { return parse_uint16_sunssf(10, 45); }
 
     /**
      * Maximum apparent power discharge rate in voltamperes. [VA]
      */
-    inline uint16_t dischargeRateMaxVARating() const { return parse_uint16(11); }
+    inline float dischargeRateMaxVARating() const { return parse_uint16_sunssf(11, 45); }
 
     /**
      * AC voltage nominal rating. [V]
      */
-    inline uint16_t ACVoltageNominalRating() const { return parse_uint16(12); }
+    inline float ACVoltageNominalRating() const { return parse_uint16_sunssf(12, 47); }
 
     /**
      * AC voltage maximum rating. [V]
      */
-    inline uint16_t ACVoltageMaxRating() const { return parse_uint16(13); }
+    inline float ACVoltageMaxRating() const { return parse_uint16_sunssf(13, 47); }
 
     /**
      * AC voltage minimum rating. [V]
      */
-    inline uint16_t ACVoltageMinRating() const { return parse_uint16(14); }
+    inline float ACVoltageMinRating() const { return parse_uint16_sunssf(14, 47); }
 
     /**
      * AC current maximum rating in amps. [A]
      */
-    inline uint16_t ACCurrentMaxRating() const { return parse_uint16(15); }
+    inline float ACCurrentMaxRating() const { return parse_uint16_sunssf(15, 48); }
 
     /**
      * Power factor over-excited rating.
      */
-    inline uint16_t PFOverExcitedRating() const { return parse_uint16(16); }
+    inline float PFOverExcitedRating() const { return parse_uint16_sunssf(16, 44); }
 
     /**
      * Power factor under-excited rating.
      */
-    inline uint16_t PFUnderExcitedRating() const { return parse_uint16(17); }
+    inline float PFUnderExcitedRating() const { return parse_uint16_sunssf(17, 44); }
 
     /**
      * Reactive susceptance that remains connected to the Area EPS in the cease to energize and trip state. [S]
      */
-    inline uint16_t reactiveSusceptance() const { return parse_uint16(18); }
+    inline float reactiveSusceptance() const { return parse_uint16_sunssf(18, 49); }
 
     /**
      * Normal operating performance category as specified in IEEE 1547-2018.
@@ -6084,132 +5542,97 @@ class DERCapacity : public SunSpecModel<702, 50> {
     /**
      * Maximum active power setting used to adjust maximum active power setting. [W]
      */
-    inline uint16_t activePowerMaxSetting() const { return parse_uint16(24); }
+    inline float activePowerMaxSetting() const { return parse_uint16_sunssf(24, 43); }
 
     /**
      * Active power setting at specified over-excited power factor in watts. [W]
      */
-    inline uint16_t activePowerOverExcitedSetting() const { return parse_uint16(25); }
+    inline float activePowerOverExcitedSetting() const { return parse_uint16_sunssf(25, 43); }
 
     /**
      * Specified over-excited power factor.
      */
-    inline uint16_t specifiedOverExcitedPF_26() const { return parse_uint16(26); }
+    inline float specifiedOverExcitedPF_26() const { return parse_uint16_sunssf(26, 44); }
 
     /**
      * Active power setting at specified under-excited power factor in watts. [W]
      */
-    inline uint16_t activePowerUnderExcitedSetting() const { return parse_uint16(27); }
+    inline float activePowerUnderExcitedSetting() const { return parse_uint16_sunssf(27, 43); }
 
     /**
      * Specified under-excited power factor.
      */
-    inline uint16_t specifiedUnderExcitedPF_28() const { return parse_uint16(28); }
+    inline float specifiedUnderExcitedPF_28() const { return parse_uint16_sunssf(28, 44); }
 
     /**
      * Maximum apparent power setting used to adjust maximum apparent power rating. [VA]
      */
-    inline uint16_t apparentPowerMaxSetting() const { return parse_uint16(29); }
+    inline float apparentPowerMaxSetting() const { return parse_uint16_sunssf(29, 45); }
 
     /**
      * Maximum injected reactive power setting used to adjust maximum injected reactive power rating. [Var]
      */
-    inline uint16_t reactivePowerInjectedSetting() const { return parse_uint16(30); }
+    inline float reactivePowerInjectedSetting() const { return parse_uint16_sunssf(30, 46); }
 
     /**
      * Maximum absorbed reactive power setting used to adjust maximum absorbed reactive power rating. [Var]
      */
-    inline uint16_t reactivePowerAbsorbedSetting() const { return parse_uint16(31); }
+    inline float reactivePowerAbsorbedSetting() const { return parse_uint16_sunssf(31, 46); }
 
     /**
      * Maximum active power charge rate setting used to adjust maximum active power charge rate rating. [W]
      */
-    inline uint16_t chargeRateMaxSetting() const { return parse_uint16(32); }
+    inline float chargeRateMaxSetting() const { return parse_uint16_sunssf(32, 43); }
 
     /**
      * Maximum active power discharge rate setting used to adjust maximum active power discharge rate rating. [W]
      */
-    inline uint16_t dischargeRateMaxSetting() const { return parse_uint16(33); }
+    inline float dischargeRateMaxSetting() const { return parse_uint16_sunssf(33, 43); }
 
     /**
      * Maximum apparent power charge rate setting used to adjust maximum apparent power charge rate rating. [VA]
      */
-    inline uint16_t chargeRateMaxVASetting() const { return parse_uint16(34); }
+    inline float chargeRateMaxVASetting() const { return parse_uint16_sunssf(34, 45); }
 
     /**
      * Maximum apparent power discharge rate setting used to adjust maximum apparent power discharge rate rating. [VA]
      */
-    inline uint16_t dischargeRateMaxVASetting() const { return parse_uint16(35); }
+    inline float dischargeRateMaxVASetting() const { return parse_uint16_sunssf(35, 45); }
 
     /**
      * Nominal AC voltage setting. [V]
      */
-    inline uint16_t nominalACVoltageSetting() const { return parse_uint16(36); }
+    inline float nominalACVoltageSetting() const { return parse_uint16_sunssf(36, 47); }
 
     /**
      * AC voltage maximum setting used to adjust AC voltage maximum rating. [V]
      */
-    inline uint16_t ACVoltageMaxSetting() const { return parse_uint16(37); }
+    inline float ACVoltageMaxSetting() const { return parse_uint16_sunssf(37, 47); }
 
     /**
      * AC voltage minimum setting used to adjust AC voltage minimum rating. [V]
      */
-    inline uint16_t ACVoltageMinSetting() const { return parse_uint16(38); }
+    inline float ACVoltageMinSetting() const { return parse_uint16_sunssf(38, 47); }
 
     /**
      * Maximum AC current setting used to adjust maximum AC current rating. [A]
      */
-    inline uint16_t ACCurrentMaxSetting() const { return parse_uint16(39); }
+    inline float ACCurrentMaxSetting() const { return parse_uint16_sunssf(39, 48); }
 
     /**
      * Power factor over-excited setting.
      */
-    inline uint16_t PFOverExcitedSetting() const { return parse_uint16(40); }
+    inline float PFOverExcitedSetting() const { return parse_uint16_sunssf(40, 44); }
 
     /**
      * Power factor under-excited setting.
      */
-    inline uint16_t PFUnderExcitedSetting() const { return parse_uint16(41); }
+    inline float PFUnderExcitedSetting() const { return parse_uint16_sunssf(41, 44); }
 
     /**
      * Intentional island categories.
      */
     inline uint16_t intentionalIslandCategories_42() const { return parse_bitfield16(42); }
-
-    /**
-     * Active power scale factor.
-     */
-    inline int16_t activePowerScaleFactor() const { return parse_sunssf(43); }
-
-    /**
-     * Power factor scale factor.
-     */
-    inline int16_t powerFactorScaleFactor() const { return parse_sunssf(44); }
-
-    /**
-     * Apparent power scale factor.
-     */
-    inline int16_t apparentPowerScaleFactor() const { return parse_sunssf(45); }
-
-    /**
-     * Reactive power scale factor.
-     */
-    inline int16_t reactivePowerScaleFactor() const { return parse_sunssf(46); }
-
-    /**
-     * Voltage scale factor.
-     */
-    inline int16_t voltageScaleFactor() const { return parse_sunssf(47); }
-
-    /**
-     * Current scale factor.
-     */
-    inline int16_t currentScaleFactor() const { return parse_sunssf(48); }
-
-    /**
-     * Susceptance scale factor.
-     */
-    inline int16_t susceptanceScaleFactor() const { return parse_sunssf(49); }
 
 };
 
@@ -6226,22 +5649,22 @@ class EnterService : public SunSpecModel<703, 17> {
     /**
      * Enter service voltage high threshold as percent of normal voltage. [Pct]
      */
-    inline uint16_t enterServiceVoltageHigh() const { return parse_uint16(1); }
+    inline float enterServiceVoltageHigh() const { return parse_uint16_sunssf(1, 15); }
 
     /**
      * Enter service voltage low threshold as percent of normal voltage. [Pct]
      */
-    inline uint16_t enterServiceVoltageLow() const { return parse_uint16(2); }
+    inline float enterServiceVoltageLow() const { return parse_uint16_sunssf(2, 15); }
 
     /**
      * Enter service frequency high threshold. [Hz]
      */
-    inline uint32_t enterServiceFrequencyHigh() const { return parse_uint32(3); }
+    inline double enterServiceFrequencyHigh() const { return parse_uint32_sunssf(3, 16); }
 
     /**
      * Enter service frequency low threshold. [Hz]
      */
-    inline uint32_t enterServiceFrequencyLow() const { return parse_uint32(5); }
+    inline double enterServiceFrequencyLow() const { return parse_uint32_sunssf(5, 16); }
 
     /**
      * Enter service delay time in seconds. [Secs]
@@ -6263,16 +5686,6 @@ class EnterService : public SunSpecModel<703, 17> {
      */
     inline uint32_t enterServiceDelayRemaining() const { return parse_uint32(13); }
 
-    /**
-     * Voltage percentage scale factor.
-     */
-    inline int16_t voltageScaleFactor() const { return parse_sunssf(15); }
-
-    /**
-     * Frequency scale factor.
-     */
-    inline int16_t frequencyScaleFactor() const { return parse_sunssf(16); }
-
 };
 
 /**
@@ -6283,37 +5696,27 @@ class DERStorageCapacity : public SunSpecModel<713, 7> {
     /**
      * Energy rating of the DER storage. [WH]
      */
-    inline uint16_t energyRating() const { return parse_uint16(0); }
+    inline float energyRating() const { return parse_uint16_sunssf(0, 5); }
 
     /**
      * Energy available of the DER storage (WHAvail = WHRtg * SoC * SoH) [WH]
      */
-    inline uint16_t energyAvailable() const { return parse_uint16(1); }
+    inline float energyAvailable() const { return parse_uint16_sunssf(1, 5); }
 
     /**
      * State of charge of the DER storage. [Pct]
      */
-    inline uint16_t stateOfCharge() const { return parse_uint16(2); }
+    inline float stateOfCharge() const { return parse_uint16_sunssf(2, 6); }
 
     /**
      * State of health of the DER storage. [Pct]
      */
-    inline uint16_t stateOfHealth() const { return parse_uint16(3); }
+    inline float stateOfHealth() const { return parse_uint16_sunssf(3, 6); }
 
     /**
      * Storage status.
      */
     inline uint16_t status() const { return parse_enum16(4); }
-
-    /**
-     * Scale factor for energy capacity.
-     */
-    inline int16_t energyScaleFactor() const { return parse_sunssf(5); }
-
-    /**
-     * Scale factor for percentage.
-     */
-    inline int16_t percentScaleFactor() const { return parse_sunssf(6); }
 
 };
 
@@ -6366,62 +5769,62 @@ class BatteryBaseModel : public SunSpecModel<802, 62> {
     /**
      * Nameplate charge capacity in amp-hours. [Ah]
      */
-    inline uint16_t nameplateChargeCapacity() const { return parse_uint16(0); }
+    inline float nameplateChargeCapacity() const { return parse_uint16_sunssf(0, 50); }
 
     /**
      * Nameplate energy capacity in DC watt-hours. [Wh]
      */
-    inline uint16_t nameplateEnergyCapacity() const { return parse_uint16(1); }
+    inline float nameplateEnergyCapacity() const { return parse_uint16_sunssf(1, 51); }
 
     /**
      * Maximum rate of energy transfer into the storage device in DC watts. [W]
      */
-    inline uint16_t nameplateMaxChargeRate() const { return parse_uint16(2); }
+    inline float nameplateMaxChargeRate() const { return parse_uint16_sunssf(2, 52); }
 
     /**
      * Maximum rate of energy transfer out of the storage device in DC watts. [W]
      */
-    inline uint16_t nameplateMaxDischargeRate() const { return parse_uint16(3); }
+    inline float nameplateMaxDischargeRate() const { return parse_uint16_sunssf(3, 52); }
 
     /**
      * Self discharge rate.  Percentage of capacity (WHRtg) discharged per day. [%WHRtg]
      */
-    inline uint16_t selfDischargeRate() const { return parse_uint16(4); }
+    inline float selfDischargeRate() const { return parse_uint16_sunssf(4, 53); }
 
     /**
      * Manufacturer maximum state of charge, expressed as a percentage. [%WHRtg]
      */
-    inline uint16_t nameplateMaxSoC() const { return parse_uint16(5); }
+    inline float nameplateMaxSoC() const { return parse_uint16_sunssf(5, 54); }
 
     /**
      * Manufacturer minimum state of charge, expressed as a percentage. [%WHRtg]
      */
-    inline uint16_t nameplateMinSoC() const { return parse_uint16(6); }
+    inline float nameplateMinSoC() const { return parse_uint16_sunssf(6, 54); }
 
     /**
      * Setpoint for maximum reserve for storage as a percentage of the nominal maximum storage. [%WHRtg]
      */
-    inline uint16_t maxReservePercent() const { return parse_uint16(7); }
+    inline float maxReservePercent() const { return parse_uint16_sunssf(7, 54); }
 
     /**
      * Setpoint for minimum reserve for storage as a percentage of the nominal maximum storage. [%WHRtg]
      */
-    inline uint16_t minReservePercent() const { return parse_uint16(8); }
+    inline float minReservePercent() const { return parse_uint16_sunssf(8, 54); }
 
     /**
      * State of charge, expressed as a percentage. [%WHRtg]
      */
-    inline uint16_t stateOfCharge() const { return parse_uint16(9); }
+    inline float stateOfCharge() const { return parse_uint16_sunssf(9, 54); }
 
     /**
      * Depth of discharge, expressed as a percentage. [%]
      */
-    inline uint16_t depthOfDischarge() const { return parse_uint16(10); }
+    inline float depthOfDischarge() const { return parse_uint16_sunssf(10, 55); }
 
     /**
      * Percentage of battery life remaining. [%]
      */
-    inline uint16_t stateOfHealth() const { return parse_uint16(11); }
+    inline float stateOfHealth() const { return parse_uint16_sunssf(11, 56); }
 
     /**
      * Number of cycles executed in the battery.
@@ -6496,22 +5899,22 @@ class BatteryBaseModel : public SunSpecModel<802, 62> {
     /**
      * DC Bus Voltage. [V]
      */
-    inline uint16_t externalBatteryVoltage() const { return parse_uint16(32); }
+    inline float externalBatteryVoltage() const { return parse_uint16_sunssf(32, 57); }
 
     /**
      * Instantaneous maximum battery voltage. [V]
      */
-    inline uint16_t maxBatteryVoltage() const { return parse_uint16(33); }
+    inline float maxBatteryVoltage() const { return parse_uint16_sunssf(33, 57); }
 
     /**
      * Instantaneous minimum battery voltage. [V]
      */
-    inline uint16_t minBatteryVoltage() const { return parse_uint16(34); }
+    inline float minBatteryVoltage() const { return parse_uint16_sunssf(34, 57); }
 
     /**
      * Maximum voltage for all cells in the bank. [V]
      */
-    inline uint16_t maxCellVoltage() const { return parse_uint16(35); }
+    inline float maxCellVoltage() const { return parse_uint16_sunssf(35, 58); }
 
     /**
      * String containing the cell with maximum voltage.
@@ -6526,7 +5929,7 @@ class BatteryBaseModel : public SunSpecModel<802, 62> {
     /**
      * Minimum voltage for all cells in the bank. [V]
      */
-    inline uint16_t minCellVoltage() const { return parse_uint16(38); }
+    inline float minCellVoltage() const { return parse_uint16_sunssf(38, 58); }
 
     /**
      * String containing the cell with minimum voltage.
@@ -6541,27 +5944,27 @@ class BatteryBaseModel : public SunSpecModel<802, 62> {
     /**
      * Average cell voltage for all cells in the bank. [V]
      */
-    inline uint16_t averageCellVoltage() const { return parse_uint16(41); }
+    inline float averageCellVoltage() const { return parse_uint16_sunssf(41, 58); }
 
     /**
      * Total DC current flowing to/from the battery bank. [A]
      */
-    inline int16_t totalDCCurrent() const { return parse_int16(42); }
+    inline float totalDCCurrent() const { return parse_int16_sunssf(42, 59); }
 
     /**
      * Instantaneous maximum DC charge current. [A]
      */
-    inline uint16_t maxChargeCurrent() const { return parse_uint16(43); }
+    inline float maxChargeCurrent() const { return parse_uint16_sunssf(43, 60); }
 
     /**
      * Instantaneous maximum DC discharge current. [A]
      */
-    inline uint16_t maxDischargeCurrent() const { return parse_uint16(44); }
+    inline float maxDischargeCurrent() const { return parse_uint16_sunssf(44, 60); }
 
     /**
      * Total power flowing to/from the battery bank. [W]
      */
-    inline int16_t totalPower() const { return parse_int16(45); }
+    inline float totalPower() const { return parse_int16_sunssf(45, 61); }
 
     /**
      * Request from battery to start or stop the inverter.  Enumeration.
@@ -6571,7 +5974,7 @@ class BatteryBaseModel : public SunSpecModel<802, 62> {
     /**
      * AC Power requested by battery. [W]
      */
-    inline int16_t batteryPowerRequest() const { return parse_int16(47); }
+    inline float batteryPowerRequest() const { return parse_int16_sunssf(47, 61); }
 
     /**
      * Instruct the battery bank to perform an operation such as connecting.  Enumeration.
@@ -6582,66 +5985,6 @@ class BatteryBaseModel : public SunSpecModel<802, 62> {
      * Set the current state of the inverter.
      */
     inline uint16_t setInverterState() const { return parse_enum16(49); }
-
-    /**
-     * Scale factor for charge capacity.
-     */
-    inline int16_t aHRtg_SF() const { return parse_sunssf(50); }
-
-    /**
-     * Scale factor for energy capacity.
-     */
-    inline int16_t wHRtg_SF() const { return parse_sunssf(51); }
-
-    /**
-     * Scale factor for maximum charge and discharge rate.
-     */
-    inline int16_t wChaDisChaMax_SF() const { return parse_sunssf(52); }
-
-    /**
-     * Scale factor for self discharge rate.
-     */
-    inline int16_t disChaRte_SF() const { return parse_sunssf(53); }
-
-    /**
-     * Scale factor for state of charge values.
-     */
-    inline int16_t soC_SF() const { return parse_sunssf(54); }
-
-    /**
-     * Scale factor for depth of discharge.
-     */
-    inline int16_t doD_SF() const { return parse_sunssf(55); }
-
-    /**
-     * Scale factor for state of health.
-     */
-    inline int16_t soH_SF() const { return parse_sunssf(56); }
-
-    /**
-     * Scale factor for DC bus voltage.
-     */
-    inline int16_t V_SF() const { return parse_sunssf(57); }
-
-    /**
-     * Scale factor for cell voltage.
-     */
-    inline int16_t cellV_SF() const { return parse_sunssf(58); }
-
-    /**
-     * Scale factor for DC current.
-     */
-    inline int16_t A_SF() const { return parse_sunssf(59); }
-
-    /**
-     * Scale factor for instantaneous DC charge/discharge current.
-     */
-    inline int16_t aMax_SF() const { return parse_sunssf(60); }
-
-    /**
-     * Scale factor for AC power request.
-     */
-    inline int16_t W_SF() const { return parse_sunssf(61); }
 
 };
 
@@ -6839,14 +6182,12 @@ class OutBackAXSDevice : public SunSpecModel<64110, 282> {
     /**
      * [C]
      */
-    inline int16_t batteryTemperature() const { return parse_int16(276); }
+    inline float batteryTemperature() const { return parse_int16_sunssf(276, 278); }
 
     /**
      * [C]
      */
-    inline int16_t ambientTemperature() const { return parse_int16(277); }
-
-    inline int16_t temp_SF() const { return parse_sunssf(278); }
+    inline float ambientTemperature() const { return parse_int16_sunssf(277, 278); }
 
     inline uint16_t AXSError() const { return parse_bitfield16(279); }
 
@@ -6860,97 +6201,87 @@ class BasicChargeController : public SunSpecModel<64111, 23> {
   public:
     inline uint16_t portNumber() const { return parse_uint16(0); }
 
-    inline int16_t V_SF() const { return parse_sunssf(1); }
-
-    inline int16_t A_SF() const { return parse_sunssf(2); }
-
-    inline int16_t P_SF() const { return parse_sunssf(3); }
-
-    inline int16_t AH_SF() const { return parse_sunssf(4); }
-
-    inline int16_t KWH_SF() const { return parse_sunssf(5); }
+    /**
+     * [V]
+     */
+    inline float batteryVoltage() const { return parse_uint16_sunssf(6, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t batteryVoltage() const { return parse_uint16(6); }
-
-    /**
-     * [V]
-     */
-    inline uint16_t arrayVoltage() const { return parse_uint16(7); }
+    inline float arrayVoltage() const { return parse_uint16_sunssf(7, 1); }
 
     /**
      * [A]
      */
-    inline uint16_t outputCurrent() const { return parse_uint16(8); }
+    inline float outputCurrent() const { return parse_uint16_sunssf(8, 2); }
 
     /**
      * [A]
      */
-    inline uint16_t arrayCurrent() const { return parse_uint16(9); }
+    inline float arrayCurrent() const { return parse_uint16_sunssf(9, 3); }
 
     inline uint16_t operatingState() const { return parse_enum16(10); }
 
     /**
      * [W]
      */
-    inline uint16_t outputWattage() const { return parse_uint16(11); }
+    inline float outputWattage() const { return parse_uint16_sunssf(11, 3); }
 
     /**
      * [V]
      */
-    inline uint16_t todaySMinimumBatteryVoltage() const { return parse_uint16(12); }
+    inline float todaySMinimumBatteryVoltage() const { return parse_uint16_sunssf(12, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t todaySMaximumBatteryVoltage() const { return parse_uint16(13); }
+    inline float todaySMaximumBatteryVoltage() const { return parse_uint16_sunssf(13, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t VOC() const { return parse_uint16(14); }
+    inline float VOC() const { return parse_uint16_sunssf(14, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t todaySMaximumVOC() const { return parse_uint16(15); }
+    inline float todaySMaximumVOC() const { return parse_uint16_sunssf(15, 1); }
 
     /**
      * [kWh]
      */
-    inline uint16_t todaySKWh() const { return parse_uint16(16); }
+    inline float todaySKWh() const { return parse_uint16_sunssf(16, 5); }
 
     /**
      * [AH]
      */
-    inline uint16_t todaySAH() const { return parse_uint16(17); }
+    inline float todaySAH() const { return parse_uint16_sunssf(17, 4); }
 
     /**
      * [kWh]
      */
-    inline uint16_t lifetimeKWh() const { return parse_uint16(18); }
+    inline float lifetimeKWh() const { return parse_uint16_sunssf(18, 3); }
 
     /**
      * [kAH]
      */
-    inline uint16_t lifetimeKAH() const { return parse_uint16(19); }
+    inline float lifetimeKAH() const { return parse_uint16_sunssf(19, 5); }
 
     /**
      * [W]
      */
-    inline uint16_t lifetimeMaximumOutputWattage() const { return parse_uint16(20); }
+    inline float lifetimeMaximumOutputWattage() const { return parse_uint16_sunssf(20, 3); }
 
     /**
      * [V]
      */
-    inline uint16_t lifetimeMaximumBatteryVoltage() const { return parse_uint16(21); }
+    inline float lifetimeMaximumBatteryVoltage() const { return parse_uint16_sunssf(21, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t lifetimeMaximumVOCVoltage() const { return parse_uint16(22); }
+    inline float lifetimeMaximumVOCVoltage() const { return parse_uint16_sunssf(22, 1); }
 
 };
 
@@ -6958,54 +6289,42 @@ class OutBackFMChargeController : public SunSpecModel<64112, 64> {
   public:
     inline uint16_t portNumber() const { return parse_uint16(0); }
 
-    inline int16_t V_SF() const { return parse_sunssf(1); }
-
-    inline int16_t C_SF() const { return parse_sunssf(2); }
-
-    inline int16_t H_SF() const { return parse_sunssf(3); }
-
-    inline int16_t P_SF() const { return parse_sunssf(4); }
-
-    inline int16_t AH_SF() const { return parse_sunssf(5); }
-
-    inline int16_t KWH_SF() const { return parse_sunssf(6); }
-
     inline uint16_t faults() const { return parse_bitfield16(7); }
 
     /**
      * [V]
      */
-    inline uint16_t absorb() const { return parse_uint16(8); }
+    inline float absorb() const { return parse_uint16_sunssf(8, 1); }
 
     /**
      * [Tmh]
      */
-    inline uint16_t absorbTime() const { return parse_uint16(9); }
+    inline float absorbTime() const { return parse_uint16_sunssf(9, 3); }
 
     /**
      * [A]
      */
-    inline uint16_t absorbEnd() const { return parse_uint16(10); }
+    inline float absorbEnd() const { return parse_uint16_sunssf(10, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t rebulk() const { return parse_uint16(11); }
+    inline float rebulk() const { return parse_uint16_sunssf(11, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t float_() const { return parse_uint16(12); }
+    inline float float_() const { return parse_uint16_sunssf(12, 1); }
 
     /**
      * [A]
      */
-    inline uint16_t maximumCharge() const { return parse_uint16(13); }
+    inline float maximumCharge() const { return parse_uint16_sunssf(13, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t equalize() const { return parse_uint16(14); }
+    inline float equalize() const { return parse_uint16_sunssf(14, 1); }
 
     /**
      * [Tmh]
@@ -7026,7 +6345,7 @@ class OutBackFMChargeController : public SunSpecModel<64112, 64> {
     /**
      * [Pct]
      */
-    inline uint16_t UPickPWMDutyCycle() const { return parse_uint16(20); }
+    inline float UPickPWMDutyCycle() const { return parse_uint16_sunssf(20, 1); }
 
     inline uint16_t gridTieMode() const { return parse_enum16(21); }
 
@@ -7035,24 +6354,24 @@ class OutBackFMChargeController : public SunSpecModel<64112, 64> {
     /**
      * [V]
      */
-    inline uint16_t tempCompLowerLimit() const { return parse_uint16(23); }
+    inline float tempCompLowerLimit() const { return parse_uint16_sunssf(23, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t tempCompUpperLimit() const { return parse_uint16(24); }
+    inline float tempCompUpperLimit() const { return parse_uint16_sunssf(24, 1); }
 
     inline uint16_t autoRestartMode() const { return parse_enum16(25); }
 
     /**
      * [V]
      */
-    inline uint16_t wakeupVOCChange() const { return parse_uint16(26); }
+    inline float wakeupVOCChange() const { return parse_uint16_sunssf(26, 1); }
 
     /**
      * [A]
      */
-    inline uint16_t snoozeMode() const { return parse_uint16(27); }
+    inline float snoozeMode() const { return parse_uint16_sunssf(27, 1); }
 
     /**
      * [Tms]
@@ -7070,12 +6389,12 @@ class OutBackFMChargeController : public SunSpecModel<64112, 64> {
     /**
      * [V]
      */
-    inline uint16_t AUXLowBatteryDisconnect() const { return parse_uint16(33); }
+    inline float AUXLowBatteryDisconnect() const { return parse_uint16_sunssf(33, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t AUXLowBatteryReconnect() const { return parse_uint16(34); }
+    inline float AUXLowBatteryReconnect() const { return parse_uint16_sunssf(34, 1); }
 
     /**
      * [Tms]
@@ -7085,12 +6404,12 @@ class OutBackFMChargeController : public SunSpecModel<64112, 64> {
     /**
      * [V]
      */
-    inline uint16_t AUXVentFan() const { return parse_uint16(36); }
+    inline float AUXVentFan() const { return parse_uint16_sunssf(36, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t AUXPVTrigger() const { return parse_uint16(37); }
+    inline float AUXPVTrigger() const { return parse_uint16_sunssf(37, 1); }
 
     /**
      * [Tms]
@@ -7100,12 +6419,12 @@ class OutBackFMChargeController : public SunSpecModel<64112, 64> {
     /**
      * [V]
      */
-    inline uint16_t AUXNightLightThreshold() const { return parse_uint16(39); }
+    inline float AUXNightLightThreshold() const { return parse_uint16_sunssf(39, 1); }
 
     /**
      * [Tmh]
      */
-    inline uint16_t AUXNightLightOnTime() const { return parse_uint16(40); }
+    inline float AUXNightLightOnTime() const { return parse_uint16_sunssf(40, 3); }
 
     /**
      * [Tms]
@@ -7120,12 +6439,12 @@ class OutBackFMChargeController : public SunSpecModel<64112, 64> {
     /**
      * [V]
      */
-    inline uint16_t AUXErrorOutputLowBattery() const { return parse_uint16(43); }
+    inline float AUXErrorOutputLowBattery() const { return parse_uint16_sunssf(43, 1); }
 
     /**
      * [Tms]
      */
-    inline uint16_t AUXDivertHoldTime() const { return parse_uint16(44); }
+    inline float AUXDivertHoldTime() const { return parse_uint16_sunssf(44, 1); }
 
     /**
      * [Tms]
@@ -7135,12 +6454,12 @@ class OutBackFMChargeController : public SunSpecModel<64112, 64> {
     /**
      * [V]
      */
-    inline uint16_t AUXDivertRelative() const { return parse_uint16(46); }
+    inline float AUXDivertRelative() const { return parse_uint16_sunssf(46, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t AUXDivertHysteresis() const { return parse_uint16(47); }
+    inline float AUXDivertHysteresis() const { return parse_uint16_sunssf(47, 1); }
 
     inline uint16_t FMCCMajorFirmwareNumber() const { return parse_uint16(48); }
 
@@ -7166,17 +6485,17 @@ class OutBackFMChargeController : public SunSpecModel<64112, 64> {
     /**
      * [kWh]
      */
-    inline uint16_t dataLogDailyKWh() const { return parse_uint16(54); }
+    inline float dataLogDailyKWh() const { return parse_uint16_sunssf(54, 6); }
 
     /**
      * [A]
      */
-    inline uint16_t dataLogDailyMaximumOutputA() const { return parse_uint16(55); }
+    inline float dataLogDailyMaximumOutputA() const { return parse_uint16_sunssf(55, 1); }
 
     /**
      * [W]
      */
-    inline uint16_t dataLogDailyMaximumOutputW() const { return parse_uint16(56); }
+    inline float dataLogDailyMaximumOutputW() const { return parse_uint16_sunssf(56, 1); }
 
     /**
      * [Tms]
@@ -7191,17 +6510,17 @@ class OutBackFMChargeController : public SunSpecModel<64112, 64> {
     /**
      * [V]
      */
-    inline uint16_t dataLogDailyMinimumBattery() const { return parse_uint16(59); }
+    inline float dataLogDailyMinimumBattery() const { return parse_uint16_sunssf(59, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t dataLogDailyMaximumBattery() const { return parse_uint16(60); }
+    inline float dataLogDailyMaximumBattery() const { return parse_uint16_sunssf(60, 1); }
 
     /**
      * [V]
      */
-    inline uint16_t dataLogDailyMaximumInput() const { return parse_uint16(61); }
+    inline float dataLogDailyMaximumInput() const { return parse_uint16_sunssf(61, 1); }
 
     inline uint16_t dataLogClear() const { return parse_uint16(62); }
 

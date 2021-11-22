@@ -31,12 +31,20 @@ TYPE_MAP = {
     'float32': 'float',
     'float64': 'double',
     'string': 'String',
-    'sunssf': 'int16_t', # TODO handle automatically
+    'sunssf': None, # Handled specially.
     'pad': None,
     'ipaddr': 'uint32_t',
     # 'ipv6addr': 'uint128_t',
     'ipv6addr': None,
     'eui48': 'uint64_t',
+
+    # Synthetic types with scale factor. We implement only those that occur in
+    # practice.
+    'int16_sunssf': 'float',
+    'uint16_sunssf': 'float',
+    'uint32_sunssf': 'double',
+    'uint64_sunssf': 'double',
+    'acc32_sunssf': 'double',
 }
 
 
@@ -89,6 +97,7 @@ class Class:
         self.doc = DocComment(group.get('desc', None))
         points = group['points']
         self.methods = []
+        scale_factor_offsets = {}
         offset = 0
         assert(points[0]['name'] == 'ID')
         assert(points[0]['size'] == 1)
@@ -100,6 +109,8 @@ class Class:
             try:
                 method = Method(point, curr_offset)
             except Skip:
+                if point['type'] == 'sunssf':
+                    scale_factor_offsets[point['name']] = curr_offset
                 continue
             self.methods.append(method)
         self.size = offset
@@ -110,6 +121,10 @@ class Class:
         for method in self.methods:
             if name_counts[method.name] > 1:
                 method.append_offset_to_name()
+
+        for method in self.methods:
+            if isinstance(method.scale_factor, str):
+                method.parse_args.append(scale_factor_offsets[method.scale_factor])
 
     def append_id_to_name(self):
         self.name += f'_{self.id}'
@@ -127,7 +142,8 @@ class Class:
 
 class Method:
     def __init__(self, point, offset):
-        self.name = label_to_identifier(point.get('label', point['name']), False)
+        self.point_name = point['name']
+        self.name = label_to_identifier(point.get('label', self.point_name), False)
         doc = point.get('desc', '')
         units = point.get('units', None)
         if units:
@@ -140,6 +156,9 @@ class Method:
         self.parse_args = [offset]
         if self.type == 'string':
             self.parse_args.append(point['size'])
+        self.scale_factor = point.get('sf', None)
+        if isinstance(self.scale_factor, str):
+            self.type += '_sunssf'
 
     @property
     def return_type(self):

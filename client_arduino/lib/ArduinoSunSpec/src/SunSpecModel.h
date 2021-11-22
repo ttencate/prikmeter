@@ -1,6 +1,52 @@
 #pragma once
 
+#include <cmath>
 #include <cstdint>
+
+static inline constexpr float uint32_to_float(uint32_t i) {
+  static_assert(sizeof(float) == sizeof(uint32_t));
+  union U {
+    uint32_t i;
+    float f;
+  };
+  U u{ .i = i };
+  return u.f;
+}
+
+static inline constexpr double uint64_to_double(uint64_t i) {
+  static_assert(sizeof(double) == sizeof(uint64_t));
+  union U {
+    uint64_t i;
+    double d;
+  };
+  U u{ .i = i };
+  return u.d;
+}
+
+// TODO make this not be in a header, or templatized or something
+namespace NotImplemented {
+  const int16_t INT16 = 0x8000;
+  const int32_t INT32 = 0x80000000;
+  const int64_t INT64 = 0x8000000000000000;
+  const uint16_t RAW16 = 0xffff; // Missing from the spec.
+  const uint16_t UINT16 = 0xffff;
+  const uint32_t UINT32 = 0xffffffff;
+  const uint64_t UINT64 = 0xffffffffffffffff;
+  const uint16_t ACC16 = 0x0000;
+  const uint32_t ACC32 = 0x00000000;
+  const uint64_t ACC64 = 0x0000000000000000;
+  const uint16_t BITFIELD16 = 0xffff;
+  const uint32_t BITFIELD32 = 0xffffffff;
+  const uint64_t BITFIELD64 = 0xffffffffffffffff; // Missing from the spec.
+  const uint16_t ENUM16 = 0xffff;
+  const uint32_t ENUM32 = 0xffffffff;
+  const float FLOAT32 = uint32_to_float(0x7fc00000);
+  const double FLOAT64 = uint64_to_double(0x7ff8000000000000);
+  const int16_t SUNSSF = 0x8000;
+  const uint32_t IPADDR = 0x00000000;
+  // const uint128_t IPV6ADDR = 0x00000000000000000000000000000000;
+  const uint64_t EUI48 = 0x0000000000000000; // Missing from the spec.
+}
 
 /**
  * A "lazy" parser of a SunSpec model. It contains an array of register values
@@ -29,7 +75,7 @@ class SunSpecModel {
 
     int16_t parse_int16(uint16_t offset) const {
       if (!canRead(offset, 1)) {
-        return static_cast<int16_t>(0x8000);
+        return NotImplemented::INT16;
       }
       return static_cast<int16_t>(read_uint16(offset));
     }
@@ -203,6 +249,51 @@ class SunSpecModel {
         static_cast<uint64_t>(buffer_[offset + 2]);
     }
 
+    float parse_int16_sunssf(uint16_t offset, uint16_t scaleOffset) const {
+      int16_t mantissa = parse_int16(offset);
+      int16_t exponent = parse_int16(scaleOffset);
+      if (mantissa == NotImplemented::INT16 || exponent == NotImplemented::SUNSSF) {
+        return NotImplemented::FLOAT32;
+      } 
+      return static_cast<float>(mantissa) * pow10f(static_cast<float>(exponent));
+    }
+
+    float parse_uint16_sunssf(uint16_t offset, uint16_t scaleOffset) const {
+      uint16_t mantissa = parse_uint16(offset);
+      int16_t exponent = parse_int16(scaleOffset);
+      if (mantissa == NotImplemented::UINT16 || exponent == NotImplemented::SUNSSF) {
+        return NotImplemented::FLOAT32;
+      } 
+      return static_cast<float>(mantissa) * pow10f(static_cast<float>(exponent));
+    }
+
+    double parse_uint32_sunssf(uint16_t offset, uint16_t scaleOffset) const {
+      uint32_t mantissa = parse_uint32(offset);
+      int16_t exponent = parse_int16(scaleOffset);
+      if (mantissa == NotImplemented::UINT32 || exponent == NotImplemented::SUNSSF) {
+        return NotImplemented::FLOAT64;
+      } 
+      return static_cast<double>(mantissa) * pow10(static_cast<double>(exponent));
+    }
+
+    double parse_uint64_sunssf(uint16_t offset, uint16_t scaleOffset) const {
+      uint64_t mantissa = parse_uint64(offset);
+      int16_t exponent = parse_int16(scaleOffset);
+      if (mantissa == NotImplemented::UINT64 || exponent == NotImplemented::SUNSSF) {
+        return NotImplemented::FLOAT64;
+      } 
+      return static_cast<double>(mantissa) * pow10(static_cast<double>(exponent));
+    }
+
+    double parse_acc32_sunssf(uint16_t offset, uint16_t scaleOffset) const {
+      uint32_t mantissa = parse_acc32(offset);
+      int16_t exponent = parse_int16(scaleOffset);
+      if (mantissa == NotImplemented::ACC32 || exponent == NotImplemented::SUNSSF) {
+        return NotImplemented::FLOAT64;
+      } 
+      return static_cast<double>(mantissa) * pow10(static_cast<double>(exponent));
+    }
+
   private:
     uint16 const *buffer_ = nullptr;
     uint16 bufSize_ = 0;
@@ -268,28 +359,6 @@ class SunSpecModel {
         static_cast<uint64_t>(buffer_[offset + 1]) << 32 |
         static_cast<uint64_t>(buffer_[offset + 2]) << 16 |
         static_cast<uint64_t>(buffer_[offset + 3]);
-    }
-
-    static inline float uint32_to_float(uint32_t i) {
-      static_assert(sizeof(float) == sizeof(uint32_t));
-      union U {
-        uint32_t i;
-        float f;
-      };
-      U u;
-      u.i = i;
-      return u.f;
-    }
-
-    static inline double uint64_to_double(uint64_t i) {
-      static_assert(sizeof(double) == sizeof(uint64_t));
-      union U {
-        uint64_t i;
-        double d;
-      };
-      U u;
-      u.i = i;
-      return u.d;
     }
 
     friend class SunSpec;
