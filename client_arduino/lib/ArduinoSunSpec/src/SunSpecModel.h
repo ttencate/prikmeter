@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Arduino.h>
+#include <cstdint>
 
 /**
  * A "lazy" parser of a SunSpec model. It contains an array of register values
@@ -11,10 +11,10 @@
  *
  * Note that write access is not currently supported.
  */
-template<uint16 ID, uint16 LENGTH>
+template<uint16_t ID, uint16_t LENGTH>
 class SunSpecModel {
   public:
-    static constexpr uint16 id() {
+    static constexpr uint16_t id() {
       return ID;
     }
 
@@ -26,13 +26,132 @@ class SunSpecModel {
     }
 
   protected:
+
+    int16_t parse_int16(uint16_t offset) const {
+      if (!canRead(offset, 1)) {
+        return static_cast<int16_t>(0x8000);
+      }
+      return static_cast<int16_t>(read_uint16(offset));
+    }
+
+    int32_t parse_int32(uint16_t offset) const {
+      if (!canRead(offset, 2)) {
+        return static_cast<int32_t>(0x80000000);
+      }
+      return static_cast<int32_t>(read_uint32(offset));
+    }
+
+    int64_t parse_int64(uint16_t offset) const {
+      if (!canRead(offset, 4)) {
+        return static_cast<int64_t>(0x8000000000000000);
+      }
+      return static_cast<int64_t>(read_uint64(offset));
+    }
+
+    uint16_t parse_raw16(uint16_t offset) const {
+      if (!canRead(offset, 1)) {
+        return 0xffff; // The spec is not clear about this.
+      }
+      return read_uint16(offset);
+    }
+
+    uint16_t parse_uint16(uint16_t offset) const {
+      if (!canRead(offset, 1)) {
+        return 0xffff;
+      }
+      return read_uint16(offset);
+    }
+
+    uint32_t parse_uint32(uint16_t offset) const {
+      if (!canRead(offset, 2)) {
+        return 0xffffffff;
+      }
+      return read_uint32(offset);
+    }
+
+    uint64_t parse_uint64(uint16_t offset) const {
+      if (!canRead(offset, 4)) {
+        return 0xffffffffffffffff;
+      }
+      return read_uint64(offset);
+    }
+
+    uint16_t parse_acc16(uint16_t offset) const {
+      if (!canRead(offset, 1)) {
+        return 0x0000;
+      }
+      return read_uint16(offset);
+    }
+
+    uint32_t parse_acc32(uint16_t offset) const {
+      if (!canRead(offset, 1)) {
+        return 0x00000000;
+      }
+      return read_uint32(offset);
+    }
+
+    uint64_t parse_acc64(uint16_t offset) const {
+      if (!canRead(offset, 1)) {
+        return 0x0000000000000000;
+      }
+      return read_uint64(offset);
+    }
+
+    uint16_t parse_bitfield16(uint16_t offset) const {
+      if (!canRead(offset, 1)) {
+        return 0xffff;
+      }
+      return read_uint16(offset);
+    }
+
+    uint32_t parse_bitfield32(uint16_t offset) const {
+      if (!canRead(offset, 2)) {
+        return 0xffffffff;
+      }
+      return read_uint32(offset);
+    }
+
+    uint64_t parse_bitfield64(uint16_t offset) const {
+      if (!canRead(offset, 4)) {
+        return 0xffffffffffffffff;
+      }
+      return read_uint64(offset);
+    }
+
+    // TODO generate symbolic constants for enum values
+
+    uint16_t parse_enum16(uint16_t offset) const {
+      if (!canRead(offset, 1)) {
+        return 0xffff;
+      }
+      return read_uint16(offset);
+    }
+
+    uint32_t parse_enum32(uint16_t offset) const {
+      if (!canRead(offset, 2)) {
+        return 0xffffffff;
+      }
+      return read_uint32(offset);
+    }
+
+    float parse_float32(uint16_t offset) const {
+      if (!canRead(offset, 2)) {
+        return uint32_to_float(0x7fc00000);
+      }
+      return uint32_to_float(read_uint32(offset));
+    }
+
+    double parse_float64(uint16_t offset) const {
+      if (!canRead(offset, 4)) {
+        return uint64_to_double(0x7ff8000000000000);
+      }
+      return uint64_to_double(read_uint64(offset));
+    }
+
     String parse_string(uint16 offset, uint16 length) const {
       String result;
-      if (offset >= bufSize_) {
+      if (!canRead(offset, length)) {
         return result;
-      }
-      if (offset + length > bufSize_) {
-        length = bufSize_ - offset;
       }
       result.reserve(length);
       uint16 const *const end = buffer_ + offset + length;
@@ -51,18 +170,37 @@ class SunSpecModel {
       return result;
     }
 
-    sint16 parse_sint16(uint16 offset) const {
-      if (offset >= bufSize_) {
+    int16_t parse_sunssf(uint16_t offset) const {
+      if (!canRead(offset, 1)) {
         return 0x8000;
       }
-      return static_cast<sint16>(buffer_[offset]);
+      return static_cast<int16_t>(read_uint16(offset));
     }
 
-    uint16 parse_uint16(uint16 offset) const {
-      if (offset >= bufSize_) {
-        return 0xffff;
+    uint32_t parse_ipaddr(uint16_t offset) const {
+      if (!canRead(offset, 2)) {
+        return 0x00000000;
       }
-      return buffer_[offset];
+      return read_uint32(offset);
+    }
+
+    /*
+    uint128_t parse_ipv6addr(uint16_t offset) const {
+      if (!canRead(offset, 8)) {
+        return 0x00000000000000000000000000000000;
+      }
+      return read_uint128(offset);
+    }
+    */
+
+    uint64_t parse_eui48(uint16_t offset) const {
+      if (!canRead(offset, 3)) {
+        return 0x000000000000;
+      }
+      return
+        static_cast<uint64_t>(buffer_[offset    ]) << 32 |
+        static_cast<uint64_t>(buffer_[offset + 1]) << 16 |
+        static_cast<uint64_t>(buffer_[offset + 2]);
     }
 
   private:
@@ -104,6 +242,54 @@ class SunSpecModel {
       delete[] buffer_; // Deleting a nullptr is okay.
       buffer_ = nullptr;
       bufSize_ = 0;
+    }
+
+    /**
+     * Whether the buffer holds enough registers to read this many from the
+     * given offset. Deals with overflow.
+     */
+    bool canRead(uint16_t offset, uint16_t count) const {
+      return offset + count <= bufSize_ && offset + count >= offset;
+    }
+
+    uint16_t read_uint16(uint16_t offset) const {
+      return buffer_[offset];
+    }
+
+    uint32_t read_uint32(uint16_t offset) const {
+      return
+        static_cast<uint32_t>(buffer_[offset]    ) << 16 |
+        static_cast<uint32_t>(buffer_[offset + 1]);
+    }
+
+    uint64_t read_uint64(uint16_t offset) const {
+      return
+        static_cast<uint64_t>(buffer_[offset    ]) << 48 |
+        static_cast<uint64_t>(buffer_[offset + 1]) << 32 |
+        static_cast<uint64_t>(buffer_[offset + 2]) << 16 |
+        static_cast<uint64_t>(buffer_[offset + 3]);
+    }
+
+    static inline float uint32_to_float(uint32_t i) {
+      static_assert(sizeof(float) == sizeof(uint32_t));
+      union U {
+        uint32_t i;
+        float f;
+      };
+      U u;
+      u.i = i;
+      return u.f;
+    }
+
+    static inline double uint64_to_double(uint64_t i) {
+      static_assert(sizeof(double) == sizeof(uint64_t));
+      union U {
+        uint64_t i;
+        double d;
+      };
+      U u;
+      u.i = i;
+      return u.d;
     }
 
     friend class SunSpec;

@@ -35,18 +35,30 @@ ErrorCode SunspecInverterReader::update() {
     Serial.print("Found model ");
     Serial.println(sunSpec.currentModelId());
 
-    if (sunSpec.currentModelIs<SunSpecModels::common>()) {
-      SunSpecModels::common commonModel;
-      if (!sunSpec.parseCurrentModel(&commonModel)) {
+    if (sunSpec.currentModelIs<SunSpecModels::Common>()) {
+      SunSpecModels::Common model;
+      if (!sunSpec.parseCurrentModel(&model)) {
         continue;
       }
       Serial.print("Manufacturer: ");
-      Serial.println(commonModel.Mn());
+      Serial.println(model.manufacturer());
       Serial.print("Device: ");
-      Serial.println(commonModel.Md());
+      Serial.println(model.model());
       Serial.print("Options: ");
-      Serial.println(commonModel.opt());
+      Serial.println(model.options());
+    } else if (sunSpec.currentModelIs<SunSpecModels::InverterSinglePhase>()) {
+      SunSpecModels::InverterSinglePhase model;
+      if (!sunSpec.parseCurrentModel(&model)) {
+        continue;
+      }
+      Serial.println(model.watts());
+      Serial.println(model.W_SF());
+      Serial.println(model.wattHours());
+      Serial.println(model.WH_SF());
+      powerWatts_ = model.watts() * model.W_SF();
+      totalEnergyWattHours_ = model.wattHours() * model.WH_SF();
     }
+    // TODO add split-phase and three-phase inverters as well as all their FLOAT counterparts
 
     if (!sunSpec.nextModel()) {
       break;
