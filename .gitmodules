@@ -7,3 +7,6 @@
 [submodule "arduino_client/esptool"]
 	path = esptool
 	url = https://github.com/espressif/esptool.git
+[submodule "client_arduino/lib/ArduinoSunSpec/models"]
+	path = client_arduino/lib/ArduinoSunSpec/models
+	url = https://github.com/sunspec/models.git

@@ -34,6 +34,20 @@ ErrorCode SunspecInverterReader::update() {
   while (sunSpec.hasCurrentModel()) {
     Serial.print("Found model ");
     Serial.println(sunSpec.currentModelId());
+
+    if (sunSpec.currentModelIs<SunSpecModels::common>()) {
+      SunSpecModels::common commonModel;
+      if (!sunSpec.parseCurrentModel(&commonModel)) {
+        continue;
+      }
+      Serial.print("Manufacturer: ");
+      Serial.println(commonModel.Mn());
+      Serial.print("Device: ");
+      Serial.println(commonModel.Md());
+      Serial.print("Options: ");
+      Serial.println(commonModel.opt());
+    }
+
     if (!sunSpec.nextModel()) {
       break;
     }
