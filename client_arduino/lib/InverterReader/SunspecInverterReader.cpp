@@ -31,6 +31,13 @@ ErrorCode SunspecInverterReader::update() {
 
   SunSpec sunSpec(&modbusClient);
   sunSpec.begin();
+  while (sunSpec.hasCurrentModel()) {
+    Serial.print("Found model ");
+    Serial.println(sunSpec.currentModelId());
+    if (!sunSpec.nextModel()) {
+      break;
+    }
+  }
 
   // powerWatts_ = values[0];
   // totalEnergyWattHours_ = values[1];

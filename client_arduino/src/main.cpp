@@ -2,7 +2,6 @@
 #include <ESP8266WiFi.h>
 #include <InverterReader.h>
 #include <LittleFS.h>
-#include <SMAReader.h>
 #include <SoftwareSerial.h>
 #include <time.h>
 #include <WiFiClientSecure.h>
