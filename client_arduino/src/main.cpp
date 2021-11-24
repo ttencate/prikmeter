@@ -13,6 +13,8 @@
 #include "Led.h"
 #include "TelegramReader.h"
 
+#include "dist_files.cpp" // Headers? We don't need no stinkin' headers!
+
 #define P1_PIN D5
 #define P1_BAUD 115200
 #define P1_CONFIG SWSERIAL_8N1
@@ -50,6 +52,9 @@ InverterReader inverterReader;
 Session tlsSession;
 WiFiClientSecure httpsClient;
 WiFiServer httpServer(HTTP_PORT);
+
+// TODO store all strings in PROGMEM using the F() macro:
+// https://arduino-esp8266.readthedocs.io/en/3.0.2/PROGMEM.html
 
 void printTelegram(byte const *buffer, unsigned int size) {
   Serial.write(buffer, size);
@@ -321,25 +326,98 @@ void readInverter() {
   }
 }
 
+/**
+ * Simple HTTP response wrapper. We don't use the ArduinoHttpServer reply
+ * classes because they are very inflexible; for example, they don't let us
+ * send custom headers.
+ */
+// TODO extract to separate file
+class HttpResponse {
+  public:
+    HttpResponse(WiFiClient &client) :
+      client_(client)
+    {
+    }
+
+    ~HttpResponse() {
+      client_.stop();
+    }
+
+    void sendStatus(int code, char const *text) {
+      client_.print("HTTP/1.1 ");
+      client_.print(code);
+      client_.print(" ");
+      client_.print(text);
+      client_.print("\r\n");
+    }
+
+    void sendHeader(char const *name, char const *value) {
+      client_.print(name);
+      client_.print(": ");
+      client_.print(value);
+      client_.print("\r\n");
+    }
+
+    void sendData(String const &data) {
+      if (!headersEnded_) {
+        client_.print("\r\n");
+        headersEnded_ = true;
+      }
+      client_.print(data);
+    }
+
+    void sendData_P(PGM_P data, size_t length) {
+      if (!headersEnded_) {
+        client_.print("\r\n");
+        headersEnded_ = true;
+      }
+      client_.write_P(data, length);
+    }
+
+    void sendError(int code, char const *text) {
+      sendStatus(code, text);
+      sendHeader("Content-Type", "text/plain; charset=UTF-8");
+      sendData(String(code));
+      sendData(" ");
+      sendData(text);
+    }
+
+  private:
+    WiFiClient &client_;
+    bool headersEnded_ = false;
+};
+
 void handleRequest(WiFiClient &client, ArduinoHttpServer::StreamHttpRequest<1024> &request) {
+  HttpResponse response(client);
   if (request.getMethod() != ArduinoHttpServer::Method::Get) {
-    ArduinoHttpServer::StreamHttpErrorReply(client, "text/plain", "405").send("Method Not Allowed");
+    response.sendError(405, "Method Not Allowed");
+    return;
   }
-  if (request.getResource().toString() == "/") {
-    ArduinoHttpServer::StreamHttpReply(client, "text/html").send("<h1>Hello world!</h1>");
+  String path = request.getResource().toString();
+  if (path == "/") {
+    response.sendStatus(200, "OK");
+    response.sendHeader("Content-Type", "text/html; charset=UTF-8");
+    response.sendData_P(dist_files::index_html, dist_files::index_html_len);
+  } else if (path == "/style.css") {
+    response.sendStatus(200, "OK");
+    response.sendHeader("Content-Type", "text/css; charset=UTF-8");
+    response.sendData_P(dist_files::style_css, dist_files::style_css_len);
+  } else if (path == "/favicon.ico") {
+    // TODO draw a favicon
+    response.sendError(404, "Not Found");
   } else {
-    ArduinoHttpServer::StreamHttpErrorReply(client, "text/plain", "404").send("Not Found");
+    response.sendError(404, "Not Found");
   }
 }
 
 void serveHttp() {
   WiFiClient client = httpServer.available();
   if (client) {
+    // TODO I'm not sure what this buffer size is for. Do we even need this lib?
     ArduinoHttpServer::StreamHttpRequest<1024> request(client);
     if (request.readRequest()) {
       handleRequest(client, request);
     }
-    client.stop();
   }
 }
 
