@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ArduinoHttpServer.h>
 #include <ESP8266WiFi.h>
 #include <InverterReader.h>
 #include <LittleFS.h>
@@ -33,6 +34,8 @@
 
 #define USER_AGENT "prikmeter"
 
+#define HTTP_PORT 80
+
 #ifdef READ_FROM_SERIAL
 #  define P1_INPUT Serial // Debugging aid.
 #else
@@ -46,6 +49,7 @@ TelegramReader telegramReader;
 InverterReader inverterReader;
 Session tlsSession;
 WiFiClientSecure httpsClient;
+WiFiServer httpServer(HTTP_PORT);
 
 void printTelegram(byte const *buffer, unsigned int size) {
   Serial.write(buffer, size);
@@ -208,6 +212,12 @@ void setup() {
   Serial.println("Setting up inverter reader");
   inverterReader.begin(config);
 
+  Serial.print("Starting to listen on http://");
+  Serial.print(WiFi.localIP());
+  Serial.print(":");
+  Serial.println(HTTP_PORT);
+  httpServer.begin();
+
   Serial.println("Enabling auto sleep");
   WiFi.setSleepMode(WIFI_MODEM_SLEEP);
 
@@ -311,7 +321,30 @@ void readInverter() {
   }
 }
 
+void handleRequest(WiFiClient &client, ArduinoHttpServer::StreamHttpRequest<1024> &request) {
+  if (request.getMethod() != ArduinoHttpServer::Method::Get) {
+    ArduinoHttpServer::StreamHttpErrorReply(client, "text/plain", "405").send("Method Not Allowed");
+  }
+  if (request.getResource().toString() == "/") {
+    ArduinoHttpServer::StreamHttpReply(client, "text/html").send("<h1>Hello world!</h1>");
+  } else {
+    ArduinoHttpServer::StreamHttpErrorReply(client, "text/plain", "404").send("Not Found");
+  }
+}
+
+void serveHttp() {
+  WiFiClient client = httpServer.available();
+  if (client) {
+    ArduinoHttpServer::StreamHttpRequest<1024> request(client);
+    if (request.readRequest()) {
+      handleRequest(client, request);
+    }
+    client.stop();
+  }
+}
+
 void loop() {
   readP1();
   readInverter();
+  serveHttp();
 }
