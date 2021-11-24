@@ -49,42 +49,57 @@ class SunSpec {
     }
 
     /**
-     * Wraps the current model into the given type, which must match the
-     * current model ID.
-     * The `ModelType` template argument must be one of the generated ones
-     * deriving from `SunSpecModel`.
+     * Enumerates models until the one of the given type is found. Returns a
+     * valid model on success, an invalid model if not found or any error
+     * occurred.
      */
     template<typename ModelType>
-    bool parseCurrentModel(ModelType *out) {
+    ModelType findModel() {
+      while (hasCurrentModel()) {
+        if (currentModelIs<ModelType>()) {
+          return currentModelAs<ModelType>();
+        }
+        if (!nextModel()) {
+          break;
+        }
+      }
+      return ModelType();
+    }
+
+    /**
+     * Returns the current model as the given type. Returns an invalid model if
+     * the current model type does not match, or the parse failed.
+     */
+    template<typename ModelType>
+    ModelType currentModelAs() {
       if (!currentModelIs<ModelType>()) {
         ARDUINO_SUNSPEC_DEBUG_LOG("Tried to parse model ");
         ARDUINO_SUNSPEC_DEBUG_LOG(currentModelId_);
         ARDUINO_SUNSPEC_DEBUG_LOG(" as ");
         ARDUINO_SUNSPEC_DEBUG_LOGLN(ModelType::id());
-        return false;
+        return ModelType();
       }
 
       uint16 const count = currentModelLength_;
-      uint16 *const buffer = new uint16[count];
-      if (!request(currentModelAddress_ + 2, count)) {
-        delete[] buffer;
-        return false;
-      }
-      for (uint16 i = 0; i < count; i++) {
-        if (!read(&buffer[i])) {
-          delete[] buffer;
-          return false;
-        }
+      uint16 *buffer = readArray(currentModelAddress_ + 2, count);
+      if (!buffer) {
+        return ModelType();
       }
 
-      out->setBuffer(buffer, count);
-      return true;
+      ModelType model;
+      model.setBuffer(buffer, count);
+      return model;
     }
 
     /**
      * Moves on to the next model.
      */
     bool nextModel();
+
+    /**
+     * Resets the current model pointer to the beginning.
+     */
+    bool restart();
 
   private:
     ModbusClient *const client_;
@@ -117,4 +132,11 @@ class SunSpec {
      * Reads the next register from the last request.
      */
     bool read(uint16 *result);
+
+    /**
+     * Reads `count` registers into an array allocated with `new`, and returns
+     * the array. Returns `nullptr` on failure.
+     */
+    uint16 *readArray(uint16 offset, uint16 count);
+
 };

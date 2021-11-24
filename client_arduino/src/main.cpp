@@ -19,11 +19,17 @@
 // Receive buffer size for P1 port. We'd like to set this higher, but even 1024
 // (which would fit a typical telegram in its entirety) results in OOMs at
 // startup.
+// TODO We might want to tweak this according to
+// https://github.com/plerup/espsoftwareserial#resource-optimization
+// because there is a second buffer, the signal edge detection buffer, which is
+// probably the one that fills up between read() calls. We'd need about
+// 10*1024*4 = 40 kB for that to hold an entire telegram.
 #define P1_BUFFER_SIZE_BYTES 128
 
-#define READ_TIMEOUT_MILLIS 5000
-
+#define TELEGRAM_READ_TIMEOUT_MILLIS 5000
 #define MIN_TELEGRAM_INTERVAL_MILLIS 9500
+
+#define INVERTER_READ_INTERVAL_MILLIS 10000
 
 #define USER_AGENT "prikmeter"
 
@@ -212,21 +218,15 @@ void setup() {
   // Serial.println("Sending test telegram");
   // char const *testTelegram = "/hello\r\n!world\r\n";
   // uploadTelegram((byte const *) testTelegram, strlen(testTelegram));
-
-  inverterReader.update();
-  Serial.print("Current power (W): ");
-  Serial.println(inverterReader.powerWatts());
-  Serial.print("Total energy (kWh): ");
-  Serial.println(inverterReader.totalEnergyWattHours() / 1000.0);
 }
 
-void loop() {
+void readP1() {
   // If we still don't have a complete telegram seconds after the start, assume
   // read error and reset the reader for the next one.
   static unsigned long telegramStartTime = millis();
-  if (!telegramReader.isEmpty() && millis() - telegramStartTime > READ_TIMEOUT_MILLIS) {
+  if (!telegramReader.isEmpty() && millis() - telegramStartTime > TELEGRAM_READ_TIMEOUT_MILLIS) {
     Serial.print("Telegram still not completed after ");
-    Serial.print(READ_TIMEOUT_MILLIS);
+    Serial.print(TELEGRAM_READ_TIMEOUT_MILLIS);
     Serial.println(" ms");
     telegramReader.reset();
     led.flashNumber(TELEGRAM_READ_TIMEOUT);
@@ -289,4 +289,23 @@ void loop() {
 #endif
     }
   }
+}
+
+void readInverter() {
+  static unsigned long lastRead = 0;
+
+  unsigned long const now = millis();
+  if (now - lastRead >= INVERTER_READ_INTERVAL_MILLIS) {
+    lastRead = now;
+    inverterReader.update();
+    Serial.print("Current power (W): ");
+    Serial.println(inverterReader.powerWatts());
+    Serial.print("Total energy (kWh): ");
+    Serial.println(inverterReader.totalEnergyWattHours() / 1000.0);
+  }
+}
+
+void loop() {
+  readP1();
+  readInverter();
 }

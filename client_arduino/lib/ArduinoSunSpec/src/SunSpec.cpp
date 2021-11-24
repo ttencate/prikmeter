@@ -24,8 +24,7 @@ bool SunSpec::begin() {
   if (!findServerId()) {
     return false;
   }
-  currentModelAddress_ = start_ + 2;
-  return readModelHeader();
+  return restart();
 }
 
 bool SunSpec::hasCurrentModel() {
@@ -43,6 +42,11 @@ bool SunSpec::nextModel() {
     return false;
   }
   return true;
+}
+
+bool SunSpec::restart() {
+  currentModelAddress_ = start_ + 2;
+  return readModelHeader();
 }
 
 bool SunSpec::findServerId() {
@@ -146,4 +150,21 @@ bool SunSpec::read(uint16 *result) {
     *result = static_cast<uint16>(value);
   }
   return true;
+}
+
+uint16 *SunSpec::readArray(uint16 offset, uint16 count) {
+  if (!request(offset, count)) {
+    return nullptr;
+  }
+
+  uint16 *const buffer = new uint16[count];
+
+  for (uint16 i = 0; i < count; i++) {
+    if (!read(&buffer[i])) {
+      delete[] buffer;
+      return nullptr;
+    }
+  }
+
+  return buffer;
 }

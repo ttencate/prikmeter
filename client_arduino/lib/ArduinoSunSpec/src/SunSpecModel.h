@@ -67,8 +67,28 @@ class SunSpecModel {
     SunSpecModel() {
     }
 
+    SunSpecModel(SunSpecModel &&other) {
+      buffer_ = other.buffer_;
+      bufSize_ = other.bufSize_;
+      other.buffer_ = nullptr;
+      other.bufSize_ = 0;
+    }
+
     ~SunSpecModel() {
       deleteBuffer();
+    }
+
+    SunSpecModel &operator=(SunSpecModel &&other) {
+      deleteBuffer();
+      buffer_ = other.buffer_;
+      bufSize_ = other.bufSize_;
+      other.buffer_ = nullptr;
+      other.bufSize_ = 0;
+      return &this;
+    }
+
+    bool isValid() const {
+      return buffer_ != nullptr;
     }
 
   protected:
