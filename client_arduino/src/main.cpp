@@ -232,8 +232,14 @@ void readP1() {
     led.flashNumber(TELEGRAM_READ_TIMEOUT);
   }
 
-  int b = P1_INPUT.read();
-  if (b >= 0) {
+  // Read as many bytes as we can at once, so that the buffer is empty again
+  // for new ones.
+  while (true) {
+    int b = P1_INPUT.read();
+    if (b < 0) {
+      break;
+    }
+
     bool wasEmpty = telegramReader.isEmpty();
 
     telegramReader.addByte((byte) b);
